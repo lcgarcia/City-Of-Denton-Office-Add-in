@@ -4,8 +4,8 @@
  * Module dependencies.
  */
 var fs = require('fs');
-console.log(fs.readdirSync('./'));
-console.log(fs.readdirSync('node_modules/oracledb/build/Release'));
+console.log(__dirname);
+console.log(fs.readdirSync('./instantclient'));
 
 var app = require('../app');
 var debug = require('debug')('City of Denton:server');
