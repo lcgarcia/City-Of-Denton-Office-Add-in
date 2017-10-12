@@ -1,13 +1,16 @@
 #!/bin/bash
-unzip linux_zips/instantclient-basic-linux.x64-12.2.0.1.0.zip -d linux_zips
-unzip linux_zips/instantclient-sdk-linux.x64-12.2.0.1.0.zip -d linux_zips
-mv linux_zips/instantclient_12_2 linux_zips/instantclient
-ln -s $PWD/linux_zips/instantclient/libclntsh.so.12.1 $PWD/linux_zips/instantclient/libclntsh.so
+cd linux_zips
+unzip instantclient-basic-linux.x64-12.2.0.1.0.zip
+unzip instantclient-sdk-linux.x64-12.2.0.1.0.zip
+mv instantclient_12_2 instantclient
+cb instantclient
+ln -s libclntsh.so.12.1 libclntsh.so
 ls -la 
 ls -la linux_zips/instantclient
 # Set oracle sdk in path
-export LD_LIBRARY_PATH=$PWD/linux_zips/instantclient:$LD_LIBRARY_PATH
-export OCI_LIB_DIR=$PWD/linux_zips/instantclient
-export OCI_INC_DIR=$PWD/linux_zips/instantclient/sdk/include
+export LD_LIBRARY_PATH=$PWD:$LD_LIBRARY_PATH
+export OCI_LIB_DIR=$PWD
+export OCI_INC_DIR=$PWD/sdk/include
 echo $OCI_LIB_DIR
 echo $OCI_INC_DIR
+cd ../..
