@@ -15,4 +15,4 @@ echo $OCI_LIB_DIR
 echo $OCI_INC_DIR
 ls -la 
 cd ../..
-source pathvars.sh
+# source pathvars.sh
