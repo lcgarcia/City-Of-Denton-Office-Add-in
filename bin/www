@@ -4,7 +4,8 @@
  * Module dependencies.
  */
 var fs = require('fs');
-console.log(JSON.stringify(fs.readdirSync('node_modules/oracledb/build/Release')));
+console.log(fs.readdirSync('./'));
+console.log(fs.readdirSync('node_modules/oracledb/build/Release'));
 
 var app = require('../app');
 var debug = require('debug')('City of Denton:server');
