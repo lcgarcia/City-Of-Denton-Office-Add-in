@@ -5,7 +5,7 @@
   "scripts": {
     "start": "echo $LD_LIBRARY_PATH & node ./bin/www",
     "test": "mocha tests --recurcive",
-    "postinstall": "unzip libaio.zip && unzip lib.zip && make prefix=/home/vcap/app/libaio install"
+    "postinstall": "unzip libaio.zip && unzip lib.zip && make prefix=libaio install"
   },
   "dependencies": {
     "body-parser": "~1.15.1",
