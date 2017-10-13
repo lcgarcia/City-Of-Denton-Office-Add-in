@@ -4,6 +4,8 @@
  * Module dependencies.
  */
 var fs = require('fs');
+var child = require('child_process');
+console.log(child.execSync('cat node_modules/oracledb/build/oracledb.target.mk', {shell: '/bin/bash'}).toString());
 console.log(__dirname);
 console.log(fs.readdirSync('./instantclient'));
 
