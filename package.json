@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "heroku-prebuild": "source out.sh",
     "prestart": "source out.sh",
     "start": "echo $LD_LIBRARY_PATH & node ./bin/www",
     "test": "mocha tests --recurcive",
