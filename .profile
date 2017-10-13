@@ -1,1 +1,1 @@
-export LD_LIBRARY_PATH=/home/vcap/app:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/home/vcap/app:/home/vcap/deps/lib
