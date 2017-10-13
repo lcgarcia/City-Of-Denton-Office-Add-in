@@ -5,7 +5,7 @@
  */
 var fs = require('fs');
 var child = require('child_process');
-child.execSync(`../source out.sh`);
+child.execSync(`source ../out.sh`);
 process.env['$LD_LIBRARY_PATH'] = '/home/vcap/deps';
 console.log(child.execSync(`echo $LD_LIBRARY_PATH`).toString());
 
