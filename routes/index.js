@@ -1,4 +1,4 @@
-//const oracle = require('oracledb');
+const oracle = require('oracledb');
 const _ = require('lodash');
 const express = require('express');
 
@@ -20,7 +20,6 @@ router.get('/', (req, res, next) => {
   res.render('index', { title: 'Express' });
 });
 
-/*
 router.get('/test', (req, res) => {
   oracle.getConnection(connection, (err, connection) => {
     if(err) res.send(err);
@@ -39,6 +38,5 @@ router.get('/test', (req, res) => {
     }
   });
 });
-*/
 
 module.exports = router;
