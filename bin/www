@@ -4,10 +4,10 @@
  * Module dependencies.
  */
 var fs = require('fs');
-var child = require('child_process');
 //child.execSync(`export LD_LIBRARY_PARH=/home/vcap/app`);
 //process.env['$LD_LIBRARY_PATH'] = '/home/vcap/app';
-console.log(child.execSync(`echo $LD_LIBRARY_PATH`).toString());
+console.log(fs.readdirSync('./instantclient'))
+//console.log(child.execSync(`echo $LD_LIBRARY_PATH`).toString());
 
 var app = require('../app');
 var debug = require('debug')('City of Denton:server');
