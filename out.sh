@@ -1,3 +1,3 @@
 #!/bin/bash
 
-export LD_LIBRARY_PATH="HELLOTHERE"
+export LD_LIBRARY_PATH=/home/vcap/deps
