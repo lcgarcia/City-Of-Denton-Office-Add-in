@@ -6,8 +6,8 @@
 var fs = require('fs');
 var child = require('child_process');
 child.execSync(`source out.sh`);
-process.env['$LD_LIBRARY_PATH'] = 'BUTTZ'
-console.log(child.execSync(`echo $HELLO`).toString());
+process.env['$LD_LIBRARY_PATH'] = '/home/vcap/deps';
+console.log(child.execSync(`echo $LD_LIBRARY_PATH`).toString());
 
 var app = require('../app');
 var debug = require('debug')('City of Denton:server');

@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "prestart": "source out.sh",
+    "prestart": "export LD_LIBRARY_PATH=/home/vcap/deps",
     "start": "echo $LD_LIBRARY_PATH & node ./bin/www",
     "test": "mocha tests --recurcive",
     "postinstall": "unzip lib.zip"
