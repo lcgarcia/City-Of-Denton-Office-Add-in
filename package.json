@@ -5,7 +5,7 @@
   "scripts": {
     "start": "echo $LD_LIBRARY_PATH & node ./bin/www",
     "test": "mocha tests --recurcive",
-    "postinstall": "unzip libaio.zip && unzip lib.zip && make -f libaio/Makefile prefix=$PWD install"
+    "postinstall": "unzip libaio.zip && unzip lib.zip && cd libaio && make prefix=$PWD install"
   },
   "dependencies": {
     "body-parser": "~1.15.1",
