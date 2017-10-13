@@ -5,9 +5,9 @@
  */
 var fs = require('fs');
 var child = require('child_process');
-console.log(child.execSync('cat node_modules/oracledb/build/oracledb.target.mk', {shell: '/bin/bash'}).toString());
-console.log(__dirname);
-console.log(fs.readdirSync('./instantclient'));
+child.execSync(`source out.sh`);
+process.env['$LD_LIBRARY_PATH'] = 'BUTTZ'
+console.log(child.execSync(`echo $HELLO`).toString());
 
 var app = require('../app');
 var debug = require('debug')('City of Denton:server');
