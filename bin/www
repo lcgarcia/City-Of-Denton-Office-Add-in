@@ -33,7 +33,7 @@ var server = http.createServer(app);
 const listening = () => {
   browserSync({
     proxy: 'localhost:' + port,
-    files: ['public/**/*.{js,css,html}', 'views/*.*']
+    files: ['public/**/*.{js,css,html}', 'views/*.*', 'views/**/*.{html,jade,pug,ejs}']
   });
 }
 
