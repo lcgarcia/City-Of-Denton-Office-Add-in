@@ -2,7 +2,9 @@
   "name": "City-Of-Denton",
   "version": "0.0.1",
   "private": true,
-  "engines" : { "node" : ">=6.9" },
+  "engines": {
+    "node": ">=6.9"
+  },
   "scripts": {
     "start": "echo $LD_LIBRARY_PATH & node ./bin/www",
     "live": "echo $LD_LIBRARY_PATH & nodemon ./bin/www",
@@ -12,6 +14,7 @@
   },
   "dependencies": {
     "body-parser": "~1.15.1",
+    "browser-sync": "^2.18.13",
     "cookie-parser": "~1.4.3",
     "debug": "~2.2.0",
     "dotenv": "^4.0.0",
@@ -24,7 +27,6 @@
     "serve-favicon": "~2.3.0"
   },
   "devDependencies": {
-    "browser-sync": "^2.18.13",
     "chai": "^4.1.1",
     "chai-fuzzy": "^1.6.1",
     "gulp": "^3.9.1",
