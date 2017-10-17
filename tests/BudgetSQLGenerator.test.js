@@ -4,7 +4,7 @@ var expect = chai.expect
 //chai.use(require('chai-fuzzy'))
 
 describe('SQL Generator individual function tests for Budrpt-90', () => {
-	var Generator = require('./../lib/SQLGenerator')
+	var Generator = require('./../lib/BudgetSQLGenerator')
 	var generator = new Generator()
 
 	it('from() should return default from SQL partial', () => {
@@ -92,7 +92,7 @@ describe('SQL Generator individual function tests for Budrpt-90', () => {
 })
 
 describe('SQL Generator individual function tests for Budrpt_f-90', () => {
-  var Generator = require('./../lib/SQLGenerator')
+  var Generator = require('./../lib/BudgetSQLGenerator')
   var generator = new Generator({type: 'f'})
 
   it('from() should return default from SQL partial', () => {
@@ -186,7 +186,7 @@ describe('SQL Generator individual function tests for Budrpt_f-90', () => {
 })
 
 describe('SQL Generator individual function tests for Budrpt_a-90', () => {
-	var Generator = require('./../lib/SQLGenerator')
+	var Generator = require('./../lib/BudgetSQLGenerator')
 	var generator = new Generator({type: 'a'})
 
 	it('whereClause() should return valid businessLevel where partial', () => {
@@ -241,7 +241,7 @@ describe('SQL Generator individual function tests for Budrpt_a-90', () => {
 })
 
 describe('SQL Generator individual function tests for Budrpt_e-90', () => {
-	var Generator = require('./../lib/SQLGenerator')
+	var Generator = require('./../lib/BudgetSQLGenerator')
 	var generator = new Generator({type: 'e'})
 
 	it('whereClause() should return valid businessLevel where partial', () => {

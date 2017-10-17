@@ -8,8 +8,8 @@
   "scripts": {
     "start": "echo $LD_LIBRARY_PATH & node ./bin/www",
     "live": "echo $LD_LIBRARY_PATH & nodemon ./bin/www",
-    "test:bx": "mocha tests --recurcive",
     "test": "mocha tests --watch",
+    "test:bx": "mocha tests --recursive",
     "postinstall": "unzip libaio.zip && unzip lib.zip && cd libaio && make prefix=$PWD install"
   },
   "dependencies": {
