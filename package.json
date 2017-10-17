@@ -7,6 +7,7 @@
   },
   "scripts": {
     "start": "echo $LD_LIBRARY_PATH & node ./bin/www",
+    "local:install": "npm i --ignore-scripts",
     "live": "echo $LD_LIBRARY_PATH & nodemon ./bin/www",
     "test": "mocha tests --watch",
     "test:bx": "mocha tests --recursive",
