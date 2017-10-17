@@ -6,18 +6,19 @@
 var fs = require('fs');
 //child.execSync(`export LD_LIBRARY_PARH=/home/vcap/app`);
 //process.env['$LD_LIBRARY_PATH'] = '/home/vcap/app';
-console.log(fs.readdirSync('./instantclient'))
+//console.log(fs.readdirSync('./instantclient'))
 //console.log(child.execSync(`echo $LD_LIBRARY_PATH`).toString());
 
 var app = require('../app');
 var debug = require('debug')('City of Denton:server');
 var http = require('http');
+var browserSync = require('browser-sync');
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(process.env.PORT || '3001');
 app.set('port', port);
 
 /**
@@ -29,8 +30,14 @@ var server = http.createServer(app);
 /**
  * Listen on provided port, on all network interfaces.
  */
+const listening = () => {
+  browserSync({
+    proxy: 'localhost:' + port,
+    files: ['public/**/*.{js,css}', 'views/*.*']
+  });
+}
 
-server.listen(port);
+server.listen(port, listening);
 server.on('error', onError);
 server.on('listening', onListening);
 

@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "start": "echo $LD_LIBRARY_PATH & node ./bin/www",
-    "test": "mocha tests --recurcive",
+    "live": "echo $LD_LIBRARY_PATH & nodemon ./bin/www",
+    "test:bx": "mocha tests --recurcive",
+    "test": "mocha tests --watch",
     "postinstall": "unzip libaio.zip && unzip lib.zip && cd libaio && make prefix=$PWD install"
   },
   "dependencies": {
@@ -16,12 +18,16 @@
     "jade": "~1.11.0",
     "lodash": "^4.17.4",
     "morgan": "~1.7.0",
+    "nodemon": "^1.12.1",
     "oracledb": "^1.13.1",
     "serve-favicon": "~2.3.0"
   },
   "devDependencies": {
+    "browser-sync": "^2.18.13",
     "chai": "^4.1.1",
     "chai-fuzzy": "^1.6.1",
+    "gulp": "^3.9.1",
+    "gulp-nodemon": "^2.2.1",
     "mocha": "^3.5.0",
     "nodemon": "^1.12.1"
   }
