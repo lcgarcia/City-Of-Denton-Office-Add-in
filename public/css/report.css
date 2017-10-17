@@ -1,0 +1,224 @@
+.dateBox{
+  height: 34px;
+}
+
+.panel-run{
+  margin-bottom:10px; 
+  margin-top: 20px; 
+  cursor:pointer; 
+  width: 100%;
+}
+.panel-main{
+  width:100%;
+  height: 100%;
+  padding: 20px; 
+  background: rgba(250, 255, 255, 0.4);
+  box-shadow: 0px 8px 19px 1px #d0d0d0;;
+}
+
+.panel-username{
+  margin: 0 auto; 
+  width: 200px; 
+  text-align: center; 
+  margin-top: -15px; 
+  padding-bottom: 10px;
+}
+
+/* .button */
+.user-logout {
+    display: inline-block;
+    position: relative;
+    border: 2px solid #FFF;
+    overflow: hidden;
+    text-decoration: none;
+    font-size: 18px;
+    outline: none;
+    background: transparent;
+    color: #337ab7;
+    min-width: 200px;
+    font-variant: all-small-caps;
+}
+
+.user-logout span {
+    -webkit-transition: 0.6s;
+    -moz-transition: 0.6s;
+    -o-transition: 0.6s;
+    transition: 0.6s;
+    -webkit-transition-delay: 0.1s;
+    -moz-transition-delay: 0.1s;
+    -o-transition-delay: 0.1s;
+    transition-delay: 0.1s;
+}
+
+.user-logout:before,
+.user-logout:after {
+    content: '';
+    position: absolute;
+    
+    left: 0;
+    width: 100%;
+    text-align: center;
+    opacity: 0;
+    -webkit-transition: .4s,opacity .6s;
+    -moz-transition: .4s,opacity .6s;
+    -o-transition: .4s,opacity .6s;
+    transition: .4s,opacity .6s;
+}
+
+/* :before */
+.user-logout:before {
+    content: attr(data-hover);
+    -webkit-transform: translate(0,-50%);
+    -moz-transform: translate(0,-50%);
+    -ms-transform: translate(0,-50%);
+    -o-transform: translate(0,-50%);
+    transform: translate(0,-50%);
+    
+}
+
+/* :after */
+.user-logout:after {
+    content: attr(data-active);
+    -webkit-transform: translate(0,150%);
+    -moz-transform: translate(0,150%);
+    -ms-transform: translate(0,150%);
+    -o-transform: translate(0,150%);
+    transform: translate(0,150%);
+}
+
+/* Span on :hover and :active */
+.user-logout:hover span,
+.user-logout:active span {
+    opacity: 0;
+
+    -webkit-transform: scale(0.1);
+    -moz-transform: scale(0.1);
+    -ms-transform: scale(0.1);
+    -o-transform: scale(0.1);
+    transform: scale(0.1);
+}
+
+/*  
+    We show :before pseudo-element on :hover 
+    and :after pseudo-element on :active 
+*/
+.user-logout:hover:before,
+.user-logout:active:after {
+    opacity: 1;
+    font-weight: bold;
+    text-decoration: underline;
+    -webkit-transform: translate(0,0);
+    -moz-transform: translate(0,0);
+    -ms-transform: translate(0,0);
+    -o-transform: translate(0,0);
+    transform: translate(0,0);
+    -webkit-transition-delay: 0s;
+    -moz-transition-delay: 0s;
+    -o-transition-delay: 0s;
+    transition-delay: 0s;
+}
+
+
+
+
+
+
+
+.form-control.input-dates.dateInputBox{
+  background-color: #fff;
+  height: 100%
+}
+
+.form-control.jdeDateInputBox{
+  background-color: #fff; 
+  border-top-right-radius: 0; 
+  border-bottom-right-radius: 0;
+  text-align: center;
+}
+
+.datepicker.dropdown-menu{
+  font-size: 14px;
+}
+.datepicker-switch{
+  font-size: 15px;
+  font-weight: bold;
+  color:#337ab7;
+}
+
+.divider {
+  height: 1px;
+  width:100%;
+  display:block; /* for use on default inline elements like span */
+  margin: 9px 0;
+  overflow: hidden;
+  background-color: #e5e5e5;
+}
+
+.details{
+  color: #333;
+}
+.details:hover {
+  color:#337ab7;
+  font-size: 14.25px;
+  text-decoration: none;
+}
+
+.parentOptions:hover {
+  color:#337ab7;
+}
+
+.container.scroll{
+  max-width: 255px; 
+  max-height: 220px; 
+  overflow: scroll;
+  border: 1px solid #ddd;
+  border-top: none;
+}
+
+.panel-heading.parent{
+  background-color:#337ab7; 
+  color:white; 
+  cursor: pointer;
+}
+.panel-heading.parent:hover{
+  background-color:#17609e;
+}
+
+.panel-heading.child{
+  cursor: pointer;
+  border-top: 1px solid rgba(0, 101, 255, 0.1);
+}
+.panel-heading.child:hover{
+  background-color:#e0e2e2;
+}
+
+.searchBox {
+  float: left; 
+  background-image: url('../assets/search.png');
+  background-position: 8px 4px;
+  background-size: 20px;
+  background-repeat: no-repeat;
+  height: 32px;
+  font-size: 16px;
+  padding: 12px 20px 12px 40px;
+  border: 1px solid #ddd;
+  position: relative;
+}
+.viewBox{
+  float: right; 
+  height: 32px;
+  padding: 5px 5px 6px 5px;
+  border: 1px solid #ddd; 
+  background: #ddd; 
+  position: static;
+}
+
+.loader {
+  border: 16px solid rgba(250,250,250,.1);
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}

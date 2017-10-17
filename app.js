@@ -13,7 +13,7 @@ var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'ejs');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -22,6 +22,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/node_modules/angular', express.static(__dirname + '/node_modules/angular'));
+app.use('/node_modules/office-ui-fabric-js', express.static(__dirname + '/node_modules/office-ui-fabric-js'));
+app.use('/node_modules/client-js', express.static(__dirname + '/node_modules/client-js'));
+app.use('/node_modules/lodash', express.static(__dirname + '/node_modules/lodash')); 
+app.use('/node_modules/core-js', express.static(__dirname + '/node_modules/core-js')); 
 
 app.use('/', routes);
 app.use('/ks2inc/budget', budget);

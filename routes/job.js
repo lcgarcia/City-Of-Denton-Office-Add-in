@@ -14,6 +14,7 @@ router.get('/ui/data', (req, res) => {
   _.forEach(sqlData, (sql, key) => {
     oracleQuery.batchQuery(sql, key)
     .then(result => {
+      
       finalData[result.id] = result.results;
       if(Object.keys(finalData).length == Object.keys(sqlData).length)
         res.send(finalData);

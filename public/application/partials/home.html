@@ -1,0 +1,39 @@
+
+<main class="ms-welcome__main" ng-controller="HomeController as home">
+    <span style="float:right; padding-left:90%; padding-bottom: -10px;">
+        <input type="image" id="myimage" style="height:30px;width:30px;" src="assets/reload.png" ng-click="home.getActiveSheet()"/>
+    </span>
+        <span style="margin:10px 0;">
+            <h2 class="ms-font-xl ms-fontWeight-semilight ms-fontColor-neutralPrimary ms-u-slideUpIn20"> Load raw Harvest data into your Excel file! </h2>
+        </span>
+
+        <p>{{debugMe}}</p>
+
+        <span style="margin:20px 0;">
+            <div class="input-group input-daterange" id="datepicker" ng-hide="showSpinner">
+                <input id="startdate" type="text" name="start" ng-model="dates.start" class="form-control input-dates"/>
+                <span class="input-group-addon"> to </span>
+                <input id="enddate" type="text" name="end" ng-model="dates.end" class="form-control input-dates"/>
+            </div>
+            <i class="fa fa-circle-o-notch fa-spin fa-3x fa-fw" ng-show="showSpinner"></i>
+            <span class="sr-only">Loading...</span>
+        </span>
+
+        <div class="row" style="margin:20px 0;">
+            <div class="col-xs-12" style="margin-bottom:20px;cursor:pointer;">
+                <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="home.getData()">Get Data</button>
+            </div>
+            <div class="col-xs-12" style="cursor:pointer;">
+                <button type="button" class="btn btn-default btn-lg btn-block" ng-click="home.getDetail()">Toggle Detail</button>
+            </div>
+        </div>
+        <select name="singleSelect" id="singleSelect" ng-model="test" class="form-control" ng-model="test" ng-change="home.showClientDetail()">
+            <option value="">---Please select---</option> <!-- not selected / blank option -->
+            <option ng-repeat="(value, key) in hideByClient" value="{{ key }}">{{ value }}</option> <!-- interpolation -->
+        </select>
+
+        <p>
+        {{debugMsg}}
+        </p>
+    </main>
+
