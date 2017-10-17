@@ -3,7 +3,7 @@ var expect = chai.expect
 // We may need fuzzy later so I included it as a dev dependancy just incase
 //chai.use(require('chai-fuzzy'))
 
-describe.only('SQL Generator individual function tests for Budrpt-90', () => {
+describe('SQL Generator individual function tests for Budrpt-90', () => {
 	var Generator = require('./../lib/SQLGenerator')
 	var generator = new Generator()
 
@@ -86,7 +86,7 @@ describe.only('SQL Generator individual function tests for Budrpt-90', () => {
 			buLevel: 'Comp',
 			key: '00105'
 		}
-		console.log(generator.getBusinessUnitData());
+		//console.log(generator.getBusinessUnitData());
 		//console.log(generator.createSelectStatement(false, 'Income Statement', 2015, 'Feb', "between '4000' and '9999'", options));
 	});
 })
@@ -290,7 +290,7 @@ describe('SQL Generator individual function tests for Budrpt_e-90', () => {
 			key: '00100'
 		}
 
-		console.log(generator.getBusinessUnitData());
+		//console.log(generator.getBusinessUnitData());
 		//console.log(generator.createSelectStatement(false, 'Income Statement', 2015, 'Feb', "between '4000' and '9999'", options));
 
 	})
