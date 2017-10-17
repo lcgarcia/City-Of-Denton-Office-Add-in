@@ -2,6 +2,7 @@
   "name": "City-Of-Denton",
   "version": "0.0.1",
   "private": true,
+  "engines" : { "node" : ">=6.9" },
   "scripts": {
     "start": "echo $LD_LIBRARY_PATH & node ./bin/www",
     "live": "echo $LD_LIBRARY_PATH & nodemon ./bin/www",
