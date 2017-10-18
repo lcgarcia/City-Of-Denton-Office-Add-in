@@ -146,6 +146,7 @@ app.controller('budgetCtrl', [
       $scope.modalBook.value = "";
 
       $("#bookModalBody").show();
+      $("#bookModalInput").show();
       $("#bookModalError").hide();
       if(option == 'View'){
         $scope.modalBook.title = "Selections";
@@ -194,12 +195,12 @@ app.controller('budgetCtrl', [
       else if(option == 'Delete'){
         $scope.modalBook.msg = "Are you sure you want to delete '" + book.name + "'?";
         $scope.modalBook.saveButton = "Delete";
-        $("#bookModalBody").hide();
+        $("#bookModalInput").hide();
       }
       else if(option == 'Save Changes'){
         $scope.modalBook.msg = "Save changes to '" + book.name + "'?";
         $scope.modalBook.saveButton = "Save";
-        $("#bookModalBody").hide();
+        $("#bookModalInput").hide();
       }
       else if(option == 'Save'){
         var noSelections = true;
