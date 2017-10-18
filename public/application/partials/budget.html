@@ -1,7 +1,7 @@
 <!-- *************** BUDGET REPORT START *************** -->
 <!-- Panel 1 Start-->
-<div id="budgetReport" class="panel-group" style="min-width: 200px;">
-   <div class="panel panel-primary" style="width:100%; max-width:300px;">
+<div id="budgetReport" class="panel-group">
+   <div class="panel panel-primary panel-report">
       <div class="panel-heading parent" data-toggle="collapse" data-target="#collapse1" aria-expanded="true">
          <h4 class="panel-title" style="text-align: center">
             Setup Report
@@ -21,11 +21,11 @@
                      <label>Report Type:</label>
                      <section>
                         <ul>
-                           <li style="text-align: center;" class="list-group-item" ng-class="(selectedValues.reportType == 'Balance') ? 'active' :'' " 
-                              ng-click="selectedReportType('Balance')" ng-style="{'cursor':'pointer'}">Balance Sheet
+                           <li class="list-group-button" ng-class="(selectedValues.reportType == 'Balance') ? 'active' :'' " 
+                              ng-click="selectedReportType('Balance')">Balance Sheet
                            </li>
-                           <li style="text-align: center;" class="list-group-item" ng-class="(selectedValues.reportType == 'Income') ? 'active' :'' " 
-                              ng-click="selectedReportType('Income')" ng-style="{'cursor':'pointer'}">Income Statement
+                           <li class="list-group-button" ng-class="(selectedValues.reportType == 'Income') ? 'active' :'' " 
+                              ng-click="selectedReportType('Income')">Income Statement
                            </li>
                         </ul>
                      </section>
@@ -142,25 +142,26 @@
                            </tbody>
                         </table>
                      </div>
-                     <div class="container scroll" style="width: 100%">
-                        <ul id="myUL" style="list-style: none;">
-                           <li class="parentLi" style="margin-top: 1em;" ng-repeat="label in parentList" >
+                     <div class="container scroll">
+                        <ul id="myUL" style="list-style: none; width: 120%">
+                           <li class="parentLi" style="margin-top: 6px;" ng-repeat="label in parentList" >
                               <div class="parentOptions">
                                  <input id="{{'parentInput-'+ label.id}}" type="checkbox" class="parentOption" ng-model="label.selected" ng-change="selectedParent(label)">
                                  <label id="{{'parentLabel-'+ label.id}}"
                                     data-toggle="collapse" 
                                     data-target="{{'#childOptions-'+ label.id}}"
                                     aria-expanded="false" 
-                                    aria-controls="{{'childOptions-'+ label.id}}">
-                                    {{ label.name }}
+                                    aria-controls="{{'childOptions-'+ label.id}}"
+                                    style="display: inline; ">
+                                    {{label.MCCO + '-' + label.CCNAME}}
                                  </label>
                               </div>
                               <div id="{{'childOptions-'+ label.id}}" aria-expanded="false" class="collapse">
                                  <ul style="list-style: none;">
                                     <li class="childLi" style="margin-left: 1em;" ng-repeat="childList in label.childList">
                                        <input id="{{'childInput-'+ childList.id}}" type="checkbox" ng-model="childList.selected" ng-change="selectedChild(label)">
-                                       <label>
-                                          {{ childList.name }}
+                                       <label style="font-size: 12px;">
+                                          {{childList.id + '-' + childList.name }}
                                        </label>
                                     </li>
                                  </ul>
@@ -198,23 +199,24 @@
    <div class="modal-dialog" style="max-width: 300px;">
       <!-- Modal content-->
       <div class="modal-content">
-         <div class="modal-header" style="padding: 5px 10px 5px 10px; color: #337ab7;">
+         <div class="modal-header" style="padding: 10px; color: #337ab7;">
             <button type="button" class="close" data-dismiss="modal">&times;</button>
             <h4 class="modal-title">{{ modalBook.title }}</h4>
          </div>
-         <div class="alert alert-danger" id="bookModalError" style="margin:0; padding:10px; display:none">
+
+         <div id="bookModalError" class="alert alert-danger" style="margin:0; padding:10px; display:none">
             {{ modalBook.error }}
          </div>            
-         <div class="modal-body" ng-keyup="modalKeyPressed($event)">
+         <div id="bookModalBody" class="modal-body" ng-keyup="modalKeyPressed($event)">
             <div class="input-group" style="width: 100%;">
               <p  style="padding-bottom: 10px;">{{ modalBook.msg }}</p>
-              <input id="bookModalInput" type="text" class="form-control" ng-model="modalBook.value">
+              <input id="bookModalInput" type="text" class="form-control" ng-model="modalBook.value" autofocus>
             </div>
          </div>
 
-         <div class="modal-footer" style="padding: 5px 10px 5px 10px;">
+         <div class="modal-footer" style="padding: 10px;">
            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-           <button type="button" class="btn btn-primary" ng-click="saveBook()">{{ modalBook.saveButton }}</button>
+           <button type="button" class="btn btn-info" ng-click="saveBook()">{{ modalBook.saveButton }}</button>
          </div>
       </div>
    </div>
@@ -227,7 +229,7 @@
    <div class="modal-dialog" style="max-width: 300px;">
       <!-- Modal content-->
       <div class="modal-content">
-         <div class="modal-header" style="padding: 5px 10px 5px 10px; color: #337ab7;">
+         <div class="modal-header" style="padding: 10px; color: #337ab7;">
             <button type="button" class="close" data-dismiss="modal">&times;</button>
             <h4 class="modal-title">{{ modalBook.title }}</h4>
          </div>       
@@ -254,8 +256,8 @@
             </div>
          </div>
 
-         <div class="modal-footer" style="padding: 5px 10px 5px 10px;">
-           <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+         <div class="modal-footer" style="padding: 10px;">
+           <button type="button" class="btn btn-info" data-dismiss="modal">OK</button>
          </div>
       </div>
    </div>

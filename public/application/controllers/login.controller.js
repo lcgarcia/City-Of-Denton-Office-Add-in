@@ -94,13 +94,24 @@ app.controller('loginCtrl', [
 		}
 		//Animate shake for empty fields
 		else{
-			if(username == ""){
+			if(username == "" && password == ""){
 				$("#username").velocity("callout.shake");
-			}
-			if(password == ""){
 				$("#password").delay(50).velocity("callout.shake");
+				$("#username").focus();
+			}
+			else if(username == ""){
+				$("#username").velocity("callout.shake");
+				$("#username").focus();
+			}
+			else if(password == ""){
+				$("#password").velocity("callout.shake");
+				$("#password").focus();
 			}
 		}
+	}
+
+	function setFocus(){
+		
 	}
 
 	function nextClick(){
