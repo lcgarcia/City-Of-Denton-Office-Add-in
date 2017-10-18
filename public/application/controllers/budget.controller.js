@@ -8,7 +8,8 @@ app.controller('budgetCtrl', [
   '$rootScope',
   '$state',
   '$stateParams',
-  function ($http, $scope, $rootScope, $state, $stateParams) {
+  'budgetService',
+  function ($http, $scope, $rootScope, $state, $stateParams, budgetService) {
     $scope.modalBook = {
       msg:"",
       title:"",
@@ -19,39 +20,19 @@ app.controller('budgetCtrl', [
     };
     $scope.modalLoad = {};
 
+    $scope.budgetList = [];
+
+    
+
     $scope.filteredBooks = [
       {id:"00", name:"--Please select---", user:"default",
         selectionList:[]
-      },
-      {id:"01", name:"book1", user:"lgarcia",
-        selectionList:[
-          {id:"00210", selected:true},
-          {id:"00250", selected:false, childList:[{id:"250"}]},
-          {id:"00291", selected:false, childList:[{id:"2910"},{id:"291801"}]},
-          {id:"00300", selected:true}
-        ]
-      },
-      {id:"02", name:"book2", user:"auser",
-        selectionList:[
-          {id:"00250", selected:true},
-          {id:"00290", selected:false, childList:[{id:"2900"}]},
-          {id:"00293", selected:false, childList:[{id:"2930"}]},
-        ]
-      },
-      {id:"03", name:"book3", user:"buser",
-        selectionList:[
-          {id:"00210", selected:false, childList:[{id:"2100"}]},
-          {id:"00291", selected:false, childList:[{id:"291"},{id:"291801"}]},
-          {id:"00293", selected:true}
-        ]
       }
     ];
 
     $scope.userSelection = {id:"", name:"", user:"defaultUser",
       selectionList:[]
     };
-
-    $scope.selectedValues = {reportType:"Balance", totalSheet:"No", month:"", year:"", searchInput:"", book:{}};
 
     $scope.parentList = [
       {id:"00210", name:"Police Fund", childList:[]},
@@ -82,21 +63,40 @@ app.controller('budgetCtrl', [
     });
 
     /**
-     * [buildPage set selected values]
+     * [buildPage sets selected values]
      */
     function buildPage(){
-      var i, j, child;
+      $scope.selectedValues.reportType ="Balance";
+      $scope.selectedValues.totalSheet = "No";
+      $scope.selectedValues.month = "";
+      $scope.selectedValues.year = "";
+      $scope.selectedValues.searchInput = ""; 
+      $scope.selectedValues.book = {};
+      var rType = $scope.selectedValues.report.type;
+      
+      budgetService.getBudgetReportData(rType).then(function(data){
+        var children;
+        $scope.parentList = _.orderBy(data, ['MCCO'], ['asc']);
+        _.forEach($scope.parentList, function(parent) {
+          children = parent.childList;
+          _.forEach(children, function(child) {
+            child.selected = false;
+            child.id = (child.id).trim();
+          });
+          parent.selected = false;
+          parent.id = (parent.id).trim();
+          parent.childList = children;
+        });
 
-      for(i=0; i<$scope.parentList.length; i++){
-        child = $scope.childList[i];
-        for(j=0; j<child.length; j++){
-          child[j].selected = false;
-        }
-        $scope.parentList[i].selected = false;
-        $scope.parentList[i].childList = child;
+      });
+
+      if($scope.user && $scope.user.name){
+        $scope.userSelection.user = $scope.user.name
       }
-
       $scope.selectedValues.book = $scope.filteredBooks[0];
+
+
+
     }
 
     /**
@@ -140,29 +140,22 @@ app.controller('budgetCtrl', [
      */
     $scope.editBook = function(option){
       var book = $scope.selectedValues.book;
-      var input = document.getElementById("bookModalInput");
-      var error = document.getElementById("bookModalError");
-
       $scope.modalBook.title = option;
       $scope.modalBook.error = "";
       $scope.modalBook.msg = "";
       $scope.modalBook.value = "";
 
-      input.style.display = "";
-      error.style.display = "none";
-      
+      $("#bookModalBody").show();
+      $("#bookModalError").hide();
       if(option == 'View'){
-        input = document.getElementById("selectionDetails");
-        error = document.getElementById("selectionWarning");
-        
         $scope.modalBook.title = "Selections";
         $scope.modalBook.saveButton = "OK";
         $scope.modalBook.detailList = [];
-
+        //
+        $("#selectionDetails").show();
+        $("#selectionWarning").hide();
         
         var element, childElement, noSelections;
-        input.style.display = "";
-        error.style.display = "none";
         noSelections = true;
         //
         _.forEach($scope.parentList, function(parent) {
@@ -185,8 +178,8 @@ app.controller('budgetCtrl', [
 
         if(noSelections){
           $scope.modalBook.error = "No Selections Made";
-          input.style.display = "none";
-          error.style.display = "";
+          $("#selectionDetails").hide();
+          $("#selectionWarning").show();
         }
       }
       else if(option == 'Rename'){
@@ -201,12 +194,12 @@ app.controller('budgetCtrl', [
       else if(option == 'Delete'){
         $scope.modalBook.msg = "Are you sure you want to delete '" + book.name + "'?";
         $scope.modalBook.saveButton = "Delete";
-        input.style.display = "none";
+        $("#bookModalBody").hide();
       }
       else if(option == 'Save Changes'){
         $scope.modalBook.msg = "Save changes to '" + book.name + "'?";
         $scope.modalBook.saveButton = "Save";
-        input.style.display = "none";
+        $("#bookModalBody").hide();
       }
       else if(option == 'Save'){
         var noSelections = true;
@@ -220,8 +213,8 @@ app.controller('budgetCtrl', [
 
         if(noSelections){
           $scope.modalBook.error = "Cannot save empty book";
-          error.style.display = "";
-          input.style.display = "none";
+          $("#bookModalBody").hide();
+          $("#bookModalError").show();
           $scope.modalBook.saveButton = "OK";
         }
         else{
@@ -281,12 +274,18 @@ app.controller('budgetCtrl', [
           bookCopy.selectionList = selectionCopy;
           $scope.filteredBooks.push(bookCopy);
           $scope.selectedValues.book = $scope.filteredBooks[$scope.filteredBooks.length-1];
+
+          //enable book menu options
+          $('#menu1').removeClass("disabled");
         }
       }
 
       var error = document.getElementById("bookModalError");
       if($scope.modalBook.error == ""){
         $scope.hideBookModal();
+        error.style.display = "none";
+      }
+      else if($scope.modalBook.error == "Empty Field"){
         error.style.display = "none";
       }
       else{
@@ -319,26 +318,29 @@ app.controller('budgetCtrl', [
             item = book.selectionList[i];
             parent = _.find($scope.parentList, ['id', item.id]);
             if(item.selected){
-              //select parent and children
+              //select all parent and children
               parent.selected = true;
               _.forEach(parent.childList, function(children) {
                 children.selected = true;
               });
             }
             else if(item.childList && item.childList.length > 0){
-              //open children options
-              showCollapsedElement(item.id);
-              for (j = 0; j < item.childList.length; j++) {
-                //set children selections
-                child = _.find(parent.childList, ['id', item.childList[j].id]);
-                if(item.childList[j].selected == null){
-                  //option with no select tag - means set selection to true
-                  child.selected = true;
+              //check for children selections
+              if((_.findIndex(item.childList, ['selected', true])) != -1){
+                //open children options
+                showCollapsedElement(item.id);
+                for (j = 0; j < item.childList.length; j++) {
+                  //set children selections
+                  child = _.find(parent.childList, ['id', item.childList[j].id]);
+                  if(item.childList[j].selected == null){
+                    //option with no select tag - means set selection to true
+                    child.selected = true;
+                  }
+                  else{
+                    child.selected = item.childList[j].selected;
+                  }
+                  
                 }
-                else{
-                  child.selected = item.childList[j].selected;
-                }
-                
               }
             }
           }
@@ -422,13 +424,7 @@ app.controller('budgetCtrl', [
       }
     }
 
-    /**
-     * [clearAll clear all selected book values]
-     */
-    $scope.clearAll = function() {  
-      $scope.selectedValues.book = $scope.filteredBooks[0];
-      $scope.changeBook();
-    }
+    
 
     $scope.showLoadingModal = function(msg) {
       $scope.modalLoad.msg = msg;
@@ -459,13 +455,23 @@ app.controller('budgetCtrl', [
     var getBookSaveError = function(value){
       if(value == ""){
         //empty field
-        return "Invalid Book Name";
+        $("#bookModalInput").velocity("callout.shake");
+        $("#bookModalInput").focus();
+        return "Empty Field";
       }
       if(_.findIndex($scope.filteredBooks, ['name', value]) != -1){
         //existing book name
         return "'" + value +"' already exists";
       }
       return "";
+    }
+
+    /**
+     * [clearAll clear all selected book values]
+     */
+    $scope.clearAll = function() {  
+      $scope.selectedValues.book = $scope.filteredBooks[0];
+      $scope.changeBook();
     }
 
 

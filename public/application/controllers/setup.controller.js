@@ -23,10 +23,10 @@ app.controller('setupCtrl', [
     $scope.showReportDetails = false;
 
     $scope.filteredReports = [
-      {name:"budrpt_a-90"},
-      {name:"budrpt_e-90"},
-      {name:"budrpt_f-90"},
-      {name:"budrpt-90"},
+      {name:"budrpt_a-90", type:'a'},
+      {name:"budrpt_e-90", type:'e'},
+      {name:"budrpt_f-90", type:'f'},
+      {name:"budrpt-90", type:''},
       {name:"bjobcost-90"},
       {name:"jobcost90_ka"},
       {name:"jobcoste-90"},
