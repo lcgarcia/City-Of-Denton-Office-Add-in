@@ -22,6 +22,8 @@ app.controller('budgetCtrl', [
 
     $scope.budgetList = [];
 
+    $scope.parentList = [];
+
     
 
     $scope.filteredBooks = [
@@ -34,23 +36,7 @@ app.controller('budgetCtrl', [
       selectionList:[]
     };
 
-    $scope.parentList = [
-      {id:"00210", name:"Police Fund", childList:[]},
-      {id:"00250", name:"Traffic Safety Fund", childList:[]},
-      {id:"00290", name:"Airport Gas Well", childList:[]},
-      {id:"00291", name:"Park Gas Well", childList:[]},
-      {id:"00293", name:"Roadway Impact Fees", childList:[]},
-      {id:"00300", name:"Grant Fund", childList:[]}
-    ];
-
-    $scope.childList = [
-      [{id:"210", name:"Option1",},{id:"2100", name:"Option2"},{id:"21000", name:"Option3"}],
-      [{id:"250", name:"Option1"},{id:"2500", name:"Option2"}],
-      [{id:"290", name:"Option1"},{id:"2900", name:"Option2"}],
-      [{id:"291", name:"Option1"},{id:"2910", name:"Option2"},{id:"291801", name:"Option3"}],
-      [{id:"293", name:"Option1"},{id:"2930", name:"Option2 Park"}],
-      [{id:"300", name:"Option1"}]
-    ];
+    
 
     $rootScope.$on('$viewContentLoaded', budgetReportDates);
 
@@ -63,6 +49,17 @@ app.controller('budgetCtrl', [
     });
 
     /**
+     * Set Report Data when budget report type is changed
+     */
+    $("#reportSelection").change(function(){
+      if($scope.selectedValues.report.name.includes("budrpt")){
+        setReportData();
+      }
+    });
+
+
+
+    /**
      * [buildPage sets selected values]
      */
     function buildPage(){
@@ -72,6 +69,19 @@ app.controller('budgetCtrl', [
       $scope.selectedValues.year = "";
       $scope.selectedValues.searchInput = ""; 
       $scope.selectedValues.book = {};
+
+      if($scope.user && $scope.user.name){
+        $scope.userSelection.user = $scope.user.name
+      }
+      $scope.selectedValues.book = $scope.filteredBooks[0];
+      setReportData();
+    }
+
+
+    /**
+     * [setReportData calls API to get report data]
+     */
+    function setReportData(){
       var rType = $scope.selectedValues.report.type;
       
       budgetService.getBudgetReportData(rType).then(function(data){
@@ -87,16 +97,7 @@ app.controller('budgetCtrl', [
           parent.id = (parent.id).trim();
           parent.childList = children;
         });
-
       });
-
-      if($scope.user && $scope.user.name){
-        $scope.userSelection.user = $scope.user.name
-      }
-      $scope.selectedValues.book = $scope.filteredBooks[0];
-
-
-
     }
 
     /**
@@ -116,21 +117,6 @@ app.controller('budgetCtrl', [
         $scope.selectedValues.totalSheet = "No";
       }
       
-    }
-
-    /**
-     * [selectedReport sets the view depending on which report is selected]
-     * @param report [the report selected]
-     */
-    $scope.selectedReport = function(report) {
-      var budrpt = document.getElementById("budgetReport");
-      if(report.name.includes("budrpt")){
-        budrpt.style.display = "";
-      }
-      else{
-        budrpt.style.display = "none";
-        $state.go("setup.jobcost");
-      }
     }
 
 

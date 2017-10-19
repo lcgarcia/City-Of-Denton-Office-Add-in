@@ -7,44 +7,22 @@ app.controller('jobcostCtrl', [
   '$scope', 
   '$rootScope',
   '$state',
-  function ($http, $scope, $rootScope, $state) {
-    $scope.modalLoad = {};
-    $scope.swing = "R";
-
+  'jobcostService',
+  function ($http, $scope, $rootScope, $state, jobcostService) {
     $scope.filteredDepartment = [
-      {id:"09", name:"Grants", companyList:[]},
-      {id:"10", name:"Facilities", companyList:[]},
-      {id:"20", name:"Airport", companyList:[]},
-      {id:"25", name:"Engineering", companyList:[]},
-      {id:"30", name:"Development", companyList:[]},
-      {id:"31", name:"Transportation", companyList:[]}
+      {id:"09", name:"Grants", companyList:[]}
     ];
 
     $scope.filteredCompany = [
-      {id:"00402", name:"Streets/Traffic - C.O.", projectList:[]},
-      {id:"00403", name:"Parks Projects Fund - C.O.", projectList:[]},
-      {id:"00404", name:"General Gov Misc - C.O.", projectList:[]},
-      {id:"00408", name:"Vehicles & Equipment", projectList:[]},
-      {id:"00409", name:"City Facilities Projects - C.O.", projectList:[]},
-      {id:"00410", name:"Denton Munincipal Complex(245)", projectList:[]}
+      {id:"00402", name:"Streets/Traffic - C.O.", projectList:[]}
     ];
 
     $scope.filteredProject = [
-      {id:"100001XXX", name:"Maruyama (Marriot Corbin Road)", jobStatusList:[]},
-      {id:"100002XXX", name:"Unallocated Vehicle Funds", jobStatusList:[]},
-      {id:"100003XXX", name:"Unallocated Funds", jobStatusList:[]},
-      {id:"100004XXX", name:"Audio Visual/Camera Equipment", jobStatusList:[]},
-      {id:"100005XXX", name:"Tree Power", jobStatusList:[]},
-      {id:"100006XXX", name:"DMC Parking Lot", jobStatusList:[]}
+      {id:"100001XXX", name:"Maruyama (Marriot Corbin Road)", jobStatusList:[]}
     ];
 
     $scope.filteredJob = [
-      {name:"The Wildwood Inn"},
-      {name:"Jack Bells Apts Hercules 1229"},
-      {name:"Law Enforcement Block Grant BS"},
-      {name:"Law Enforcement Block Grant RE"},
-      {name:"Law Enforcement Block Grant EX"},
-      {name:"Law Enforcement Block Grant EX"}
+      {name:"The Wildwood Inn"}
     ];
 
     $scope.filteredDetails = [
@@ -58,7 +36,7 @@ app.controller('jobcostCtrl', [
     ];
 
 
-    $scope.selectedValues = {dates:{monthStart:"", jdeYear:"", jdeFiscalYear:""}};
+    
 
     $rootScope.$on('$viewContentLoaded', jobcostReportDates);
 
@@ -68,6 +46,10 @@ app.controller('jobcostCtrl', [
     });
 
     function buildPage(){
+      $scope.selectedValues.dates = {};
+      $scope.selectedValues.dates.monthStart = "";
+      $scope.selectedValues.dates.jdeYear ="";
+      $scope.selectedValues.dates.jdeFiscalYear="";
       //Set Job IDs
       for(i=0; i<$scope.filteredJob.length; i++){
         $scope.filteredJob[i].id = "300"+i+"0";
@@ -76,10 +58,62 @@ app.controller('jobcostCtrl', [
       for(i=0; i<$scope.filteredDetails.length; i++){
         $scope.filteredDetails[i].id = i;
       }
+
+      setReportData();
     }
 
-    $scope.changeSwing = function (swing) {
-      $scope.swing = swing;
+    /**
+     * [setReportData calls API to get report data]
+     */
+    function setReportData(){
+      var rType = $scope.selectedValues.report.type;
+      
+      jobcostService.getJobcostReportData(rType).then(function(data){
+        var element, value, splitIndex, id, name;
+        $scope.filteredDepartment = [];
+        $scope.filteredProject = [];
+        $scope.filteredJob = [];
+
+        //departments
+        _.forEach(data.departments, function(obj) {
+          value = obj[0].trim();
+          splitIndex = value.indexOf(' ');
+
+          element = {};
+          element.id = value.substr(0,splitIndex);
+          element.name = value.substr(splitIndex+1);
+
+          $scope.filteredDepartment.push(element);
+        });
+
+        //projects
+        _.forEach(data.projects, function(obj) {
+          value = obj[0].trim();
+          splitIndex = value.indexOf(' ');
+
+          element = {};
+          element.id = value.substr(0,splitIndex);
+          element.name = value.substr(splitIndex+1);
+
+          $scope.filteredProject.push(element);
+        });
+
+        //jobs
+        _.forEach(data.jobs, function(obj) {
+          value = obj[0].trim();
+          splitIndex = value.indexOf(' ');
+
+          element = {};
+          element.id = value.substr(0,splitIndex);
+          element.name = value.substr(splitIndex+1);
+
+          $scope.filteredJob.push(element);
+        });
+
+
+
+
+      });
     }
 
     //Set JDE Fiscal Years
