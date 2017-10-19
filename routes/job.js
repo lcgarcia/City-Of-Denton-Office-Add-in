@@ -24,6 +24,33 @@ router.get('/ui/data', (req, res) => {
         res.send(finalData);
     });
   });
-})
+});
+
+router.get('/companies/:department', (req, res) => {
+  // The type does not matter here but you can included it if you would like
+  var generator = new Generator({ type: req.query.type || '' });
+
+  oracleQuery.query(generator.getCompanySelections(req.params.department))
+  .then(result => res.send(result))
+  .catch(err => res.send(err))
+});
+
+router.get('/project/:department/:company', (req, res) => {
+  // you must specify a report type unless it is blank
+  var generator = new Generator({ type: req.query.type || '' });
+
+  oracleQuery.query(generator.getProjectSelections(req.params.department, req.params.company))
+  .then(result => res.send(result))
+  .catch(err => res.send(err))
+});
+
+router.get('/:department/:company/:project', (req, res) => {
+  var generator = new Generator({ type: req.query.type || '' });
+  const jobStatus = req.query.jobstatus || '';
+
+  oracleQuery.query(generator.getJobSelections(req.params.department, req.params.company, req.params.project, jobStatus))
+  .then(result => res.send(result))
+  .catch(err => res.send(err))
+});
 
 module.exports = router
