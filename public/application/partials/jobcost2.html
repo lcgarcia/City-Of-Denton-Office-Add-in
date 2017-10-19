@@ -29,10 +29,10 @@
                         </label>
                         <select id="departmentSelection" 
                            class="form-control" 
-                           ng-model="departmentSelected" 
-                           ng-options="option.id + ' ' + option.name for option in filteredDepartment track by option.id"
-                           ng-change="selectedDepartment(departmentSelected)">
-                           <option value="">*All</option>
+                           ng-model="selectedValues.department" 
+                           ng-options="option.name for option in filteredDepartment track by option.key"
+                           ng-change="selectedDepartment()">
+                           
                         </select>
                      </section>
                      <span class="divider"></span>
@@ -47,10 +47,10 @@
                         </label>
                         <select id="companySelection" 
                            class="form-control" 
-                           ng-model="companySelected" 
-                           ng-options="option.id + ' ' + option.name for option in filteredCompany track by option.id"
-                           ng-change="selectedCompany(companySelected)">
-                           <option value="">*All</option>
+                           ng-model="selectedValues.company" 
+                           ng-options="option.name for option in filteredCompany track by option.key"
+                           ng-change="selectedCompany()">
+                           
                         </select>
                      </section>
                      <span class="divider"></span>
@@ -65,10 +65,10 @@
                         </label>
                         <select id="projectSelection" 
                            class="form-control" 
-                           ng-model="projectSelected" 
-                           ng-options="option.id + ' ' + option.name for option in filteredProject track by option.id"
-                           ng-change="selectedProject(projectSelected)">
-                           <option value="">*All</option>
+                           ng-model="selectedValues.project" 
+                           ng-options="option.name for option in filteredProject track by option.key"
+                           ng-change="selectedProject()">
+                           
                         </select>
                      </section>
                      <span class="divider"></span>
@@ -83,9 +83,9 @@
                         </label>
                         <select id="jobStatusSelection" 
                            class="form-control" 
-                           ng-model="jobStatusSelected" 
-                           ng-options="option.name for option in jobStatus track by option.id">
-                           <option value="">*All</option>
+                           ng-model="selectedValues.jobStatus" 
+                           ng-options="option.name for option in jobStatus track by option.key">
+                           
                         </select>
                      </section>
                      <section style="padding-top: 5px">
@@ -99,10 +99,10 @@
                         </label>
                         <select id="jobSelection" 
                            class="form-control" 
-                           ng-model="jobSelected" 
-                           ng-options="option.id + ' ' + option.name for option in filteredJob track by option.id"
-                           ng-change="selectedJob(jobSelected)">
-                           <option value="">*All</option>
+                           ng-model="selectedValues.job" 
+                           ng-options="option.name for option in filteredJob track by option.key"
+                           ng-change="selectedJob()">
+                           
                         </select>
                      </section>
                      <span class="divider"></span>
@@ -117,10 +117,10 @@
                         </label>
                         <select id="detailSelection" 
                            class="form-control" 
-                           ng-model="detailSelection" 
-                           ng-options="option.name for option in filteredDetails track by option.id"
-                           ng-change="selectedDetail(detailSelected)">
-                           <option value="">*All</option>
+                           ng-model="selectedValues.details" 
+                           ng-options="option.name for option in filteredDetails track by option.key"
+                           ng-change="selectedDetail()">
+                           
                         </select>
                      </section>
                   </div>
@@ -235,10 +235,10 @@
                         <label>Category Code Type 1:</label>
                         <select id="catCode1Type" 
                            class="form-control" 
-                           ng-model="catCode1Selected" 
-                           ng-options="option.id + ' ' + option.name for option in filteredCatCode1 track by option.id"
-                           ng-change="selectedCatCode1(catCode1Selected)">
-                           <option value="">*All</option>
+                           ng-model="selectedValues.optional.cat1" 
+                           ng-options="option.name for option in filteredCatCode1 track by option.key"
+                           ng-change="selectedCatCode1()">
+                           
                         </select>
                      </section>
                      <span class="divider"></span>
@@ -247,8 +247,8 @@
                         <select id="catCode1Description" 
                            class="form-control" 
                            ng-model="catCode1DescriptionSelected" 
-                           ng-options="option.id + ' ' + option.name for option in filteredCatCode1Description track by option.id">
-                           <option value="">*All</option>
+                           ng-options="option.name for option in filteredCC1Descriptions track by option.key">
+                           
                         </select>
                      </section>
                      <span class="divider"></span>
@@ -256,10 +256,10 @@
                         <label>Category Code Type 2:</label>
                         <select id="catCode2Type" 
                            class="form-control" 
-                           ng-model="catCode2Selected" 
-                           ng-options="option.id + ' ' + option.name for option in filteredCatCode2 track by option.id"
-                           ng-change="selectedCatCode2(catCode2Selected)">
-                           <option value="">*All</option>
+                           ng-model="selectedValues.optional.cat2" 
+                           ng-options="option.name for option in filteredCatCode2 track by option.key"
+                           ng-change="selectedCatCode2()">
+                           
                         </select>
                      </section>
                      <span class="divider"></span>
@@ -268,8 +268,8 @@
                         <select id="catCode2Description" 
                            class="form-control" 
                            ng-model="catCode2DescriptionSelected" 
-                           ng-options="option.id + ' ' + option.name for option in filteredCatCode2Description track by option.id">
-                           <option value="">*All</option>
+                           ng-options="option.name for option in filteredCC2Descriptions track by option.key">
+                           
                         </select>
                      </section>
                   </div>

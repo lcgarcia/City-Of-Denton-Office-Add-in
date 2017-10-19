@@ -7,19 +7,54 @@ var budgetReportDates = function (event) {
         maxViewMode: 1,
         format: "MM"
     });
-    $("#yearStart").datepicker({
+
+    
+
+    //JDE Year
+    $("#jdeYear").datepicker({
         autoclose: !0,
         disableTouchKeyboard: !0,
         minViewMode: 2,
         maxViewMode: 2,
+        orientation: "top right",
         format: "yyyy",
         endDate: '+1d'
     });
 
+    //JDE Year Events
+    $("#jdeYear").datepicker().on('changeDate', function(selected){
+        if($("#jdeYearSelection").val()){
+            year = parseInt($("#jdeYearSelection").val());
+            dateRange = year + "-" + (year+1);
+            $("#jdeFiscalYearSelection").val(dateRange); 
+        }
+    });
+    $("#jdeYear").datepicker().on('show', function(selected){
+        if($("#jdeYearSelection").val() && document.getElementsByClassName("datepicker-years").length > 0){
+            yearList = document.getElementsByClassName("datepicker-years")[0].getElementsByClassName("year");
+            focusIndex = _.findIndex(yearList, ['className', "year focused"]);
+            activeIndex = _.findIndex(yearList, ['className', "year active"]);
+
+            if(activeIndex == -1){
+                activeIndex = _.findIndex(yearList, ['textContent', $("#jdeYearSelection").val()]);
+            }
+
+            if(focusIndex != -1){
+                yearList[focusIndex].className = "year";
+            }
+            if(activeIndex != -1){
+                yearList[activeIndex].className = "year active";
+                yearList[activeIndex].setAttribute("style", "margin-right: -2px;");
+                yearList[activeIndex+1].setAttribute("style", "background-color: #daeeff;");
+            }
+        }
+    });
+
     $("#monthSelection").val("December"); 
     $("#monthSelection").datepicker("update"); 
-    $("#yearSelection").val("2011"); 
-    $("#yearSelection").datepicker("update"); 
+
+    $("#jdeYearSelection").val("2011"); 
+    $("#jdeYearSelection").datepicker("update");
 }
 
 

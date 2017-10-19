@@ -29,6 +29,17 @@
   max-width:350px;
 }
 
+.panel-addon{
+  padding: 8px 8px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1;
+  color: #555;
+  text-align: center;
+  background-color: #eee;
+  border: 1px solid #ddd;
+}
+
 /* .button */
 .user-logout {
     display: inline-block;

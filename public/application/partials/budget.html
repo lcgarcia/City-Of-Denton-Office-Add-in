@@ -49,17 +49,31 @@
                      <label>Select Month:</label>
                      <div style="height: 100%;" class="input-group input-daterange" id="monthStart">
                         <input id="monthSelection" type="text" name="start" ng-model="selectedValues.month" class="form-control input-dates dateInputBox"/>
-                        <div style="border-width: 1px;" class="input-group-addon">
+                        <div style="width: 40px; border-width: 1px;" class="input-group-addon">
                            <span class="fa fa-calendar"></span>
                         </div>
                      </div>
-                     <label style="padding-top: 5px;">Select Year:</label>
-                     <div style="height: 100%;" class="input-group input-daterange" id="yearStart">
-                        <input id="yearSelection" type="text" name="start" ng-model="selectedValues.year" class="form-control input-dates dateInputBox"/>
-                        <div style="border-width: 1px;" class="input-group-addon">
-                           <span class="fa fa-calendar"></span>
-                        </div>
-                     </div>
+
+                     <section style="padding-top: 5px;">
+                        <label>Select Year</label>
+                        <table style="width: 100%;">
+                        <tbody>
+                           <tr>
+                              <td class="dateBox">
+                                 <input id="jdeFiscalYearSelection" type="text" ng-model="selectedValues.dates.jdeFiscalYear" class="form-control jdeDateInputBox" ng-click="jdeYearClick()" readonly/>
+                              </td>
+                              <td class="dateBox">
+                                 <div style="height: 100%;" class="input-group date" id="jdeYear">
+                                    <input style="display: none;" id="jdeYearSelection" type="text" ng-model="selectedValues.dates.jdeYear" class="form-control input-dates" ng-change="jdeYearChange()"/>
+                                    <div class="input-group-addon" id="jdeCalendar">
+                                       <span class="fa fa-calendar"></span>
+                                    </div>
+                                 </div>
+                              </td>
+                           </tr>
+                        </tbody>
+                        </table>
+                     </section>
                   </div>
                </div>
                <!-- Panel 1.2 End-->
@@ -124,6 +138,15 @@
                            <tbody>
                            <tr>
                               <td>
+                                 <div class="panel-addon" style="border-top-left-radius: 6px;">
+                                    <input type="checkbox" 
+                                    style="margin: 0; margin-left: 4px; width: 16px;" 
+                                    ng-model="selectedValues.selectAll"
+                                    ng-change="selectedOptionsAll()"
+                                    >
+                                 </div>
+                              </td>
+                              <td>
                                  <input type="text" 
                                  class="searchBox" 
                                  ng-model="selectedValues.searchInput" 
@@ -132,11 +155,11 @@
                                  title="SearchField">
                               </td>
                               <td>
-                                 <section class="viewBox">
+                                 <div class="panel-addon" style="cursor: pointer; border-top-right-radius: 6px;">
                                     <a class="nav-link" data-toggle="modal" data-target="#bookViewModal" ng-click="editBook('View')">
-                                       <i class="fa fa-eye" aria-hidden="true"></i>
+                                       <i class="fa fa-eye" aria-hidden="true" style="width: 16px;"></i>
                                     </a>
-                                 </section>
+                                 </div>
                               </td>
                            </tr>
                            </tbody>
@@ -152,7 +175,7 @@
                                     data-target="{{'#childOptions-'+ label.id}}"
                                     aria-expanded="false" 
                                     aria-controls="{{'childOptions-'+ label.id}}"
-                                    style="display: inline; ">
+                                    style="display: inline; font-weight: normal;">
                                     {{label.mcco + '-' + label.ccname}}
                                  </label>
                               </div>
@@ -160,7 +183,7 @@
                                  <ul style="list-style: none;">
                                     <li class="childLi" style="margin-left: 1em;" ng-repeat="childList in label.childList">
                                        <input id="{{'childInput-'+ childList.id}}" type="checkbox" ng-model="childList.selected" ng-change="selectedChild(label)">
-                                       <label style="font-size: 12px;">
+                                       <label style="font-size: 12px; font-weight: normal;">
                                           {{childList.id + '-' + childList.name }}
                                        </label>
                                     </li>
@@ -173,10 +196,10 @@
                      
                      <section style="padding-top: 10px; float: right">
                         <!-- Trigger the modal with a button -->
-                        <button id="clearButton" type="button" class="btn btn-info" ng-click="clearAll()">
+                        <button id="clearButton" type="button" class="btn btn-info" style="width: 90px;" ng-click="clearAll()">
                            Clear All
                         </button>
-                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#bookModal" ng-click="editBook('Save')">
+                        <button type="button" class="btn btn-info" style="width: 90px;" data-toggle="modal" data-target="#bookModal" ng-click="editBook('Save')">
                            Save New
                         </button>
                      </section>

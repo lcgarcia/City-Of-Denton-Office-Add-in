@@ -26,7 +26,7 @@ app.controller('jobcostCtrl', [
       {name:"Trend - Encumbrances"}
     ];
 
-    $scope.allOptionValue = {key:"00", name:"*All"};
+    $scope.allOptionValue = {key:"*All", name:"*All"};
 
     $rootScope.$on('$viewContentLoaded', jobcostReportDates);
 
@@ -84,7 +84,7 @@ app.controller('jobcostCtrl', [
       var rType = $scope.selectedValues.report.type;
       var dKey = $scope.selectedValues.department.key;
 
-      if(dKey == "00"){
+      if(dKey == "*All"){
         setReportData();
       }
       else{

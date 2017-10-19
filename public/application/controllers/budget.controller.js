@@ -64,12 +64,19 @@ app.controller('budgetCtrl', [
      * [buildPage sets selected values]
      */
     function buildPage(){
+
+      $scope.selectedValues.dates = {};
       $scope.selectedValues.reportType ="Balance";
       $scope.selectedValues.totalSheet = "No";
       $scope.selectedValues.month = "";
       $scope.selectedValues.year = "";
+
+      $scope.selectedValues.dates.jdeFiscalYear = "";
+      $scope.selectedValues.dates.jdeYear = "";
+
       $scope.selectedValues.searchInput = ""; 
       $scope.selectedValues.book = {};
+      $scope.selectedValues.selectAll = false;
 
       if($scope.user && $scope.user.name){
         $scope.userSelection.user = $scope.user.name
@@ -376,6 +383,8 @@ app.controller('budgetCtrl', [
       }
     }
 
+    
+
 
     /**
      * [searchOptions shows/hides options depending on the value that is entered in searchbox]
@@ -466,10 +475,21 @@ app.controller('budgetCtrl', [
     }
 
 
+
+    $scope.selectedOptionsAll = function(){
+      _.forEach($scope.parentList, function(parent) {
+        parent.selected = $scope.selectedValues.selectAll;
+        _.forEach(parent.childList, function(child) {
+          child.selected = $scope.selectedValues.selectAll;
+        });
+      });
+    }
+
+
     /**
      * [clearBookSelections clears search input, and selected options]
      */
-    var clearBookSelections = function(){
+    function clearBookSelections(){
       var children;
       //unselect all values
       _.forEach($scope.parentList, function(parent) {
@@ -490,7 +510,7 @@ app.controller('budgetCtrl', [
      * [showCollapsedElement expands children within parent id]
      * @param id [parent id used to expand children]
      */
-    var showCollapsedElement = function(id){
+    function showCollapsedElement(id){
       var childOptions = $("#childOptions-"+id);
 
       childOptions.collapse('show');
@@ -505,8 +525,23 @@ app.controller('budgetCtrl', [
       }
     }
 
-    var getNextBookId = function(){
+    function getNextBookId(){
       return Date.now().toString();
+    }
+
+
+    //Set JDE Fiscal Years
+    $scope.jdeYearChange = function() {
+      var selectedDates = $scope.selectedValues.dates;
+      if(selectedDates && selectedDates.jdeFiscalYear == "" && selectedDates.jdeYear != ""){
+        var year = parseInt(selectedDates.jdeYear);
+        selectedDates.jdeFiscalYear = year + "-" + (year+1);
+      }
+    }
+
+    //Open Calendar for JDE Years
+    $scope.jdeYearClick = function() {
+      $("#jdeCalendar").click();
     }
 
     buildPage();

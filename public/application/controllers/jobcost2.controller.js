@@ -7,59 +7,19 @@ app.controller('jobcost2Ctrl', [
   '$scope', 
   '$rootScope',
   '$state',
-  function ($http, $scope, $rootScope, $state) {
-    $scope.modalLoad = {};
-    $scope.swing = "R";
+  'jobcostService',
+  'modalService',
+  function ($http, $scope, $rootScope, $state, jobcostService, modalService) {
 
-    $scope.filteredDepartment = [
-      {id:"09", name:"Grants", companyList:[]},
-      {id:"10", name:"Facilities", companyList:[]},
-      {id:"20", name:"Airport", companyList:[]},
-      {id:"25", name:"Engineering", companyList:[]},
-      {id:"30", name:"Development", companyList:[]},
-      {id:"31", name:"Transportation", companyList:[]}
-    ];
-
-    $scope.filteredCompany = [
-      {id:"00402", name:"Streets/Traffic - C.O.", projectList:[]},
-      {id:"00403", name:"Parks Projects Fund - C.O.", projectList:[]},
-      {id:"00404", name:"General Gov Misc - C.O.", projectList:[]},
-      {id:"00408", name:"Vehicles & Equipment", projectList:[]},
-      {id:"00409", name:"City Facilities Projects - C.O.", projectList:[]},
-      {id:"00410", name:"Denton Munincipal Complex(245)", projectList:[]}
-    ];
-
-    $scope.filteredProject = [
-      {id:"100001XXX", name:"Maruyama (Marriot Corbin Road)", jobStatusList:[]},
-      {id:"100002XXX", name:"Unallocated Vehicle Funds", jobStatusList:[]},
-      {id:"100003XXX", name:"Unallocated Funds", jobStatusList:[]},
-      {id:"100004XXX", name:"Audio Visual/Camera Equipment", jobStatusList:[]},
-      {id:"100005XXX", name:"Tree Power", jobStatusList:[]},
-      {id:"100006XXX", name:"DMC Parking Lot", jobStatusList:[]}
-    ];
+    $scope.filteredDepartment = [];
+    $scope.filteredCompany = [];
+    $scope.filteredProject = [];
+    $scope.filteredJob = [];
+    $scope.filteredDetails = [];
 
     $scope.jobStatus = [
-      {id:1, name:"Open", jobList:[]},
-      {id:2, name:"Closed", jobList:[]}
-    ];
-
-    $scope.filteredJob = [
-      {name:"The Wildwood Inn"},
-      {name:"Jack Bells Apts Hercules 1229"},
-      {name:"Law Enforcement Block Grant BS"},
-      {name:"Law Enforcement Block Grant RE"},
-      {name:"Law Enforcement Block Grant EX"},
-      {name:"Law Enforcement Block Grant EX"}
-    ];
-
-    $scope.filteredDetails = [
-      {name:"No Details"},
-      {name:"Cost Code/Type Details"},
-      {name:"FERC/Cost Code Subtotals"},
-      {name:"Cost Type Subtotals"},
-      {name:"Trend - Expenditures"},
-      {name:"Trend - Budget"},
-      {name:"Trend - Encumbrances"}
+      {key:"Open", name:"Open", jobList:[]},
+      {key:"Closed", name:"Closed", jobList:[]}
     ];
 
     $scope.filteredFiscalYears = [
@@ -72,110 +32,150 @@ app.controller('jobcost2Ctrl', [
       {name:"2016-2017"}
     ];    
 
-    $scope.filteredCatCode1 = [
-      {name:"Sales Order Detail (F4211)", descriptionList:[]},
-      {name:"Fund Group", descriptionList:[]},
-      {name:"Fund Type", descriptionList:[]},
-      {name:"Operating Department", descriptionList:[]},
-      {name:"Special Revenue Dept", descriptionList:[]},
-      {name:"Gen Gov Funding Resource", descriptionList:[]},
-      {name:"Proprietary Funding Resource", descriptionList:[]}
-    ];
+    $scope.filteredCatCode1 = [];
 
-    $scope.filteredCC1Descriptions = [
-      {name:"Governmental Fund"},
-      {name:"Proprietary Fund"},
-      {name:"Fiduciary Fund"},
-      {name:"Account Groups"}
-    ];
+    $scope.filteredCC1Descriptions = [];
 
-    $scope.filteredCatCode2 = [
-      {name:"Sales Order Detail (F4211)", descriptionList:[]},
-      {name:"Fund Group", descriptionList:[]},
-      {name:"Fund Type", descriptionList:[]},
-      {name:"Operating Department", descriptionList:[]},
-      {name:"Special Revenue Dept", descriptionList:[]},
-      {name:"Gen Gov Funding Resource", descriptionList:[]},
-      {name:"Proprietary Funding Resource", descriptionList:[]}
-    ];
+    $scope.filteredCatCode2 = [];
 
-    $scope.filteredCC2Descriptions = [
-      {name:"Blank"},
-      {name:"Misc Grants"},
-      {name:"Munincipal Court"},
-      {name:"Police"},
-      {name:"Fire"},
-      {name:"Parks & Recreation"}
-    ];
+    $scope.filteredCC2Descriptions = [];
 
     $scope.filteredCatCode1Description = [];
     $scope.filteredCatCode2Description = [];
 
-    $scope.selectedValues = {dates:{monthStart:"", yearStart:"", monthEnd:"", yearEnd:"", jdeYear:"", jdeFiscalYear:""}};
+    $scope.allOptionValue = {key:"*All", name:"*All"};
+
+    $scope.selectedValues.optional = {};
 
     $rootScope.$on('$viewContentLoaded', jobcost2ReportDates);
 
-
-    /*
-    $(window).load(function(){
-    });
-    */
-   $(document).ready(function(){
+    $(document).ready(function(){
+      //Enables popup help boxes over labels
       $('[data-toggle="popover"]').popover();
     });
 
+
     function buildPage(){
-      //Set Job IDs
-      for(i=0; i<$scope.filteredJob.length; i++){
-        $scope.filteredJob[i].id = "300"+i+"0";
-      }
+      //Set dates
+      $scope.selectedValues.dates = {};
+      $scope.selectedValues.dates.monthStart = "";
+      $scope.selectedValues.dates.monthEnd = "";
+      $scope.selectedValues.dates.yearStart = "";
+      $scope.selectedValues.dates.yearEnd = "";
+      $scope.selectedValues.dates.jdeYear ="";
+      $scope.selectedValues.dates.jdeFiscalYear="";
+
       //Set Deatil IDs
       for(i=0; i<$scope.filteredDetails.length; i++){
-        $scope.filteredDetails[i].id = i;
+        $scope.filteredDetails[i].key = i;
       }
+
       //Set Fiscal Year IDs
       for(i=0; i<$scope.filteredFiscalYears.length; i++){
         $scope.filteredFiscalYears[i].id = i;
       }
-      //Set Category Code 1 Description IDs
-      for(i=0; i<$scope.filteredCC1Descriptions.length; i++){
-        $scope.filteredCC1Descriptions[i].id = "00" + i;
+     
+
+      setReportData();
+    }
+
+    /**
+     * [setReportData calls API to get report data]
+     */
+    function setReportData(){
+      var rType = $scope.selectedValues.report.type;
+
+      modalService.showDataLoadingModal();
+      jobcostService.getReportData(rType).then(function(data){
+        $scope.filteredDepartment = data.departments;
+        $scope.filteredCompany = data.company;
+        $scope.filteredProject = data.projects;
+        $scope.filteredJob  = data.jobs;
+        $scope.filteredCatCode1 = data.catCodeHead;
+        
+
+        $scope.filteredDepartment.unshift($scope.allOptionValue);
+        $scope.filteredCompany.unshift($scope.allOptionValue);
+        $scope.filteredProject.unshift($scope.allOptionValue);
+        $scope.filteredJob.unshift($scope.allOptionValue);
+        $scope.filteredDetails.unshift($scope.allOptionValue);
+        $scope.jobStatus.unshift($scope.allOptionValue);
+        $scope.filteredCatCode1.unshift($scope.allOptionValue);
+        
+        $scope.selectedValues.department = $scope.allOptionValue;
+        $scope.selectedValues.company = $scope.allOptionValue;
+        $scope.selectedValues.project = $scope.allOptionValue;
+        $scope.selectedValues.job = $scope.allOptionValue;
+        $scope.selectedValues.jobStatus = $scope.allOptionValue;
+        $scope.selectedValues.details = $scope.allOptionValue;
+
+        $scope.filteredCatCode2 = $scope.filteredCatCode1;
+        $scope.selectedValues.optional.cat1 = $scope.allOptionValue;
+        $scope.selectedValues.optional.cat2 = $scope.allOptionValue;
+        modalService.hideDataLoadingModal();
+      });
+    }
+
+    $scope.selectedDepartment = function(){
+      var rType = $scope.selectedValues.report.type;
+      var dKey = $scope.selectedValues.department.key;
+
+      if(dKey == "*All"){
+        setReportData();
       }
-      //Set Category Code 1 IDs and Descriptions
-      for(i=0; i<$scope.filteredCatCode1.length; i++){
-        $scope.filteredCatCode1[i].id = "0" + i;
-        $scope.filteredCatCode1[i].descriptionList = $scope.filteredCC1Descriptions;
-      }
-      //Set Category Code 2 Description IDs
-      for(i=0; i<$scope.filteredCC2Descriptions.length; i++){
-        $scope.filteredCC2Descriptions[i].id = "00" + i;
-      }
-      //Set Category Code 2 IDs and Descriptions
-      for(i=0; i<$scope.filteredCatCode2.length; i++){
-        $scope.filteredCatCode2[i].id = "0" + i;
-        $scope.filteredCatCode2[i].descriptionList = $scope.filteredCC2Descriptions;
+      else{
+        modalService.showDataLoadingModal();
+        jobcostService.getCompaniesByDepartmentKey(rType, dKey).then(function(data){
+          $scope.filteredCompany = data;
+
+          $scope.filteredCompany.unshift($scope.allOptionValue);
+          $scope.selectedValues.company = $scope.allOptionValue;
+
+          modalService.hideDataLoadingModal();
+        });
       }
     }
 
-    $scope.changeSwing = function (swing) {
-      $scope.swing = swing;
+    $scope.selectedCompany = function(){
+      var rType = $scope.selectedValues.report.type;
+      var dKey = $scope.selectedValues.department.key;
+      var cKey = $scope.selectedValues.company.key;
+
+      modalService.showDataLoadingModal();
+      jobcostService.getProjectsByDepartmentAndCompanyKeys(rType, dKey, cKey).then(function(data){
+        $scope.filteredProject = data;
+
+        $scope.filteredProject.unshift($scope.allOptionValue);
+        $scope.selectedValues.project = $scope.allOptionValue;
+        
+        modalService.hideDataLoadingModal();
+      });
     }
 
-    $scope.selectedCatCode1 = function(type) {
-      if(type){
-        $scope.filteredCatCode1Description = type.descriptionList;
-      }
-      else{
-        $scope.filteredCatCode1Description = [];
-      }
+
+
+    $scope.selectedProject = function(){
+      var rType = $scope.selectedValues.report.type;
+      var dKey = $scope.selectedValues.department.key;
+      var cKey = $scope.selectedValues.company.key;
+      var pKey = $scope.selectedValues.project.key;
+
+      modalService.showDataLoadingModal();
+      jobcostService.getJobs(rType, dKey, cKey, pKey).then(function(data){
+        $scope.filteredJob = data;
+
+        $scope.filteredJob.unshift($scope.allOptionValue);
+        $scope.selectedValues.job = $scope.allOptionValue;
+        
+        modalService.hideDataLoadingModal();
+      });
     }
-    $scope.selectedCatCode2 = function(type) {
-      if(type){
-        $scope.filteredCatCode2Description = type.descriptionList;
-      }
-      else{
-        $scope.filteredCatCode2Description = [];
-      }
+
+    $scope.selectedCatCode1 = function() {
+      
+    }
+    $scope.selectedCatCode2 = function() {
+      
     }
 
     //Set JDE Fiscal Years
