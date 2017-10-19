@@ -111,8 +111,6 @@ app.controller('setupCtrl', [
 
       $("#collapse1").collapse('hide');
     }
- 
-
 
     this.showClientDetail = function (clientKey) {
       $scope.data = $scope.test;

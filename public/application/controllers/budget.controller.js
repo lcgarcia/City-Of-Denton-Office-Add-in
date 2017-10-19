@@ -9,7 +9,8 @@ app.controller('budgetCtrl', [
   '$state',
   '$stateParams',
   'budgetService',
-  function ($http, $scope, $rootScope, $state, $stateParams, budgetService) {
+  'modalService',
+  function ($http, $scope, $rootScope, $state, $stateParams, budgetService, modalService) {
     $scope.modalBook = {
       msg:"",
       title:"",
@@ -84,9 +85,10 @@ app.controller('budgetCtrl', [
     function setReportData(){
       var rType = $scope.selectedValues.report.type;
       
-      budgetService.getBudgetReportData(rType).then(function(data){
+      modalService.showDataLoadingModal();
+      budgetService.getReportData(rType).then(function(data){
         var children;
-        $scope.parentList = _.orderBy(data, ['MCCO'], ['asc']);
+        $scope.parentList = _.orderBy(data, ['mcco'], ['asc']);
         _.forEach($scope.parentList, function(parent) {
           children = parent.childList;
           _.forEach(children, function(child) {
@@ -97,6 +99,7 @@ app.controller('budgetCtrl', [
           parent.id = (parent.id).trim();
           parent.childList = children;
         });
+        modalService.hideDataLoadingModal();
       });
     }
 
@@ -427,6 +430,7 @@ app.controller('budgetCtrl', [
       $('.modal-backdrop').remove();
       $("#collapse1").collapse('hide');
     }
+
 
     $scope.hideBookModal = function() {
       $('#bookModal').modal('hide');
