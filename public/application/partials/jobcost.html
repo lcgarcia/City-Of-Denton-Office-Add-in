@@ -18,6 +18,7 @@
                </div>
                <div id="collapse1_1" class="panel-collapse collapse in" aria-expanded="true">
                   <div class="panel-body">
+                     <!-- Department Start -->
                      <section >
                      	<label>
                            <a class="details" data-toggle="popover" data-trigger="hover"
@@ -29,13 +30,17 @@
                         </label>
                         <select id="departmentSelection" 
                            class="form-control" 
-                           ng-model="departmentSelected" 
-                           ng-options="option.id + ' ' + option.name for option in filteredDepartment track by option.id"
-                           ng-change="selectedDepartment(departmentSelected)">
-                           <option value="">*All</option>
+                           ng-model="selectedValues.department" 
+                           ng-options="option.name for option in filteredDepartment track by option.key"
+                           ng-change="selectedDepartment()">
+                           
                         </select>
                      </section>
+                     <!-- Department End -->
+
                      <span class="divider"></span>
+
+                     <!-- Company Start -->
                      <section>
                         <label>
                            <a class="details" data-toggle="popover" data-trigger="hover"
@@ -47,13 +52,17 @@
                         </label>
                         <select id="companySelection" 
                            class="form-control" 
-                           ng-model="companySelected" 
-                           ng-options="option.id + ' ' + option.name for option in filteredCompany track by option.id"
-                           ng-change="selectedCompany(companySelected)">
-                           <option value="">*All</option>
+                           ng-model="selectedValues.company" 
+                           ng-options="option.name for option in filteredCompany track by option.key"
+                           ng-change="selectedCompany()">
+                           
                         </select>
                      </section>
+                     <!-- Company End -->
+
                      <span class="divider"></span>
+
+                     <!-- Project Start -->
                      <section >
                         <label>
                            <a class="details" data-toggle="popover" data-trigger="hover"
@@ -65,13 +74,17 @@
                         </label>
                         <select id="projectSelection" 
                            class="form-control" 
-                           ng-model="projectSelected" 
-                           ng-options="option.id + ' ' + option.name for option in filteredProject track by option.id"
-                           ng-change="selectedProject(projectSelected)">
-                           <option value="">*All</option>
+                           ng-model="selectedValues.project" 
+                           ng-options="option.name for option in filteredProject track by option.key"
+                           ng-change="selectedProject()">
+                           
                         </select>
                      </section>
+                     <!-- Project End -->
+
                      <span class="divider"></span>
+
+                     <!-- Job Start -->
                      <section style="padding-top: 5px">
                         <label>
                            <a class="details" data-toggle="popover" data-trigger="hover"
@@ -83,13 +96,17 @@
                         </label>
                         <select id="jobSelection" 
                            class="form-control" 
-                           ng-model="jobSelected" 
-                           ng-options="option.id + ' ' + option.name for option in filteredJob track by option.id"
-                           ng-change="selectedJob(jobSelected)">
-                           <option value="">*All</option>
+                           ng-model="selectedValues.job" 
+                           ng-options="option.name for option in filteredJob track by option.key"
+                           ng-change="selectedJob()">
+                           
                         </select>
                      </section>
+                     <!-- Job End -->
+
                      <span class="divider"></span>
+
+                     <!-- Level of Detail Start -->
                      <section>
                         <label>
                            <a class="details" data-toggle="popover" data-trigger="hover"
@@ -101,12 +118,13 @@
                         </label>
                         <select id="detailSelection" 
                            class="form-control" 
-                           ng-model="detailSelection" 
-                           ng-options="option.name for option in filteredDetails track by option.id"
-                           ng-change="selectedDetail(detailSelected)">
-                           <option value="">*All</option>
+                           ng-model="selectedValues.details" 
+                           ng-options="option.name for option in filteredDetails track by option.key"
+                           ng-change="selectedDetail()">
+                           
                         </select>
                      </section>
+                     <!-- Level of Detail End -->
                   </div>
                </div>
                <!-- Panel 1.1 End-->

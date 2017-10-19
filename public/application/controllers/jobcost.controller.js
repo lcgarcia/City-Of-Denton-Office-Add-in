@@ -8,22 +8,13 @@ app.controller('jobcostCtrl', [
   '$rootScope',
   '$state',
   'jobcostService',
-  function ($http, $scope, $rootScope, $state, jobcostService) {
-    $scope.filteredDepartment = [
-      {id:"09", name:"Grants", companyList:[]}
-    ];
-
-    $scope.filteredCompany = [
-      {id:"00402", name:"Streets/Traffic - C.O.", projectList:[]}
-    ];
-
-    $scope.filteredProject = [
-      {id:"100001XXX", name:"Maruyama (Marriot Corbin Road)", jobStatusList:[]}
-    ];
-
-    $scope.filteredJob = [
-      {name:"The Wildwood Inn"}
-    ];
+  'modalService',
+  function ($http, $scope, $rootScope, $state, jobcostService, modalService) {
+    $scope.filteredDepartment = [];
+    $scope.filteredCompany = [];
+    $scope.filteredProject = [];
+    $scope.filteredJob = [];
+    $scope.filteredDetails = [];
 
     $scope.filteredDetails = [
       {name:"No Details"},
@@ -35,28 +26,25 @@ app.controller('jobcostCtrl', [
       {name:"Trend - Encumbrances"}
     ];
 
-
-    
+    $scope.allOptionValue = {key:"00", name:"*All"};
 
     $rootScope.$on('$viewContentLoaded', jobcostReportDates);
 
-   $(document).ready(function(){
+    $(document).ready(function(){
       //Enables popup help boxes over labels
       $('[data-toggle="popover"]').popover();
     });
 
     function buildPage(){
+      //set dates
       $scope.selectedValues.dates = {};
       $scope.selectedValues.dates.monthStart = "";
       $scope.selectedValues.dates.jdeYear ="";
       $scope.selectedValues.dates.jdeFiscalYear="";
-      //Set Job IDs
-      for(i=0; i<$scope.filteredJob.length; i++){
-        $scope.filteredJob[i].id = "300"+i+"0";
-      }
+
       //Set Deatil IDs
       for(i=0; i<$scope.filteredDetails.length; i++){
-        $scope.filteredDetails[i].id = i;
+        $scope.filteredDetails[i].key = i;
       }
 
       setReportData();
@@ -67,52 +55,84 @@ app.controller('jobcostCtrl', [
      */
     function setReportData(){
       var rType = $scope.selectedValues.report.type;
-      
-      jobcostService.getJobcostReportData(rType).then(function(data){
-        var element, value, splitIndex, id, name;
-        $scope.filteredDepartment = [];
-        $scope.filteredProject = [];
-        $scope.filteredJob = [];
 
-        //departments
-        _.forEach(data.departments, function(obj) {
-          value = obj[0].trim();
-          splitIndex = value.indexOf(' ');
+      modalService.showDataLoadingModal();
+      jobcostService.getReportData(rType).then(function(data){
+        $scope.filteredDepartment = data.departments;
+        $scope.filteredCompany = data.company;
+        $scope.filteredProject = data.projects;
+        $scope.filteredJob  = data.jobs;
 
-          element = {};
-          element.id = value.substr(0,splitIndex);
-          element.name = value.substr(splitIndex+1);
+        $scope.filteredDepartment.unshift($scope.allOptionValue);
+        $scope.filteredCompany.unshift($scope.allOptionValue);
+        $scope.filteredProject.unshift($scope.allOptionValue);
+        $scope.filteredJob.unshift($scope.allOptionValue);
+        $scope.filteredDetails.unshift($scope.allOptionValue);
 
-          $scope.filteredDepartment.push(element);
+
+        $scope.selectedValues.department = $scope.allOptionValue;
+        $scope.selectedValues.company = $scope.allOptionValue;
+        $scope.selectedValues.project = $scope.allOptionValue;
+        $scope.selectedValues.job = $scope.allOptionValue;
+        $scope.selectedValues.details = $scope.allOptionValue;
+        modalService.hideDataLoadingModal();
+      });
+    }
+
+
+    $scope.selectedDepartment = function(){
+      var rType = $scope.selectedValues.report.type;
+      var dKey = $scope.selectedValues.department.key;
+
+      if(dKey == "00"){
+        setReportData();
+      }
+      else{
+        modalService.showDataLoadingModal();
+        jobcostService.getCompaniesByDepartmentKey(rType, dKey).then(function(data){
+          $scope.filteredCompany = data;
+
+          $scope.filteredCompany.unshift($scope.allOptionValue);
+          $scope.selectedValues.company = $scope.allOptionValue;
+
+          modalService.hideDataLoadingModal();
         });
+      }
+    }
 
-        //projects
-        _.forEach(data.projects, function(obj) {
-          value = obj[0].trim();
-          splitIndex = value.indexOf(' ');
 
-          element = {};
-          element.id = value.substr(0,splitIndex);
-          element.name = value.substr(splitIndex+1);
+    $scope.selectedCompany = function(){
+      var rType = $scope.selectedValues.report.type;
+      var dKey = $scope.selectedValues.department.key;
+      var cKey = $scope.selectedValues.company.key;
 
-          $scope.filteredProject.push(element);
-        });
+      modalService.showDataLoadingModal();
+      jobcostService.getProjectsByDepartmentAndCompanyKeys(rType, dKey, cKey).then(function(data){
+        $scope.filteredProject = data;
 
-        //jobs
-        _.forEach(data.jobs, function(obj) {
-          value = obj[0].trim();
-          splitIndex = value.indexOf(' ');
-
-          element = {};
-          element.id = value.substr(0,splitIndex);
-          element.name = value.substr(splitIndex+1);
-
-          $scope.filteredJob.push(element);
-        });
+        $scope.filteredProject.unshift($scope.allOptionValue);
+        $scope.selectedValues.project = $scope.allOptionValue;
+        
+        modalService.hideDataLoadingModal();
+      });
+    }
 
 
 
+    $scope.selectedProject = function(){
+      var rType = $scope.selectedValues.report.type;
+      var dKey = $scope.selectedValues.department.key;
+      var cKey = $scope.selectedValues.company.key;
+      var pKey = $scope.selectedValues.project.key;
 
+      modalService.showDataLoadingModal();
+      jobcostService.getJobs(rType, dKey, cKey, pKey).then(function(data){
+        $scope.filteredJob = data;
+
+        $scope.filteredJob.unshift($scope.allOptionValue);
+        $scope.selectedValues.job = $scope.allOptionValue;
+        
+        modalService.hideDataLoadingModal();
       });
     }
 
