@@ -40,31 +40,12 @@ app.controller('loginCtrl', [
   		}
    }
 
-   function showLoadingModal() {
-      $('#loadModal').modal({
-        backdrop: 'static',
-        show: true
-      });
-
-      $('#loadModal').delay(1500).fadeOut(500);
-      setTimeout(hideLoadingModal, 1000);
-    }
-
-   function hideLoadingModal() {
-      $('#loadModal').modal('hide');
-   }
-
-
-	function buildPage() {
+  	function buildPage() {
 		$("#login").velocity("transition.slideUpIn", 1250);
 		$(".row").delay(500).velocity("transition.slideLeftIn", {stagger: 500}) ;
 		$("#error").hide();
+		sessionStorage.clear();
 	};
-
-	function showError(){
-		$("#error").fadeIn(100);
-		$("#error").velocity("callout.pulse", {duration: 200});
-	}
 
 	function validateCredentials() {
 		var username = $scope.user.username;
@@ -110,8 +91,25 @@ app.controller('loginCtrl', [
 		}
 	}
 
-	function setFocus(){
-		
+
+	function showLoadingModal() {
+      $('#loadModal').modal({
+        backdrop: 'static',
+        show: true
+      });
+
+      $('#loadModal').delay(1500).fadeOut(500);
+      setTimeout(hideLoadingModal, 1000);
+    }
+
+   function hideLoadingModal() {
+      $('#loadModal').modal('hide');
+   }
+
+
+	function showError(){
+		$("#error").fadeIn(100);
+		$("#error").velocity("callout.pulse", {duration: 200});
 	}
 
 	function nextClick(){

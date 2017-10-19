@@ -27,10 +27,10 @@ app.controller('setupCtrl', [
       {name:"budrpt_e-90", type:'e'},
       {name:"budrpt_f-90", type:'f'},
       {name:"budrpt-90", type:''},
-      {name:"bjobcost-90"},
-      {name:"jobcost90_ka"},
-      {name:"jobcoste-90"},
-      {name:"newjobcost-90"}
+      {name:"bjobcost-90", type:''},
+      {name:"jobcost90_ka", type:'ka'},
+      {name:"jobcoste-90", type:'e'},
+      {name:"newjobcost-90", type:'new'},
     ];
     $scope.modalLoad = {};
     $scope.user = {};
@@ -64,16 +64,18 @@ app.controller('setupCtrl', [
       else{
         $scope.selectedValues.report = $scope.filteredReports[0];
       }
-      
     } 
 
 
     $scope.logout = function(){
-      sessionStorage.clear();
       $state.go("login");
     }
 
 
+    /**
+     * [selectedReport sets the view depending on which report is selected]
+     * @param report [the report selected]
+     */
     $scope.selectedReport = function() {
       var report = $scope.selectedValues.report;
       sessionStorage.setItem('reportIndex', report.id);
