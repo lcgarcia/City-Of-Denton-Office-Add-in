@@ -26,12 +26,20 @@ router.get('/ui/data', (req, res) => {
   });
 });
 
+router.get('/departments', (req, res) => {
+  var generator = new Generator({ type: req.query.type || '' })
+  var sqlData = generator.getUIData();
+
+  oracleQuery.query(sqlData.departments)
+  .then(result => res.send(result))
+  .catch(err => res.send(err))
+});
+
 // Department should be the key
 router.get('/companies/:department', (req, res) => {
   // The type does not matter here but you can included it if you would like
   var generator = new Generator({ type: req.query.type || '' });
 
-  console.log(generator.getCompanySelections(req.params.department));
   oracleQuery.query(generator.getCompanySelections(req.params.department))
   .then(result => res.send(result))
   .catch(err => res.send(err))
