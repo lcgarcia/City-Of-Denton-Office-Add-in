@@ -14,7 +14,6 @@ router.get('/ui/data', (req, res) => {
   _.forEach(sqlData, (sql, key) => {
     oracleQuery.batchQuery(sql, key)
     .then(result => {
-      
       finalData[result.id] = result.results;
       if(Object.keys(finalData).length == Object.keys(sqlData).length)
         res.send(finalData);
@@ -63,6 +62,15 @@ router.get('/:department/:company/:project', (req, res) => {
   oracleQuery.query(generator.getJobSelections(req.params.department, req.params.company, req.params.project, jobStatus))
   .then(result => res.send(result))
   .catch(err => res.send(err))
+});
+
+router.get('/code/detail/:department/:company/:project/:status/:job/:catcode', (req, res) => {
+  const generator = new Generator({ type: req.query.type || '' });
+  const sql = generator.getCadeCodeDetail(req.params.department, req.params.company, req.params.project, req.params.status, req.params.job, req.params.catcode);
+
+  oracleQuery.query(sql)
+  .then(result => res.send(result))
+  .catch(err => res.send(err));
 });
 
 module.exports = router
