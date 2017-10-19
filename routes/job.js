@@ -68,8 +68,6 @@ router.get('/code/detail/:department/:company/:project/:status/:job/:catcode', (
   const generator = new Generator({ type: req.query.type || '' });
   const sql = generator.getCadeCodeDetail(req.params.department, req.params.company, req.params.project, req.params.status, req.params.job, req.params.catcode);
 
-  console.log(sql);
-
   oracleQuery.query(sql)
   .then(result => res.send(result))
   .catch(err => res.send(err));
