@@ -151,9 +151,10 @@ app.controller('jobcost2Ctrl', [
       var dKey = $scope.selectedValues.department.key;
       var cKey = $scope.selectedValues.company.key;
       var pKey = $scope.selectedValues.project.key;
+      var jobStatus = $scope.selectedValues.jobStatus.key;
 
       modalService.showDataLoadingModal();
-      jobcostService.getJobs(rType, dKey, cKey, pKey).then(function(data){
+      jobcostService.getJobWithStatus(rType, dKey, cKey, pKey, jobStatus).then(function(data){
         $scope.filteredJob = data;
 
         $scope.filteredJob.unshift($scope.allOptionValue);
