@@ -18,11 +18,44 @@ router.get('/ui/data', (req, res) => {
       if(Object.keys(finalData).length == Object.keys(sqlData).length)
         res.send(finalData);
     }).catch(err => {
-      finalData[result.id] = result.err;
+      finalData[err.id] = err.err;
       if(Object.keys(finalData).length == Object.keys(sqlData).length)
         res.send(finalData);
     });
   });
+});
+
+// layout
+//    - Values are ('Cost Code/Type Details', 'No Detail')
+// Department
+//    - Selected Department key
+// Company
+//    - Selected Company key
+// Project
+//    - Selected project key
+// Job
+//    - Selected job key
+// 
+router.post('/sheet/data', (req, res) => {
+  var generator = new Generator({ type: req.query.type || '' });
+  const options = {
+    layout: req.body.layout,
+    department: req.body.department,
+    company: req.body.comapny,
+    project: req.body.project,
+    job: req.body.job
+  }
+  if(reportSelected == 'ka' || reportSelected == 'new') {
+    options.status = req.body.status;
+    options.catField = req.body.catField;
+    options.catField1 = req.body.catField1;
+    options.catCode = req.body.catCode;
+    options.catCode1 = req.body.catCode1;
+  }
+
+  oracleQuery.query(generator.createSelectStatement(req.body.month, req.body.year, options))
+  .then(result => res.send(result))
+  .catch(err => res.send(err));
 });
 
 router.get('/departments', (req, res) => {
