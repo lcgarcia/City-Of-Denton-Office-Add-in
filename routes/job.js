@@ -82,6 +82,8 @@ router.get('/project/:department/:company', (req, res) => {
   // you must specify a report type unless it is blank
   var generator = new Generator({ type: req.query.type || '' });
 
+  console.log(generator.getProjectSelections(req.params.department, req.params.company));
+
   oracleQuery.query(generator.getProjectSelections(req.params.department, req.params.company))
   .then(result => res.send(result))
   .catch(err => res.send(err))
@@ -91,6 +93,9 @@ router.get('/project/:department/:company', (req, res) => {
 router.get('/:department/:company/:project', (req, res) => {
   var generator = new Generator({ type: req.query.type || '' });
   const jobStatus = req.query.jobstatus || '';
+
+  console.log(jobStatus);
+  console.log(generator.getJobSelections(req.params.department, req.params.company, req.params.project, jobStatus));
 
   oracleQuery.query(generator.getJobSelections(req.params.department, req.params.company, req.params.project, jobStatus))
   .then(result => res.send(result))
