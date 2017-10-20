@@ -26,17 +26,17 @@ app.config(['$logProvider', '$stateProvider', '$urlRouterProvider',
       }
     })
     .state('setup.budget', {
-      url: '/budget',
+      url: '/budget/:type',
       controller: 'budgetCtrl',
       templateUrl: 'application/partials/budget.html'
     })
     .state('setup.jobcost', {
-      url: '/jobcost',
+      url: '/jobcost/:type',
       controller: 'jobcostCtrl',
       templateUrl: 'application/partials/jobcost.html'
     })
     .state('setup.jobcost2', {
-      url: '/jobcost2',
+      url: '/jobcost2/:type',
       controller: 'jobcost2Ctrl',
       templateUrl: 'application/partials/jobcost2.html'
     })

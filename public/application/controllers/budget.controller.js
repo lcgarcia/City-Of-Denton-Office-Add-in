@@ -20,27 +20,18 @@ app.controller('budgetCtrl', [
       error:""
     };
     $scope.modalLoad = {};
-
     $scope.budgetList = [];
-
     $scope.parentList = [];
-
-    
-
     $scope.filteredBooks = [
       {id:"00", name:"--Please select---", user:"default",
         selectionList:[]
       }
     ];
-
     $scope.userSelection = {id:"", name:"", user:"defaultUser",
       selectionList:[]
     };
 
-    
-
     $rootScope.$on('$viewContentLoaded', budgetReportDates);
-
     $(document).ready(function(){
       //Enables popup help boxes over labels
       $('#toggle-two').bootstrapToggle({
@@ -50,21 +41,9 @@ app.controller('budgetCtrl', [
     });
 
     /**
-     * Set Report Data when budget report type is changed
-     */
-    $("#reportSelection").change(function(){
-      if($scope.selectedValues.report.name.includes("budrpt")){
-        setReportData();
-      }
-    });
-
-
-
-    /**
      * [buildPage sets selected values]
      */
     function buildPage(){
-
       $scope.selectedValues.dates = {};
       $scope.selectedValues.reportType ="Balance";
       $scope.selectedValues.totalSheet = "No";
@@ -119,6 +98,9 @@ app.controller('budgetCtrl', [
     }
 
     
+    /**
+     * [selectedTotalSheet ]
+     */
     $scope.selectedTotalSheet = function () {
       if($scope.selectedValues.totalSheet == "No"){
         $scope.selectedValues.totalSheet = "Yes";
@@ -126,7 +108,6 @@ app.controller('budgetCtrl', [
       else{
         $scope.selectedValues.totalSheet = "No";
       }
-      
     }
 
 
@@ -383,9 +364,6 @@ app.controller('budgetCtrl', [
       }
     }
 
-    
-
-
     /**
      * [searchOptions shows/hides options depending on the value that is entered in searchbox]
      */
@@ -467,15 +445,16 @@ app.controller('budgetCtrl', [
     }
 
     /**
-     * [clearAll clear all selected book values]
+     * [clearAll clear all selected book/business unit values]
      */
     $scope.clearAll = function() {  
       $scope.selectedValues.book = $scope.filteredBooks[0];
       $scope.changeBook();
     }
 
-
-
+    /**
+     * [selectedOptionsAll selectAll checkbox selected. Set Business Unit values to selectAll value]
+     */
     $scope.selectedOptionsAll = function(){
       _.forEach($scope.parentList, function(parent) {
         parent.selected = $scope.selectedValues.selectAll;
@@ -484,7 +463,6 @@ app.controller('budgetCtrl', [
         });
       });
     }
-
 
     /**
      * [clearBookSelections clears search input, and selected options]
@@ -525,10 +503,13 @@ app.controller('budgetCtrl', [
       }
     }
 
+    /**
+     * [getNextBookId sets unique id for new book created]
+     * @return {[String]} [timestamp]
+     */
     function getNextBookId(){
       return Date.now().toString();
     }
-
 
     //Set JDE Fiscal Years
     $scope.jdeYearChange = function() {
