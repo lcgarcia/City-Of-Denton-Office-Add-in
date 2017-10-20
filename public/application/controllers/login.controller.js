@@ -18,9 +18,6 @@ app.controller('loginCtrl', [
       {name:"Luis Garcia", username:"lgarcia", password:"mustang100"}
     ];
 
-  	$stateParams.data = {
-  		user:""
-  	}
   	$scope.modalLoad = {};
 
 
@@ -114,8 +111,9 @@ app.controller('loginCtrl', [
 
 	function nextClick(){
 		$scope.user.isLoggedIn = true;
-		$stateParams.data.user = $scope.user;
-		$state.go("setup.budget", $stateParams);
+
+		var stateObject = {type:'a', data:{user:$scope.user}};
+		$state.go("setup.budget", stateObject);
 	}
 
 	buildPage();

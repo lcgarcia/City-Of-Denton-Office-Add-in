@@ -33,27 +33,20 @@ app.controller('jobcost2Ctrl', [
     ];
 
     $scope.filteredCatCode1 = [];
-
     $scope.filteredCC1Descriptions = [];
-
     $scope.filteredCatCode2 = [];
-
     $scope.filteredCC2Descriptions = [];
-
     $scope.filteredCatCode1Description = [];
     $scope.filteredCatCode2Description = [];
 
     $scope.allOptionValue = {key:"*All", name:"*All"};
-
     $scope.selectedValues.optional = {};
 
     $rootScope.$on('$viewContentLoaded', jobcost2ReportDates);
-
     $(document).ready(function(){
       //Enables popup help boxes over labels
       $('[data-toggle="popover"]').popover();
     });
-
 
     function buildPage(){
       //Set dates
@@ -69,7 +62,6 @@ app.controller('jobcost2Ctrl', [
       for(i=0; i<$scope.filteredDetails.length; i++){
         $scope.filteredDetails[i].key = i;
       }
-
       setReportData();
     }
 
@@ -191,7 +183,7 @@ app.controller('jobcost2Ctrl', [
         modalService.hideDataLoadingModal();
       });
     }
-    
+
     $scope.selectedCatCode2 = function() {
       var rType = $scope.selectedValues.report.type;
       var dKey = $scope.selectedValues.department.key;

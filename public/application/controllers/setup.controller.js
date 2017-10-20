@@ -80,14 +80,15 @@ app.controller('setupCtrl', [
       var report = $scope.selectedValues.report;
       sessionStorage.setItem('reportIndex', report.id);
 
+      var stateObject = {type:$scope.selectedValues.report.type, data:{user:$scope.user}};
       if(report.name.includes("budrpt")){
-        $state.go("setup.budget");
+        $state.go("setup.budget", stateObject);
       }
       else if(report.name == "bjobcost-90" || report.name == "jobcoste-90"){
-        $state.go("setup.jobcost");
+        $state.go("setup.jobcost", stateObject);
       }
       else{
-        $state.go("setup.jobcost2");
+        $state.go("setup.jobcost2", stateObject);
       }
     }
 
