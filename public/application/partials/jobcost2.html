@@ -246,7 +246,7 @@
                         <label>Category Code Description 1:</label>
                         <select id="catCode1Description" 
                            class="form-control" 
-                           ng-model="catCode1DescriptionSelected" 
+                           ng-model="selectedValues.optional.cat1Description" 
                            ng-options="option.name for option in filteredCC1Descriptions track by option.key">
                            
                         </select>
@@ -267,7 +267,7 @@
                         <label>Category Code Description 2:</label>
                         <select id="catCode2Description" 
                            class="form-control" 
-                           ng-model="catCode2DescriptionSelected" 
+                           ng-model="selectedValues.optional.cat2Description" 
                            ng-options="option.name for option in filteredCC2Descriptions track by option.key">
                            
                         </select>

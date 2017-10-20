@@ -18,7 +18,7 @@ app.service("jobcostService", [
       );
   	};
 
-    this.getCompaniesByDepartmentKey = function(type, key) {
+    this.getCompanies = function(type, key) {
       console.log("Fetching Jobcost Companies, Type: '" + type + "'");
       var query = getQueryType(type);
 
@@ -34,11 +34,11 @@ app.service("jobcostService", [
       );
     };
 
-    this.getProjectsByDepartmentAndCompanyKeys = function(type, dKey, cKey) {
+    this.getProjects = function(type, departmentKey, companyKey) {
       console.log("Fetching Jobcost Projects, Type: '" + type + "'");
       var query = getQueryType(type);
       
-      return $http.get("/ks2inc/job/project/" + dKey + "/" + cKey + query)
+      return $http.get("/ks2inc/job/project/"+departmentKey+"/"+companyKey+query)
         .then(
         function(response) {
           return response.data;
@@ -50,11 +50,27 @@ app.service("jobcostService", [
       );
     };
 
-    this.getJobs = function(type, dKey, cKey, pKey) {
+    this.getJobs = function(type, departmentKey, companyKey, projectKey) {
       console.log("Fetching Jobcost Jobs, Type: '" + type + "'");
       var query = getQueryType(type);
       
-      return $http.get("/ks2inc/job/" + dKey + "/" + cKey + "/" + pKey + query)
+      return $http.get("/ks2inc/job/"+departmentKey+"/"+companyKey+"/"+projectKey+query)
+        .then(
+        function(response) {
+          return response.data;
+        },
+        function (httpError) {
+          // translate the error
+          throw httpError.status + " : " +httpError.data;
+        }
+      );
+    };
+
+    this.getCatCodeDescription = function(type, departmentKey, companyKey, projectKey, jobStatusKey, jobKey, catCodeKey) {
+      console.log("Fetching Jobcost Jobs, Type: '" + type + "'");
+      var query = getQueryType(type);
+      
+      return $http.get("/ks2inc/job/code/detail/"+departmentKey+"/"+companyKey+"/"+projectKey+"/"+jobStatusKey+"/"+jobKey+"/"+catCodeKey+query)
         .then(
         function(response) {
           return response.data;

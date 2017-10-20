@@ -22,15 +22,15 @@ app.controller('jobcost2Ctrl', [
       {key:"Closed", name:"Closed", jobList:[]}
     ];
 
-    $scope.filteredFiscalYears = [
-      {name:"2010-2011"},
-      {name:"2011-2012"},
-      {name:"2012-2013"},
-      {name:"2013-2014"},
-      {name:"2014-2015"},
-      {name:"2015-2016"},
-      {name:"2016-2017"}
-    ];    
+    $scope.filteredDetails = [
+      {name:"No Details"},
+      {name:"Cost Code/Type Details"},
+      {name:"FERC/Cost Code Subtotals"},
+      {name:"Cost Type Subtotals"},
+      {name:"Trend - Expenditures"},
+      {name:"Trend - Budget"},
+      {name:"Trend - Encumbrances"}
+    ];
 
     $scope.filteredCatCode1 = [];
 
@@ -70,12 +70,6 @@ app.controller('jobcost2Ctrl', [
         $scope.filteredDetails[i].key = i;
       }
 
-      //Set Fiscal Year IDs
-      for(i=0; i<$scope.filteredFiscalYears.length; i++){
-        $scope.filteredFiscalYears[i].id = i;
-      }
-     
-
       setReportData();
     }
 
@@ -92,8 +86,9 @@ app.controller('jobcost2Ctrl', [
         $scope.filteredProject = data.projects;
         $scope.filteredJob  = data.jobs;
         $scope.filteredCatCode1 = data.catCodeHead;
+        $scope.filteredCC1Descriptions = [];
+        $scope.filteredCC2Descriptions = [];
         
-
         $scope.filteredDepartment.unshift($scope.allOptionValue);
         $scope.filteredCompany.unshift($scope.allOptionValue);
         $scope.filteredProject.unshift($scope.allOptionValue);
@@ -101,6 +96,8 @@ app.controller('jobcost2Ctrl', [
         $scope.filteredDetails.unshift($scope.allOptionValue);
         $scope.jobStatus.unshift($scope.allOptionValue);
         $scope.filteredCatCode1.unshift($scope.allOptionValue);
+        $scope.filteredCC1Descriptions.unshift($scope.allOptionValue);
+        $scope.filteredCC2Descriptions.unshift($scope.allOptionValue);
         
         $scope.selectedValues.department = $scope.allOptionValue;
         $scope.selectedValues.company = $scope.allOptionValue;
@@ -112,6 +109,9 @@ app.controller('jobcost2Ctrl', [
         $scope.filteredCatCode2 = $scope.filteredCatCode1;
         $scope.selectedValues.optional.cat1 = $scope.allOptionValue;
         $scope.selectedValues.optional.cat2 = $scope.allOptionValue;
+        $scope.selectedValues.optional.cat1Description = $scope.allOptionValue;
+        $scope.selectedValues.optional.cat2Description = $scope.allOptionValue;
+
         modalService.hideDataLoadingModal();
       });
     }
@@ -125,7 +125,7 @@ app.controller('jobcost2Ctrl', [
       }
       else{
         modalService.showDataLoadingModal();
-        jobcostService.getCompaniesByDepartmentKey(rType, dKey).then(function(data){
+        jobcostService.getCompanies(rType, dKey).then(function(data){
           $scope.filteredCompany = data;
 
           $scope.filteredCompany.unshift($scope.allOptionValue);
@@ -142,7 +142,7 @@ app.controller('jobcost2Ctrl', [
       var cKey = $scope.selectedValues.company.key;
 
       modalService.showDataLoadingModal();
-      jobcostService.getProjectsByDepartmentAndCompanyKeys(rType, dKey, cKey).then(function(data){
+      jobcostService.getProjects(rType, dKey, cKey).then(function(data){
         $scope.filteredProject = data;
 
         $scope.filteredProject.unshift($scope.allOptionValue);
@@ -172,10 +172,45 @@ app.controller('jobcost2Ctrl', [
     }
 
     $scope.selectedCatCode1 = function() {
-      
+      var rType = $scope.selectedValues.report.type;
+      var dKey = $scope.selectedValues.department.key;
+      var cKey = $scope.selectedValues.company.key;
+      var pKey = $scope.selectedValues.project.key;
+      var jsKey = $scope.selectedValues.jobStatus.key;
+      var jKey = $scope.selectedValues.job.key;
+      var ccKey = $scope.selectedValues.optional.cat1.key;
+
+      modalService.showDataLoadingModal();
+      jobcostService.getCatCodeDescription(rType, dKey, cKey, pKey, jsKey, jKey, ccKey).then(function(catData){
+        $scope.filteredCC1Descriptions = [];
+        if(catData[0]){
+          $scope.filteredCC1Descriptions = catData;
+        }
+        $scope.filteredCC1Descriptions.unshift($scope.allOptionValue);
+        $scope.selectedValues.optional.cat1Description = $scope.allOptionValue;
+        modalService.hideDataLoadingModal();
+      });
     }
+    
     $scope.selectedCatCode2 = function() {
-      
+      var rType = $scope.selectedValues.report.type;
+      var dKey = $scope.selectedValues.department.key;
+      var cKey = $scope.selectedValues.company.key;
+      var pKey = $scope.selectedValues.project.key;
+      var jsKey = $scope.selectedValues.jobStatus.key;
+      var jKey = $scope.selectedValues.job.key;
+      var ccKey = $scope.selectedValues.optional.cat2.key;
+
+      modalService.showDataLoadingModal();
+      jobcostService.getCatCodeDescription(rType, dKey, cKey, pKey, jsKey, jKey, ccKey).then(function(catData){
+        $scope.filteredCC2Descriptions = [];
+        if(catData[0]){
+          $scope.filteredCC2Descriptions = catData;
+        }
+        $scope.filteredCC2Descriptions.unshift($scope.allOptionValue);
+        $scope.selectedValues.optional.cat2Description = $scope.allOptionValue;
+        modalService.hideDataLoadingModal();
+      });
     }
 
     //Set JDE Fiscal Years
