@@ -145,18 +145,36 @@ app.controller('jobcost2Ctrl', [
     }
 
 
-
     $scope.selectedProject = function(){
       var rType = $scope.selectedValues.report.type;
       var dKey = $scope.selectedValues.department.key;
       var cKey = $scope.selectedValues.company.key;
       var pKey = $scope.selectedValues.project.key;
-      var jobStatus = $scope.selectedValues.jobStatus.key;
 
       modalService.showDataLoadingModal();
-      jobcostService.getJobWithStatus(rType, dKey, cKey, pKey, jobStatus).then(function(data){
+      jobcostService.getJobs(rType, dKey, cKey, pKey).then(function(data){
         $scope.filteredJob = data;
 
+        $scope.filteredJob.unshift($scope.allOptionValue);
+        $scope.selectedValues.job = $scope.allOptionValue;
+        
+        modalService.hideDataLoadingModal();
+      });
+    }
+
+    $scope.selectedJobStatus = function(){
+      var rType = $scope.selectedValues.report.type;
+      var dKey = $scope.selectedValues.department.key;
+      var cKey = $scope.selectedValues.company.key;
+      var pKey = $scope.selectedValues.project.key;
+      var jsKey = $scope.selectedValues.jobStatus.key;
+
+      modalService.showDataLoadingModal();
+      jobcostService.getJobWithStatus(rType, dKey, cKey, pKey, jsKey).then(function(data){
+        $scope.filteredJob = [];
+        if(data[0]){
+          $scope.filteredJob = data;
+        }
         $scope.filteredJob.unshift($scope.allOptionValue);
         $scope.selectedValues.job = $scope.allOptionValue;
         
@@ -174,10 +192,10 @@ app.controller('jobcost2Ctrl', [
       var ccKey = $scope.selectedValues.optional.cat1.key;
 
       modalService.showDataLoadingModal();
-      jobcostService.getCatCodeDescription(rType, dKey, cKey, pKey, jsKey, jKey, ccKey).then(function(catData){
+      jobcostService.getCatCodeDescription(rType, dKey, cKey, pKey, jsKey, jKey, ccKey).then(function(data){
         $scope.filteredCC1Descriptions = [];
-        if(catData[0]){
-          $scope.filteredCC1Descriptions = catData;
+        if(data[0]){
+          $scope.filteredCC1Descriptions = data;
         }
         $scope.filteredCC1Descriptions.unshift($scope.allOptionValue);
         $scope.selectedValues.optional.cat1Description = $scope.allOptionValue;
@@ -195,10 +213,10 @@ app.controller('jobcost2Ctrl', [
       var ccKey = $scope.selectedValues.optional.cat2.key;
 
       modalService.showDataLoadingModal();
-      jobcostService.getCatCodeDescription(rType, dKey, cKey, pKey, jsKey, jKey, ccKey).then(function(catData){
+      jobcostService.getCatCodeDescription(rType, dKey, cKey, pKey, jsKey, jKey, ccKey).then(function(data){
         $scope.filteredCC2Descriptions = [];
-        if(catData[0]){
-          $scope.filteredCC2Descriptions = catData;
+        if(data[0]){
+          $scope.filteredCC2Descriptions = data;
         }
         $scope.filteredCC2Descriptions.unshift($scope.allOptionValue);
         $scope.selectedValues.optional.cat2Description = $scope.allOptionValue;

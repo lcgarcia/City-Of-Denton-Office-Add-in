@@ -50,18 +50,18 @@ app.service("jobcostService", [
       );
     };
 
-    this.getJobWithStatus = function (type, departmentKey, companyKey, projectKey, jobStatus) {
-      console.log("Fetching Jobcost Jobs, Type: '" + type + "'");
-      var query = getQueryType(type);
-      query += "&jobstatus=" + jobStatus;
-      return this.getJobsAPIRequest("/ks2inc/job/"+departmentKey+"/"+companyKey+"/"+projectKey+query);
-    };
-
     this.getJobs = function (type, departmentKey, companyKey, projectKey) {
       console.log("Fetching Jobcost Jobs, Type: '" + type + "'");
       var query = getQueryType(type);
       return this.getJobsAPIRequest("/ks2inc/job/"+departmentKey+"/"+companyKey+"/"+projectKey+query);
     }
+
+    this.getJobWithStatus = function (type, departmentKey, companyKey, projectKey, jobStatusKey) {
+      console.log("Fetching Jobcost Jobs, Type: '" + type + "'");
+      var query = getQueryType(type);
+      query += "&jobstatus=" + jobStatusKey;
+      return this.getJobsAPIRequest("/ks2inc/job/"+departmentKey+"/"+companyKey+"/"+projectKey+query);
+    };
 
     this.getJobsAPIRequest = function (url) {
       return $http.get(url)
