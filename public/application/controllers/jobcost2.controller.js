@@ -144,25 +144,7 @@ app.controller('jobcost2Ctrl', [
       });
     }
 
-
-    $scope.selectedProject = function(){
-      var rType = $scope.selectedValues.report.type;
-      var dKey = $scope.selectedValues.department.key;
-      var cKey = $scope.selectedValues.company.key;
-      var pKey = $scope.selectedValues.project.key;
-
-      modalService.showDataLoadingModal();
-      jobcostService.getJobs(rType, dKey, cKey, pKey).then(function(data){
-        $scope.filteredJob = data;
-
-        $scope.filteredJob.unshift($scope.allOptionValue);
-        $scope.selectedValues.job = $scope.allOptionValue;
-        
-        modalService.hideDataLoadingModal();
-      });
-    }
-
-    $scope.selectedJobStatus = function(){
+    var updateJobs = function () {
       var rType = $scope.selectedValues.report.type;
       var dKey = $scope.selectedValues.department.key;
       var cKey = $scope.selectedValues.company.key;
@@ -181,6 +163,9 @@ app.controller('jobcost2Ctrl', [
         modalService.hideDataLoadingModal();
       });
     }
+
+    $scope.selectedProject = updateJobs
+    $scope.selectedJobStatus = updateJobs
 
     $scope.selectedCatCode1 = function() {
       var rType = $scope.selectedValues.report.type;
