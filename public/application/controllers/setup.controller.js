@@ -8,7 +8,8 @@ app.controller('setupCtrl', [
   '$rootScope',
   '$state',
   '$stateParams',
-  function ($http, $scope, $rootScope, $state, $stateParams) {
+  'jobcostService',
+  function ($http, $scope, $rootScope, $state, $stateParams, jobcostService) {
     var debugCreated = false;
     var dataCreated = false;
     var debugRange = 3;
@@ -207,11 +208,19 @@ app.controller('setupCtrl', [
      * Step 1: Get HTTP data from Harvest Server
      */
     var getHttpData = function (cb) {
+      jobcostService.getSheetData('', 'September', 2015, '09', "00301", "902003XXX", "902003020")
+      .then(function (response) {
+        console.log(response);
+        cb(null, {response: response})
+      })
+      /*
       var url = 'https://ks2harvestdashboard.mybluemix.net/dashboard/raw/' + moment($scope.dates.start).format('YYYY-MM-DD') + '/' + moment($scope.dates.end).format('YYYY-MM-DD');
       $http.get(url)
       .then(function (response) {
+        console.log(response);
         cb(null, {response: response})
       })
+      */
     }
 
     /**
@@ -371,11 +380,13 @@ app.controller('setupCtrl', [
      * @param {function} cb   This is the callback function for our async chain
      */
     var formatHttpData = function(data, cb) {
+      //var keyIndex = 1;
+      var keyIndex = 3;
       if(!dataCreated){
-        data = data.response.data.data
+        data = data.response
         Excel.run(function (ctx) {
           var ws = ctx.workbook.worksheets.getItem(dataSheetName);
-          data = _.sortBy(data, function(o){ return o[1] })
+          data = _.sortBy(data, function(o){ return o[keyIndex] })
           var currentCompany = '';
           var hours = 0;
           var startRange = 1;
@@ -383,9 +394,10 @@ app.controller('setupCtrl', [
           $scope.hiddenRanges = [];
           $scope.hideByClient = {};
           _.forEach(data, function(o, i) {
-            if(currentCompany != o[1]) {
+            if(currentCompany != o[keyIndex]) {
               if(currentCompany != '') {
-                var addRow = ['',currentCompany,hours,'','','','','','','','','','','',''];
+                //var addRow = ['',currentCompany,hours,'','','','','','','','','','','',''];
+                var addRow = ['','','','','',currentCompany,hours,'','','',''];
                 newData.push(addRow);
 
                 // Hide Range
@@ -395,7 +407,7 @@ app.controller('setupCtrl', [
               }
               insertDebugMsg("formatHttpData",currentCompany);
 
-              currentCompany = o[1];
+              currentCompany = o[keyIndex];
               hours = 0;
             }
 
@@ -408,7 +420,8 @@ app.controller('setupCtrl', [
           });
 
           // Add last set
-          var addRow = ['',currentCompany,hours,'','','','','','','','','','','',''];
+          //var addRow = ['',currentCompany,hours,'','','','','','','','','','','',''];
+          var addRow = ['','','','','',currentCompany,hours,'','','',''];
           newData.push(addRow);
           $scope.hiddenRanges.push('A'+(startRange+1)+':Z'+(newData.length));
           $scope.hideByClient[currentCompany] = 'A'+(startRange+1)+':Z'+(newData.length);
@@ -420,11 +433,16 @@ app.controller('setupCtrl', [
           })
 
           data = newData;
-          data.unshift(['Date','Client','Hours','Project','Project Code','Task','Billable','Notes','Invoiced','First Name','Last Name','Department','Contractor?','Billable Rate','Cost Rate']);
+          data.unshift(['Dept','Company', 'x', 'Bus Unit','Object','Subsidary','Budget','Expendatures','Remaining','Encuberances','Unencumbered']);
+          //data.unshift(['Date','Client','Hours','Project','Project Code','Task','Billable','Notes','Invoiced','First Name','Last Name','Department','Contractor?','Billable Rate','Cost Rate']);
 
+          console.log('Formatted data');
           return ctx.sync()
             .then(function () {
+              $scope.debugMessage = "DONE";
               cb(null, data);
+            }).catch(function (err) {
+              $scope.debugMessage = err;
             })
         })
       }
@@ -442,12 +460,19 @@ app.controller('setupCtrl', [
       if(!dataCreated){
         Excel.run(function (ctx) {
           var worksheet = ctx.workbook.worksheets.getItem(dataSheetName);
-          var range = worksheet.getRange('A1:O' + data.length)
+          var range = 'O';
+          var alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+          if (data.length > 0)
+            var alphabetRangeValue = alphabet[data[0].length-1];
+          var range = worksheet.getRange('A1:' + alphabetRangeValue + data.length)
           range.load('values')
+          $scope.debugMessage = data
           range.values = data
           range.format.autofitColumns()
+          $scope.debugMessage = data;
           return ctx.sync()
             .then(function (res) {
+              $scope.debugMessage = 'Added to sheet'
               cb(null, data)
             }).catch(function (err) {
               data.err = err

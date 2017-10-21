@@ -57,9 +57,8 @@ router.post('/sheet/data', (req, res) => {
   }
 
   const sql = generator.createSelectStatement(req.body.month, req.body.year, options);
-  console.log(sql);
 
-  oracleQuery.query(sql)
+  oracleQuery.jobSheetDataQuery(sql)
   .then(result => res.send(result))
   .catch(err => res.send(err));
 });
