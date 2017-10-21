@@ -1,5 +1,6 @@
 const express = require('express')
 const _ = require('lodash')
+const async = require('async')
 const router = express.Router()
 const Generator = require('../lib/BudgetSQLGenerator')
 const oracleQuery = require('../lib/OracleQuery')
@@ -43,18 +44,21 @@ router.post('/sheet/data', (req, res) => {
     }
   })
   
+  const queries = {};
   _.forEach(querySets, data => {
-    oracleQuery.batchQuery(data.sql, data.id)
-    .then(result => {
-      finalData[result.id] = result.results
-      if(Object.keys(finalData).length == Object.keys(querySets).length)
-        res.send(finalData)
-    }).catch(err => {
-      finalData[err.id] = err.err
-      if(Object.keys(finalData).length == Object.keys(querySets).length)
-        res.send(finalData)
-    })
-  })
+    queries[data.id] = (next) => {
+      oracleQuery.query(data.sql)
+      .then(result => {
+        next(null, result)
+      }).catch(err => {
+        next(err)
+      });
+    };
+  });
+  async.parallel(queries, (err, results) => {
+    if (err) res.send({err: err});
+    else res.send(results);
+  });
 })
 
 router.get('/query/:sql', (req, res) => {

@@ -1,27 +1,29 @@
-var express = require('express')
+const express = require('express')
 const _ = require('lodash');
-var router = express.Router()
-var Generator = require('../lib/JobCostSQLGenerator')
-var oracleQuery = require('../lib/OracleQuery')
-var dataFormater = require('../lib/DataFormater')
+const async = require('async');
+const router = express.Router()
+const Generator = require('../lib/JobCostSQLGenerator')
+const oracleQuery = require('../lib/OracleQuery')
+const dataFormater = require('../lib/DataFormater')
 
 router.get('/ui/data', (req, res) => {
-  var generator = new Generator({ type: req.query.type || '' })
-  var sqlData = generator.getUIData();
+  const generator = new Generator({ type: req.query.type || '' })
+  const sqlData = generator.getUIData();
 
-  var finalData = {};
-
+  const queries = {};
   _.forEach(sqlData, (sql, key) => {
-    oracleQuery.batchQuery(sql, key)
-    .then(result => {
-      finalData[result.id] = result.results;
-      if(Object.keys(finalData).length == Object.keys(sqlData).length)
-        res.send(finalData);
-    }).catch(err => {
-      finalData[err.id] = err.err;
-      if(Object.keys(finalData).length == Object.keys(sqlData).length)
-        res.send(finalData);
-    });
+    queries[key] = (next) => {
+      oracleQuery.query(sql)
+      .then(result => {
+        next(null, result)
+      }).catch(err => {
+        next(err)
+      });
+    };
+  });
+  async.parallel(queries, (err, results) => {
+    if (err) res.send({err: err});
+    else res.send(results);
   });
 });
 
