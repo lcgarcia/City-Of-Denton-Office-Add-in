@@ -89,7 +89,7 @@ app.controller('jobcostCtrl', [
       }
       else{
         modalService.showDataLoadingModal();
-        jobcostService.getCompaniesByDepartmentKey(rType, dKey).then(function(data){
+        jobcostService.getCompanies(rType, dKey).then(function(data){
           $scope.filteredCompany = data;
 
           $scope.filteredCompany.unshift($scope.allOptionValue);
@@ -107,7 +107,7 @@ app.controller('jobcostCtrl', [
       var cKey = $scope.selectedValues.company.key;
 
       modalService.showDataLoadingModal();
-      jobcostService.getProjectsByDepartmentAndCompanyKeys(rType, dKey, cKey).then(function(data){
+      jobcostService.getProjects(rType, dKey, cKey).then(function(data){
         $scope.filteredProject = data;
 
         $scope.filteredProject.unshift($scope.allOptionValue);
@@ -116,8 +116,6 @@ app.controller('jobcostCtrl', [
         modalService.hideDataLoadingModal();
       });
     }
-
-
 
     $scope.selectedProject = function(){
       var rType = $scope.selectedValues.report.type;
@@ -150,9 +148,20 @@ app.controller('jobcostCtrl', [
       $("#jdeCalendar").click();
     }
 
-    
+    $scope.getJobData = function () {
+      var rType = $scope.selectedValues.report.type;
+      var dKey = $scope.selectedValues.department.key;
+      var cKey = $scope.selectedValues.company.key;
+      var pKey = $scope.selectedValues.project.key;
+      var jKey = $scope.selectedValues.job.key;
+      var year = $scope.selectedValues.dates.jdeYear;
+      var month = $scope.selectedValues.dates.monthStart;
 
-    
+      jobcostService.getSheetData(rType, month, year, dKey, cKey, pKey, jKey)
+      .then(function (data) {
+        console.log(data);
+      });
+    }
 
     buildPage();
   }]);

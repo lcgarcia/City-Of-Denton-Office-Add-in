@@ -92,6 +92,44 @@ app.service("jobcostService", [
       );
     };
 
+    /**
+     * Get data for the spreadsheet
+     * @param  {string} type          Type of spreadsheet
+     * @param  {string} departmentKey 
+     * @param  {string} companyKey    
+     * @param  {string} projectKey    
+     * @param  {string} jobKey        
+     * @param  {object} options       Object containing the data for new and ka jobcosts
+     *                                { status: jobStatus, catField, catField1, catCode, catCode1 }
+     * @return {promise}              Promise from the $http request
+     */
+    this.getSheetData = function (type, month, year, departmentKey, companyKey, projectKey, jobKey, options) {
+      var requestData = {
+        month: month,
+        year: year,
+        layout: 'Cost Code/Type Details',
+        department: departmentKey,
+        company: companyKey,
+        project: projectKey,
+        job: jobKey,
+      };
+
+      if (type === 'new' || type === 'ka') {
+        requestData.status = options.jobStatus;
+        requestData.catField = options.catCode1;
+        requestData.catField1 = options.catCode1Description;
+        requestData.catCode = options.catCode2;
+        requestData.catCode2 = options.catCode2Description;
+      }
+
+      return $http.post('/ks2inc/job/sheet/data', JSON.stringify(requestData), {headers: {'Content-Type': 'application/json'} })
+      .then(function (response) {
+        return response.data;
+      },
+      function (httpError) {
+        throw httpError.status + " : " + httpError.data;
+      });
+    };
 
     function getQueryType(type){
       if(type === 'ka') {return '?type=ka'}
@@ -99,8 +137,6 @@ app.service("jobcostService", [
       else if(type === 'new') {return '?type=new'}
       return '';
     }
-
-
 
   }
 ]);

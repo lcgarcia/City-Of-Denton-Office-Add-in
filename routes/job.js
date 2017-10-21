@@ -37,11 +37,12 @@ router.get('/ui/data', (req, res) => {
 //    - Selected job key
 // 
 router.post('/sheet/data', (req, res) => {
-  var generator = new Generator({ type: req.query.type || '' });
+  const reportSelected = req.query.type || '';
+  const generator = new Generator({ type: reportSelected });
   const options = {
     layout: req.body.layout,
     department: req.body.department,
-    company: req.body.comapny,
+    company: req.body.company,
     project: req.body.project,
     job: req.body.job
   }
@@ -53,7 +54,10 @@ router.post('/sheet/data', (req, res) => {
     options.catCode1 = req.body.catCode1;
   }
 
-  oracleQuery.query(generator.createSelectStatement(req.body.month, req.body.year, options))
+  const sql = generator.createSelectStatement(req.body.month, req.body.year, options);
+  console.log(sql);
+
+  oracleQuery.query(sql)
   .then(result => res.send(result))
   .catch(err => res.send(err));
 });
