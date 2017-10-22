@@ -426,6 +426,8 @@ app.controller('setupCtrl', [
           $scope.hiddenRanges.push('A'+(startRange+1)+':Z'+(newData.length));
           $scope.hideByClient[currentCompany] = 'A'+(startRange+1)+':Z'+(newData.length);
 
+          $scope.debugMessage = JSON.stringify($scope.hiddenRanges);
+
           // Hide Ranges
           _.forEach($scope.hiddenRanges, function(o) {
             var range2 = ws.getRange(o);
@@ -439,7 +441,7 @@ app.controller('setupCtrl', [
           console.log('Formatted data');
           return ctx.sync()
             .then(function () {
-              $scope.debugMessage = "DONE";
+              //$scope.debugMessage = "DONE";
               cb(null, data);
             }).catch(function (err) {
               $scope.debugMessage = err;
@@ -466,13 +468,13 @@ app.controller('setupCtrl', [
             var alphabetRangeValue = alphabet[data[0].length-1];
           var range = worksheet.getRange('A1:' + alphabetRangeValue + data.length)
           range.load('values')
-          $scope.debugMessage = data
+          //$scope.debugMessage = data
           range.values = data
           range.format.autofitColumns()
-          $scope.debugMessage = data;
+          //$scope.debugMessage = data;
           return ctx.sync()
             .then(function (res) {
-              $scope.debugMessage = 'Added to sheet'
+              //$scope.debugMessage = 'Added to sheet'
               cb(null, data)
             }).catch(function (err) {
               data.err = err
