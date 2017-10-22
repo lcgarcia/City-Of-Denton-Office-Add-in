@@ -4,12 +4,13 @@ const async = require('async')
 const router = express.Router()
 const Generator = require('../lib/BudgetSQLGenerator')
 const oracleQuery = require('../lib/OracleQuery')
+const knexQuery = require('../lib/KnexQuery')
 const dataFormater = require('../lib/DataFormater')
 
 router.get('/business/unit', (req, res) => {
   var generator = new Generator({ type: req.query.type || '' })
 
-  oracleQuery.query(generator.getBusinessUnitData(), dataFormater.formatBusinessUnit)
+  knexQuery.query(generator.getBusinessUnitData(), dataFormater.formatBusinessUnit)
   .then(result => res.send(result))
   .catch(err => res.send(err))
 })
@@ -47,7 +48,7 @@ router.post('/sheet/data', (req, res) => {
   const queries = {};
   _.forEach(querySets, data => {
     queries[data.id] = (next) => {
-      oracleQuery.query(data.sql)
+      knexQuery.query(data.sql)
       .then(result => {
         next(null, result)
       }).catch(err => {
@@ -62,7 +63,7 @@ router.post('/sheet/data', (req, res) => {
 })
 
 router.get('/query/:sql', (req, res) => {
-  oracleQuery.query(req.params.sql)
+  knexQuery.query(req.params.sql)
   .then(result => res.send(result))
   .catch(err => res.send(err))
 });
@@ -78,7 +79,7 @@ router.get('/sheet/data/:type/:year/:month/:accounts/:key/:buLevel', (req, res) 
   const generator = new Generator({ type: req.params.type })
   const sql = generator.createSelectStatement(false, req.params.type, req.params.year, req.params.month, req.params.accounts, options)
 
-  oracleQuery.query(sql)
+  knexQuery.query(sql)
   .then(result => res.send(result))
   .catch(err => res.send(err))
 })
