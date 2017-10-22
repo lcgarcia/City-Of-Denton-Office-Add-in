@@ -138,5 +138,94 @@ app.service("jobcostService", [
       return '';
     }
 
+    /**
+     * Insert data into spreadsheet
+     * @param  {object}   data Data object from the getSheetData call
+     * @param  {Function} cb   Callback function
+     * @return {(err, data)}   Data and error object form async call
+     */
+    this.insertSpreadSheetData = function (data, cb) {
+      // Callback with (err, result)
+      async.waterfall([
+        function (next) {
+          next(null, data);
+        },
+        initalizeWorksheet,
+        hideRows,
+        insertSheetData
+      ], cb);
+    };
+
+    this.initalizeWorksheet = function (data, next) {
+      Excel.run(function (ctx) {
+        data.scope.debugMessage = 'INIT WORK SHEET';
+        var worksheets = ctx.workbook.worksheets;
+        var jobCostSheetName = 'jobCost-90';
+        var hasJobCostSheet = false;
+
+        _.forEach(worksheets.items, function (sheet) {
+          if (sheet.name === jobCostSheetName)
+            hasJobCostSheet = true;
+        });
+
+        if(!hasJobCostSheet) {
+          // Create the jobcost sheet
+          worksheet = worksheets.add();
+          worksheet.name = jobCostSheetName;
+          worksheet.load("name, position");
+        }
+
+        data.sheetName = jobCostSheetName;
+
+        worksheet.activate();
+
+        return ctx.sync()
+          .then(function () {
+            next(null, data);
+          }).catch(function (err) {
+            next({err: err, stage: 'initalizeWorksheet'});
+          })
+      });
+    };
+
+    this.hideRows = function (data, next) {
+      Excel.run(function (ctx) {
+        var worksheet = ctx.workbook.worksheets.getItem(data.sheetName);
+        
+        _.forEach(data.hiddenRows, function (rowKey) {
+          var range = worksheet.getRange(rowKey);
+          range.rowHidden = true;
+        });
+
+        return ctx.sync()
+          .then(function () {
+            next(null, data);
+          }).catch(function (err) {
+            next({err: err, stage: 'hideRows'});
+          });
+      });
+    };
+
+    this.insertSheetData = function (data, next) {
+      Excel.run(function (ctx) {
+        var worksheet = ctx.workbook.worksheets.getItem(data.sheetName);
+
+        var range = 'O';
+        var alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+        if (data.length > 0)
+          var alphabetRangeValue = alphabet[data[0].length-1];
+        var range = worksheet.getRange('A1:' + alphabetRangeValue + data.length)
+        range.load('values')
+        range.values = data.sheetData;
+        range.format.autofitColumns()
+        return ctx.sync()
+          .then(function () {
+            next(null);
+          }).catch(function (err) {
+            next({err: err, stage: 'insertSheetData'});
+          })
+      });
+    };
+
   }
 ]);

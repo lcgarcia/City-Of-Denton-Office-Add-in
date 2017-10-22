@@ -13,7 +13,7 @@ router.get('/business/unit', (req, res) => {
   knexQuery.query(generator.getBusinessUnitData(), dataFormater.formatBusinessUnit)
   .then(result => res.send(result))
   .catch(err => res.send(err))
-})
+});
 
 // accounts values
 //      Balance - ("Between '0' and '3999'")
