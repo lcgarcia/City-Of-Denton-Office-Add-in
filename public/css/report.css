@@ -2,9 +2,15 @@
   height: 34px;
 }
 
+.btn-run{
+  height: 40px; 
+  font-size: 16px;
+  border-radius: 0;
+  margin-left: 0.5px;
+}
+
 .panel-run{
-  margin-bottom:10px; 
-  margin-top: 20px; 
+  border-top: 1px solid #275F90;;
   cursor:pointer; 
   width: 100%;
 }
@@ -215,6 +221,7 @@
 .panel-heading.child{
   cursor: pointer;
   border-top: 1px solid rgba(0, 101, 255, 0.1);
+  border-radius: 0;
 }
 .panel-heading.child:hover{
   background-color:#e0e2e2;

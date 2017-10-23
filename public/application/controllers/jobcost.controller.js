@@ -157,6 +157,8 @@ app.controller('jobcostCtrl', [
       var year = $scope.selectedValues.dates.jdeYear;
       var month = $scope.selectedValues.dates.monthStart;
 
+      $scope.showReportDetails = true;
+      modalService.showReportLoadingModal();
       jobcostService.getSheetData(rType, month, year, dKey, cKey, pKey, jKey)
       .then(function (data) {
         try {
@@ -173,6 +175,7 @@ app.controller('jobcostCtrl', [
         } catch (e) {
           console.log(data);
         }
+        modalService.hideReportLoadingModal();
       });
     };
 
