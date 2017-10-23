@@ -220,7 +220,7 @@
                   <td>
                      <div class="panel-addon" style="border-top-left-radius: 6px;">
                         <input type="checkbox" 
-                        style="margin: 0; margin-left: 4px; width: 16px;" 
+                        style="margin: 0; margin-left: 4px; width: 16px; cursor: pointer;" 
                         ng-model="selectedValues.data.selectAll"
                         ng-change="selectedDataAll()"
                         >
@@ -243,7 +243,7 @@
             <ul id="myUL" style="list-style: none; width: 120%">
                <li class="parentLi" style="margin-top: 6px;" ng-repeat="label in sheetData.hiddenRows" >
                   <div class="parentOptions">
-                     <input id="{{'parentInput-'+ label.key}}" type="checkbox" class="parentOption" ng-model="label.selected">
+                     <input id="{{'parentInput-'+ label.key}}" type="checkbox" ng-model="label.selected" style="cursor: pointer;">
                      <label id="{{'parentLabel-'+ label.key}}"
                         style="display: inline; font-weight: normal;">
                         {{label.key}}

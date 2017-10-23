@@ -144,7 +144,7 @@
                               <td>
                                  <div class="panel-addon" style="border-top-left-radius: 6px;">
                                     <input type="checkbox" 
-                                    style="margin: 0; margin-left: 4px; width: 16px;" 
+                                    style="margin: 0; margin-left: 4px; width: 16px; cursor: pointer;" 
                                     ng-model="selectedValues.selectAll"
                                     ng-change="selectedOptionsAll()"
                                     >
@@ -173,7 +173,7 @@
                         <ul id="myUL" style="list-style: none; width: 120%">
                            <li class="parentLi" style="margin-top: 6px;" ng-repeat="label in parentList" >
                               <div class="parentOptions">
-                                 <input id="{{'parentInput-'+ label.id}}" type="checkbox" class="parentOption" ng-model="label.selected" ng-change="selectedParent(label)">
+                                 <input id="{{'parentInput-'+ label.id}}" type="checkbox" ng-model="label.selected" ng-change="selectedParent(label)" style="cursor: pointer;">
                                  <label id="{{'parentLabel-'+ label.id}}"
                                     data-toggle="collapse" 
                                     data-target="{{'#childOptions-'+ label.id}}"
@@ -186,7 +186,7 @@
                               <div id="{{'childOptions-'+ label.id}}" aria-expanded="false" class="collapse">
                                  <ul style="list-style: none;">
                                     <li class="childLi" style="margin-left: 1em;" ng-repeat="childList in label.childList">
-                                       <input id="{{'childInput-'+ childList.id}}" type="checkbox" ng-model="childList.selected" ng-change="selectedChild(label)">
+                                       <input id="{{'childInput-'+ childList.id}}" type="checkbox" ng-model="childList.selected" ng-change="selectedChild(label)" style="cursor: pointer;">
                                        <label style="font-size: 12px; font-weight: normal;">
                                           {{childList.id + '-' + childList.name }}
                                        </label>
