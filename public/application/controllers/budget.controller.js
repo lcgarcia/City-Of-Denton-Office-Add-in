@@ -38,6 +38,7 @@ app.controller('budgetCtrl', [
         on: 'Yes',
         off: 'No'
       });
+      $("#content1").show();
     });
 
     /**
@@ -61,7 +62,7 @@ app.controller('budgetCtrl', [
         $scope.userSelection.user = $scope.user.name
       }
       $scope.selectedValues.book = $scope.filteredBooks[0];
-      setReportData();
+      
     }
 
 
@@ -107,6 +108,24 @@ app.controller('budgetCtrl', [
       }
       else{
         $scope.selectedValues.totalSheet = "No";
+      }
+    }
+
+    $scope.displayTab = function(tab){
+      $("#content1").hide();
+      $("#content2").hide();
+      $("#content3").hide();
+      if(tab == 'tab1'){
+        $("#content1").show();
+      }
+      else if(tab == 'tab2'){
+        $("#content2").show();
+      }
+      else if(tab == 'tab3'){
+        $("#content3").show();
+        if($scope.parentList.length == 0){
+          setReportData();
+        }
       }
     }
 

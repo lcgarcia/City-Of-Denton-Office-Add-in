@@ -9,14 +9,27 @@
       </div>
       <div id="collapse1" class="panel-collapse collapse in" aria-expanded="true">
          <div class="panel-group" style="margin-bottom:0">
-            <div class="panel panel-default">
+            <div class="panel panel-default" style="border-radius: 0">
+               <table style="width: 100%;">
+               <tbody>
+                  <tr>
+                     <td>
+                        <input class="tab-input" id="tab1" type="radio" name="tabs" checked ng-click="displayTab('tab1')">
+                        <label class="tab-label" for="tab1">Report Details</label>
+                     </td>
+                     <td>
+                        <input class="tab-input" id="tab2" type="radio" name="tabs" ng-click="displayTab('tab2')">
+                        <label class="tab-label" for="tab2">Report Period</label>
+                     </td>
+                     <td>
+                        <input class="tab-input" id="tab3" type="radio" name="tabs" ng-click="displayTab('tab3')">
+                        <label class="tab-label last" for="tab3">Business Units</label>
+                     </td>
+                  </tr>
+               </tbody>
+               </table>
                <!-- Panel 1.1 Start-->
-               <div class="panel-heading child" style="border-top: 0;" data-toggle="collapse" data-target="#collapse1_1" aria-expanded="true">
-                  <h4 class="panel-title">        
-                     Select Report Details
-                  </h4>
-               </div>
-               <div id="collapse1_1" class="panel-collapse collapse in" aria-expanded="true">
+               <div class="tab-panel" id="content1">
                   <div class="panel-body">
                      <label>Report Type:</label>
                      <section>
@@ -39,12 +52,7 @@
                <!-- Panel 1.1 End-->
 
                <!-- Panel 1.2 Start-->
-               <div class="panel-heading child" data-toggle="collapse" data-target="#collapse1_2">
-                  <h4 class="panel-title">
-                     Select Report Period
-                  </h4>
-               </div>
-               <div id="collapse1_2" class="panel-collapse collapse">
+               <div class="tab-panel" id="content2">
                   <div class="panel-body">
                      <label>Select Month:</label>
                      <div style="height: 100%;" class="input-group input-daterange" id="monthStart">
@@ -79,12 +87,7 @@
                <!-- Panel 1.2 End-->
 
                <!-- Panel 1.3 Start-->
-               <div class="panel-heading child" style="border-bottom: 0;" data-toggle="collapse" data-target="#collapse1_3">
-                  <h4 class="panel-title">
-                     Select Book
-                  </h4>
-               </div>
-               <div id="collapse1_3" class="panel-collapse collapse">
+               <div class="tab-panel" id="content3">
                   <div class="panel-body">
                      <table style="width: 100%">
                         <tbody>
