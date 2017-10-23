@@ -27,6 +27,7 @@ app.controller('jobcostCtrl', [
     ];
 
     $scope.allOptionValue = {key:"*All", name:"*All"};
+    $scope.sheetData = {};
 
     $rootScope.$on('$viewContentLoaded', jobcostReportDates);
 
@@ -41,6 +42,10 @@ app.controller('jobcostCtrl', [
       $scope.selectedValues.dates.monthStart = "";
       $scope.selectedValues.dates.jdeYear ="";
       $scope.selectedValues.dates.jdeFiscalYear="";
+
+      $scope.selectedValues.data = {};
+      $scope.selectedValues.data.searchInput =""
+      $scope.selectedValues.data.selectAll = false;
 
       //Set Deatil IDs
       for(i=0; i<$scope.filteredDetails.length; i++){
@@ -148,6 +153,37 @@ app.controller('jobcostCtrl', [
       $("#jdeCalendar").click();
     }
 
+
+    /**
+     * [selectedDataAll selectAll checkbox selected. Set Sheet Data values to selectAll value]
+     */
+    $scope.selectedDataAll = function(){
+      _.forEach($scope.sheetData.hiddenRows, function(parent) {
+        parent.selected = $scope.selectedValues.data.selectAll;
+      });
+    }
+
+
+    /**
+     * [searchData shows/hides options depending on the value that is entered in searchbox]
+     */
+    $scope.searchData = function(){
+      var filter, ul, li, parentText, i;
+      filter = $scope.selectedValues.data.searchInput.toUpperCase();
+      ul = document.getElementById("myUL");
+      li = ul.getElementsByClassName("parentLi");
+      for (i = 0; i < li.length; i++) {
+        parentText = li[i].getElementsByTagName("label")[0].innerText.toUpperCase().trim();
+        
+        if (parentText.indexOf(filter) > -1) {
+          li[i].style.display = "";
+        }
+        else{
+          li[i].style.display = "none";
+        }
+      }
+    }
+
     $scope.getJobData = function () {
       var rType = $scope.selectedValues.report.type;
       var dKey = $scope.selectedValues.department.key;
@@ -157,11 +193,15 @@ app.controller('jobcostCtrl', [
       var year = $scope.selectedValues.dates.jdeYear;
       var month = $scope.selectedValues.dates.monthStart;
 
-      $scope.showReportDetails = true;
+      
       modalService.showReportLoadingModal();
       jobcostService.getSheetData(rType, month, year, dKey, cKey, pKey, jKey)
       .then(function (data) {
         try {
+          _.forEach(data.hiddenRows, function(child) {
+            child.selected = false;
+          });
+          $scope.sheetData = data;
           data.scope = $scope;
           jobcostService.insertSpreadSheetData(data, function(err, response){
             if (err) {
@@ -176,6 +216,13 @@ app.controller('jobcostCtrl', [
           console.log(data);
         }
         modalService.hideReportLoadingModal();
+        if($scope.sheetData.hiddenRows && $scope.sheetData.hiddenRows.length>0){
+          $scope.showReportDetails = true;
+        }
+        else{
+          $scope.showReportDetails = false;
+        }
+        
       });
     };
 
