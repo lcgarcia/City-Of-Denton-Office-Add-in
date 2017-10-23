@@ -163,11 +163,9 @@ app.controller('jobcostCtrl', [
           data.scope = $scope;
           jobcostService.insertSpreadSheetData(data, function(err, response){
             if (err) {
-              /*
               $scope.$apply(function () {
                 $scope.debugMessage = JSON.stringify(err);
-              })
-              */  
+              }) 
             } else {
               //$scope.debugMessage = 'DONE';
             }

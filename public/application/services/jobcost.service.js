@@ -229,9 +229,9 @@ app.service("jobcostService", [
         var fullrange = worksheet.getRange('A1:Z1000');
         fullrange.rowHidden = false;
 
-        _.forEach(data.hiddenRows, function (rowKey) {
+        _.forEach(data.hiddenRows, function (rowData) {
           //var rangeString = 'A'+(parseInt(rowKey)+1)+':Z'+(parseInt(rowKey)+2)
-          var range = worksheet.getRange(rowKey);
+          var range = worksheet.getRange(rowData.range);
           range.rowHidden = true;
         });
 
