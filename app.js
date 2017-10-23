@@ -5,6 +5,19 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+/*
+const oracle = require('oracledb');
+
+oracle.createPool({
+  user: 'jdeview',
+  password: 'viewonly',
+  connectString: 'cap-sg-prd-1.integration.ibmcloud.com:16019/JDEPD910'
+}, (err, pool) => {
+  console.log('created pool');
+});
+
+*/
+
 var routes = require('./routes/index');
 var budget = require('./routes/budget');
 var job = require('./routes/job');

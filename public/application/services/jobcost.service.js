@@ -138,5 +138,135 @@ app.service("jobcostService", [
       return '';
     }
 
+    /**
+     * Insert data into spreadsheet
+     * @param  {object}   data Data object from the getSheetData call
+     * @param  {Function} cb   Callback function
+     * @return {(err, data)}   Data and error object form async call
+     */
+    this.insertSpreadSheetData = function (data, cb) {
+      // Callback with (err, result)
+      try {
+        async.waterfall([
+          function (next) {
+            next(null, data);
+          },
+          loadWorkSheets,
+          findWorkSheet,
+          initalizeWorkSheet,
+          hideRows,
+          insertDataToWorkSheet,
+        ], cb);
+      } catch (e) {
+        cb(e);
+      }
+    };
+
+    var loadWorkSheets = function (data, next) {
+      Excel.run(function (ctx) {
+        var sheets = ctx.workbook.worksheets;
+        sheets.load("items");
+        var activeWorksheet = ctx.workbook.worksheets.getActiveWorksheet();
+        activeWorksheet.load('name');
+
+        return ctx.sync()
+          .then(function(response) {
+            data.sheets = sheets;
+            data.activeSheet = activeWorksheet.name;
+            next(null, data);
+          }).catch(function (err) {
+            next(err);
+          });
+      });
+    };
+
+    var findWorkSheet = function (data, next) {
+      var allWorksheets = data.sheets;
+      Excel.run(function (ctx) {
+        var dataCreated = false;
+        var dataSheetName = 'Jobcost-90'
+        
+        _.forEach(data.sheets.items, function (sheet) {
+          if(sheet.name == dataSheetName)
+            dataCreated = true;
+        });
+
+        return ctx.sync()
+          .then(function (response) {
+            data.dataSheetName = dataSheetName;
+            data.dataCreated = dataCreated;
+            next(null, data);
+          }).catch(function (err) {
+            next(err);
+          });
+      });
+    }
+
+    var initalizeWorkSheet = function (data, next) {
+      if(!data.dataCreated){
+        Excel.run(function (ctx) {
+          var worksheets = ctx.workbook.worksheets;
+          var worksheet = worksheets.add();
+          worksheet.name = data.dataSheetName;
+          worksheet.load("name, position");
+
+          worksheet.activate();
+
+        return ctx.sync()
+          .then(function () {
+            next(null, data);
+          }).catch(function (err) {
+            next(err);
+          });
+        });
+      } else next(null, data);
+    }
+
+    var hideRows = function (data, next) {
+      Excel.run(function (ctx) {
+        var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+        
+        var fullrange = worksheet.getRange('A1:Z1000');
+        fullrange.rowHidden = false;
+
+        _.forEach(data.hiddenRows, function (rowKey) {
+          //var rangeString = 'A'+(parseInt(rowKey)+1)+':Z'+(parseInt(rowKey)+2)
+          var range = worksheet.getRange(rowKey);
+          range.rowHidden = true;
+        });
+
+        return ctx.sync()
+          .then(function () {
+            next(null, data);
+          }).catch(function (err) {
+            next({err: err, stage: 'hideRows'});
+          });
+      });
+    };
+
+    var insertDataToWorkSheet = function (data, next) {
+      Excel.run(function (ctx) {
+        var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+        var range = 'O';
+        var alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+        if (data.sheetData.length > 0)
+          var alphabetRangeValue = alphabet[data.sheetData[0].length-1];
+
+        var fullrange = worksheet.getRange();
+        fullrange.load('values');
+        fullrange.clear();
+
+        var range = worksheet.getRange('A1:' + alphabetRangeValue + data.sheetData.length)
+        range.load('values')
+        range.values = data.sheetData
+        range.format.autofitColumns()
+        return ctx.sync()
+          .then(function (res) {
+            next(null, data)
+          }).catch(function (err) {
+            next({err: err, stage: 'insertHttpDataIntoSpreadSheet'});
+          })
+      });
+    }
   }
 ]);

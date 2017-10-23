@@ -159,9 +159,24 @@ app.controller('jobcostCtrl', [
 
       jobcostService.getSheetData(rType, month, year, dKey, cKey, pKey, jKey)
       .then(function (data) {
-        console.log(data);
+        try {
+          data.scope = $scope;
+          jobcostService.insertSpreadSheetData(data, function(err, response){
+            if (err) {
+              /*
+              $scope.$apply(function () {
+                $scope.debugMessage = JSON.stringify(err);
+              })
+              */  
+            } else {
+              //$scope.debugMessage = 'DONE';
+            }
+          });
+        } catch (e) {
+          console.log(data);
+        }
       });
-    }
+    };
 
     buildPage();
   }]);

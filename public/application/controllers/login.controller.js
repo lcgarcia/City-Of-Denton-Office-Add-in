@@ -114,6 +114,7 @@ app.controller('loginCtrl', [
 
 		var stateObject = {type:'a', data:{user:$scope.user}};
 		$state.go("setup.budget", stateObject);
+    //$state.go('setup.jobcost', {type: '', data:{user:$scope.user}})
 	}
 
 	buildPage();

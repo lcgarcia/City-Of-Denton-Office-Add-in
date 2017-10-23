@@ -4,6 +4,7 @@ const async = require('async');
 const router = express.Router()
 const Generator = require('../lib/JobCostSQLGenerator')
 const oracleQuery = require('../lib/OracleQuery')
+const knexQuery = require('../lib/KnexQuery')
 const dataFormater = require('../lib/DataFormater')
 
 router.get('/ui/data', (req, res) => {
@@ -13,7 +14,7 @@ router.get('/ui/data', (req, res) => {
   const queries = {};
   _.forEach(sqlData, (sql, key) => {
     queries[key] = (next) => {
-      oracleQuery.query(sql)
+      knexQuery.query(sql)
       .then(result => {
         next(null, result)
       }).catch(err => {
@@ -21,6 +22,7 @@ router.get('/ui/data', (req, res) => {
       });
     };
   });
+
   async.parallel(queries, (err, results) => {
     if (err) res.send({err: err});
     else res.send(results);
@@ -58,7 +60,8 @@ router.post('/sheet/data', (req, res) => {
 
   const sql = generator.createSelectStatement(req.body.month, req.body.year, options);
 
-  oracleQuery.jobSheetDataQuery(sql)
+  //oracleQuery.jobSheetDataQuery(sql)
+  knexQuery.jobSheetDataQuery(sql)
   .then(result => res.send(result))
   .catch(err => res.send(err));
 });
@@ -67,7 +70,7 @@ router.get('/departments', (req, res) => {
   var generator = new Generator({ type: req.query.type || '' })
   var sqlData = generator.getUIData();
 
-  oracleQuery.query(sqlData.departments)
+  knexQuery.query(sqlData.departments)
   .then(result => res.send(result))
   .catch(err => res.send(err))
 });
@@ -77,7 +80,7 @@ router.get('/companies/:department', (req, res) => {
   // The type does not matter here but you can included it if you would like
   var generator = new Generator({ type: req.query.type || '' });
 
-  oracleQuery.query(generator.getCompanySelections(req.params.department))
+  knexQuery.query(generator.getCompanySelections(req.params.department))
   .then(result => res.send(result))
   .catch(err => res.send(err))
 });
@@ -87,7 +90,7 @@ router.get('/project/:department/:company', (req, res) => {
   // you must specify a report type unless it is blank
   var generator = new Generator({ type: req.query.type || '' });
 
-  oracleQuery.query(generator.getProjectSelections(req.params.department, req.params.company))
+  knexQuery.query(generator.getProjectSelections(req.params.department, req.params.company))
   .then(result => res.send(result))
   .catch(err => res.send(err))
 });
@@ -97,7 +100,7 @@ router.get('/:department/:company/:project', (req, res) => {
   var generator = new Generator({ type: req.query.type || '' });
   const jobStatus = req.query.jobstatus || '';
 
-  oracleQuery.query(generator.getJobSelections(req.params.department, req.params.company, req.params.project, jobStatus))
+  knexQuery.query(generator.getJobSelections(req.params.department, req.params.company, req.params.project, jobStatus))
   .then(result => res.send(result))
   .catch(err => res.send(err))
 });
@@ -106,7 +109,7 @@ router.get('/code/detail/:department/:company/:project/:status/:job/:catcode', (
   const generator = new Generator({ type: req.query.type || '' });
   const sql = generator.getCadeCodeDetail(req.params.department, req.params.company, req.params.project, req.params.status, req.params.job, req.params.catcode);
 
-  oracleQuery.query(sql)
+  knexQuery.query(sql)
   .then(result => res.send(result))
   .catch(err => res.send(err));
 });
