@@ -197,6 +197,7 @@ app.controller('jobcost2Ctrl', [
       var jKey = $scope.selectedValues.job.key;
       var ccKey = $scope.selectedValues.optional.cat2.key;
 
+      $scope.showReportDetails = true;
       modalService.showDataLoadingModal();
       jobcostService.getCatCodeDescription(rType, dKey, cKey, pKey, jsKey, jKey, ccKey).then(function(data){
         $scope.filteredCC2Descriptions = [];

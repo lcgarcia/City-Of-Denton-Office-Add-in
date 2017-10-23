@@ -14,5 +14,20 @@ app.service("modalService", [
 	      $('#quickLoad').modal('hide');
 	   }
 
+	   this.showReportLoadingModal = function() {
+	      $('#loadModal').modal({
+	        backdrop: 'static',
+	        show: true
+	      });
+	   }
+
+	   this.hideReportLoadingModal = function() {
+	      $('#loadModal').modal('hide');
+	      $('body').removeClass('modal-open');
+	      $('.modal-backdrop').remove();
+
+	      $("#collapse1").collapse('hide');
+	    }
+
 	}
 ]);
