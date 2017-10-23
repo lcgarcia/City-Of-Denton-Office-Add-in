@@ -156,6 +156,7 @@ app.service("jobcostService", [
           initalizeWorkSheet,
           hideRows,
           insertDataToWorkSheet,
+          setSubTotalFormat,
         ], cb);
       } catch (e) {
         cb(e);
@@ -229,9 +230,8 @@ app.service("jobcostService", [
         var fullrange = worksheet.getRange('A1:Z1000');
         fullrange.rowHidden = false;
 
-        _.forEach(data.hiddenRows, function (rowKey) {
-          //var rangeString = 'A'+(parseInt(rowKey)+1)+':Z'+(parseInt(rowKey)+2)
-          var range = worksheet.getRange(rowKey);
+        _.forEach(data.hiddenRows, function (rowData) {
+          var range = worksheet.getRange(rowData.range);
           range.rowHidden = true;
         });
 
@@ -262,11 +262,36 @@ app.service("jobcostService", [
         range.format.autofitColumns()
         return ctx.sync()
           .then(function (res) {
-            next(null, data)
+            next(null, data);
           }).catch(function (err) {
             next({err: err, stage: 'insertHttpDataIntoSpreadSheet'});
-          })
+          });
       });
-    }
+    };
+
+    var setSubTotalFormat = function (data, next) {
+      Excel.run(function (ctx) {
+        var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+
+        _.forEach(data.subTotalRows, function (val) {
+          var numberRange = worksheet.getRange('E'+val+':K'+val);
+          var range = worksheet.getRange('A'+val+':Z'+val);
+          range.format.font.color = 'blue';
+          range.format.font.bold = true;
+          var format = '_($* #,##0.00_);[Red]_($* (#,##0.00);_($* "-"??_);_(@_)';
+          numberRange.numberFormat = [_.fill(Array(7), format)];
+        });
+
+        var range = worksheet.getRange('E1:K' + data.sheetData.length)
+        range.format.columnWidth = 85;
+
+        return ctx.sync()
+          .then(function (res) {
+            next(null, data);
+          }).catch(function (err) {
+            next({err: err, stage: 'setSubTotalColor'});
+          });
+      })
+    };
   }
 ]);

@@ -1,7 +1,4 @@
-
 <main class="ms-welcome__main" ng-controller="setupCtrl as home">
-
-
 
 <div id="mainReport" class="panel-group" style="margin: 0; height: 100%; display: grid;">
    <div class="panel panel-default panel-main">
@@ -28,6 +25,7 @@
 
 
    <!-- *************** REPORT DEATILS START *************** -->
+      <!-- *************** HARVEST START *************** -->
       <!-- HIDEN DATE RANGE FOR HARVEST -->
       <span style="margin:20px 0; display:none">
          <div class="input-group input-daterange" id="datepicker">
@@ -38,8 +36,8 @@
       </span>
       <!-- HIDEN DATE RANGE FOR HARVEST End-->
 
-      <!-- Data Run -->
-      <div class="panel-group">
+      <!-- HARVEST Data Run -->
+      <div class="panel-group" style="display:none">
          <div class="panel-run">
             <button style="height: 40px; font-size: 18px;" type="button" class="btn btn-info btn-block" ng-click="runData()" 
             data-toggle="modal" data-target="#modalLoad">
@@ -48,11 +46,13 @@
          </div>
       </div>
       <p>{{debugMessage}}</p>
+      <!-- HARVEST Data Run -->
+      <!-- *************** HARVEST END *************** -->
 
 
       <!-- Panel Report Deatils Start-->
-      <div class="panel-group" style="min-width: 200px" ng-show="showReportDetails">
-         <div class="panel panel-default" style="width:100%; max-width:300px;">
+      <div class="panel-group" ng-show="showReportDetails">
+         <div class="panel panel-default" style="width:100%;">
             <div class="panel-heading">
                <h4 class="panel-title">
                   <a data-toggle="collapse" href="#collapse10" aria-expanded="true">
@@ -84,31 +84,31 @@
 
 
 <!-- *************** MODALS START *************** -->
-   <!-- Modal 1-->
-   <div id="loadModal" class="modal fade" role="dialog" data-dismiss="loadModal">
-      <div class="modal-dialog">
-         <!-- Modal content-->
-         <div class="center-div">
-            <div class="loader"></div>
-            <h2 class="modal-title">
-               <span class="label">{{ modalLoad.msg }}</span>
-            </h2>
-         </div>
+<!-- Modal 1-->
+<div id="loadModal" class="modal fade" role="dialog" data-dismiss="loadModal">
+   <div class="modal-dialog">
+      <!-- Modal content-->
+      <div class="center-div">
+         <div class="loader"></div>
+         <h2 class="modal-title" style="margin-left: -20px;">
+            <span class="label">Loading Data...</span>
+         </h2>
       </div>
    </div>
-   <!-- Modal 1 End-->
+</div>
+<!-- Modal 1 End-->
 
 
-   <!-- Modal 2-->
-   <div id="quickLoad" class="modal fade">
-      <div class="modal-dialog">
-         <!-- Modal content-->
-         <div class="center-div">
-            <div class="loader-data"></div>
-         </div>
+<!-- Modal 2-->
+<div id="quickLoad" class="modal fade">
+   <div class="modal-dialog">
+      <!-- Modal content-->
+      <div class="center-div">
+         <div class="loader-data"></div>
       </div>
    </div>
-   <!-- Modal 2 End-->
+</div>
+<!-- Modal 2 End-->
 <!-- *************** MODALS END *************** -->
 
 

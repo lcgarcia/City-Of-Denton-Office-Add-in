@@ -97,23 +97,6 @@ app.controller('setupCtrl', [
       getData();
     }
 
-    $scope.showLoadingModal = function(msg) {
-      $scope.modalLoad.msg = msg;
-      
-      $('#loadModal').modal({
-        backdrop: 'static',
-        show: true
-      });
-    }
-
-    $scope.hideLoadingModal = function() {
-      $('#loadModal').modal('hide');
-      $('body').removeClass('modal-open');
-      $('.modal-backdrop').remove();
-
-      $("#collapse1").collapse('hide');
-    }
-
     this.showClientDetail = function (clientKey) {
       $scope.data = $scope.test;
       Excel.run(function (ctx) {
@@ -176,7 +159,7 @@ app.controller('setupCtrl', [
      * Step 0: Execute our chain of commands
      */
     var getData = function () {
-      //$scope.showSpinner = true;
+      /*
       $scope.showLoadingModal("Loading...");
       async.waterfall([
         getHttpData,
@@ -188,12 +171,12 @@ app.controller('setupCtrl', [
         insertHttpDataIntoSpreadSheet,
         hideSpinner
       ])
+      */
       $scope.showReportDetails = true;
     }
 
     this.getActiveSheet = function () {
       //$scope.showSpinner = true;
-      $scope.showLoadingModal("Loading...");
       async.waterfall([
         getHttpData,
         loadWorkSheets,

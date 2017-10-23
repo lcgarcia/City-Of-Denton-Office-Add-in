@@ -8,7 +8,7 @@
          </h4>
       </div>
       <div id="collapse1" class="panel-collapse collapse in" aria-expanded="true">
-         <div class="panel-group" style="margin-bottom:0">
+         <div class="panel-group" style="margin-bottom:0; margin-left: 0.5px;">
             <div class="panel panel-default">
                <!-- Panel 1.1 Start-->
                <div class="panel-heading child" style="border-top: 0;" data-toggle="collapse" data-target="#collapse1_1" aria-expanded="true">
@@ -185,17 +185,75 @@
             </div>
          </div>
       </div>
+
+      <!-- Panel Run Start-->
+      <div class="panel-run">
+         <button type="button" class="btn btn-info btn-block btn-run" ng-click="getJobData()" 
+         data-toggle="modal" data-target="#modalLoad">
+            Run Report
+         </button>
+      </div>
+      <p>{{debugMessage}}</p>
+      <!-- Panel Run End-->
    </div>
 </div>
-<div class="panel-group">
-   <div class="panel-run">
-      <button style="height: 40px; font-size: 18px;" type="button" class="btn btn-info btn-block" ng-click="getJobData()" 
-      data-toggle="modal" data-target="#modalLoad">
-         Run Report
-      </button>
-   </div>
-</div>
-<p>{{debugMessage}}</p>
 <!-- Panel 1 End--> 
+
+<!-- Panel Report Deatils Start--> 
+<div class="panel-group" style="margin-bottom:0; margin-left: 0.5px;" ng-show="showReportDetails">
+   <div class="panel panel-default panel-report">
+      <div class="panel-heading" style="border-top: 0;">
+         <h4 class="panel-title">        
+            Report Details
+         </h4>
+      </div>
+      <div class="panel-body">
+         <div class="modal-header" style="padding: 10px 0px 0px 0px;">
+            <table width="100%;">
+               <tbody>
+               <tr>
+                  <td>
+                     <div class="panel-addon" style="border-top-left-radius: 6px;">
+                        <input type="checkbox" 
+                        style="margin: 0; margin-left: 4px; width: 16px;" 
+                        ng-model="selectedValues.data.selectAll"
+                        ng-change="selectedDataAll()"
+                        >
+                     </div>
+                  </td>
+                  <td>
+                     <input type="text" 
+                     class="searchBox" 
+                     ng-model="selectedValues.data.searchInput" 
+                     ng-keyup="searchData()"
+                     placeholder="Search.." 
+                     title="SearchField"
+                     style="border-top-right-radius: 6px;">
+                  </td>
+               </tr>
+               </tbody>
+            </table>
+         </div>
+         <div class="container scroll">
+            <ul id="myUL" style="list-style: none; width: 120%">
+               <li class="parentLi" style="margin-top: 6px;" ng-repeat="label in sheetData.hiddenRows" >
+                  <div class="parentOptions">
+                     <input id="{{'parentInput-'+ label.key}}" type="checkbox" class="parentOption" ng-model="label.selected">
+                     <label id="{{'parentLabel-'+ label.key}}"
+                        style="display: inline; font-weight: normal;">
+                        {{label.key}}
+                     </label>
+                  </div>
+               </li>
+            </ul>
+            <br>
+         </div>
+         
+         
+      </div>
+   </div>
+</div>
+<!-- Panel Report Deatils End--> 
+
 
 <!-- *************** JOBCOST REPORT END *************** -->

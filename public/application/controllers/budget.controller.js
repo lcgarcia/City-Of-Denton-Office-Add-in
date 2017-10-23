@@ -420,23 +420,6 @@ app.controller('budgetCtrl', [
       }
     }
 
-    
-
-    $scope.showLoadingModal = function(msg) {
-      $scope.modalLoad.msg = msg;
-      $('#loadModal').modal({
-        backdrop: 'static',
-        show: true
-      });
-    }
-
-    $scope.hideLoadingModal = function() {
-      $('#loadModal').modal('hide');
-      $('body').removeClass('modal-open');
-      $('.modal-backdrop').remove();
-      $("#collapse1").collapse('hide');
-    }
-
 
     $scope.hideBookModal = function() {
       $('#bookModal').modal('hide');
@@ -542,6 +525,13 @@ app.controller('budgetCtrl', [
     //Open Calendar for JDE Years
     $scope.jdeYearClick = function() {
       $("#jdeCalendar").click();
+    }
+
+
+    $scope.getJobData = function () {
+      modalService.showReportLoadingModal();
+      modalService.hideReportLoadingModal();
+      $scope.showReportDetails = true;
     }
 
     buildPage();
