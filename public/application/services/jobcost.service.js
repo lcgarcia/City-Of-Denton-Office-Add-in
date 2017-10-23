@@ -256,15 +256,21 @@ app.service("jobcostService", [
         fullrange.load('values');
         fullrange.clear();
 
-        var range = worksheet.getRange('A1:' + alphabetRangeValue + data.sheetData.length)
+        var headerOffset = 6;
+        var sheetLength = data.sheetData.length + headerOffset - 1;
+        var range = worksheet.getRange('A' + headerOffset + ':' + alphabetRangeValue + sheetLength)
         range.load('values')
         range.values = data.sheetData
         range.format.autofitColumns()
+
+        var numberRange = worksheet.getRange('E' + headerOffset + ':' + alphabetRangeValue + sheetLength)
+        var format = '_($* #,##0.00_);_($* (#,##0.00);_($* "-"??_);_(@_)';
+        numberRange.numberFormat = _.fill(Array(data.sheetData.length),_.fill(Array(7), format));
         return ctx.sync()
           .then(function (res) {
             next(null, data);
           }).catch(function (err) {
-            next({err: err, stage: 'insertHttpDataIntoSpreadSheet'});
+            next({err: err, stage: 'insertHttpDataIntoSpreadSheet', len: sheetLength });
           });
       });
     };
@@ -282,7 +288,9 @@ app.service("jobcostService", [
           numberRange.numberFormat = [_.fill(Array(7), format)];
         });
 
-        var range = worksheet.getRange('E1:K' + data.sheetData.length)
+        var headerOffset = 6;
+        var sheetLength = data.sheetData.length + headerOffset - 1;
+        var range = worksheet.getRange('E' + headerOffset + ':K' + sheetLength)
         range.format.columnWidth = 85;
 
         return ctx.sync()
