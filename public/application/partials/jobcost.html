@@ -218,6 +218,7 @@
                         style="margin: 0; margin-left: 4px; width: 16px; cursor: pointer;" 
                         ng-model="selectedValues.data.selectAll"
                         ng-change="selectedDataAll()"
+                        ng-click="toggleAllRows(selectedValues.data.selectAll)"
                         >
                      </div>
                   </td>
@@ -238,7 +239,7 @@
             <ul id="myUL" style="list-style: none; width: 120%">
                <li class="parentLi" style="margin-top: 6px;" ng-repeat="label in sheetData.hiddenRows" >
                   <div class="parentOptions">
-                     <input id="{{'parentInput-'+ label.key}}" type="checkbox" ng-model="label.selected" style="cursor: pointer;">
+                     <input id="{{'parentInput-'+ label.key}}" type="checkbox" ng-model="label.selected" ng-click="toggleRow(label)" style="cursor: pointer;">
                      <label id="{{'parentLabel-'+ label.key}}"
                         style="display: inline; font-weight: normal;">
                         {{label.key}}

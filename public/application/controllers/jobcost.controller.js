@@ -182,7 +182,40 @@ app.controller('jobcostCtrl', [
           li[i].style.display = "none";
         }
       }
+    };
+
+    $scope.toggleAllRows = function (show) {
+      Excel.run(function (ctx) {
+        var worksheet = ctx.workbook.worksheets.getItem('Jobcost-90');
+
+        _.forEach($scope.sheetData.hiddenRows, function (row) {
+          var range = worksheet.getRange(row.range);
+          range.rowHidden = !show;
+        });
+
+        return ctx.sync()
+          .then(function () {}).catch(function (err) {
+            $scope.$apply(function () {
+              $scope.debugMessage = err;
+            });
+          });
+      });
     }
+
+    $scope.toggleRow = function (label) {
+      Excel.run(function (ctx) {
+        var worksheet = ctx.workbook.worksheets.getItem('Jobcost-90');
+        var range = worksheet.getRange(label.range);
+        range.rowHidden = !label.selected;
+
+        return ctx.sync()
+          .then(function () {}).catch(function (err) {
+            $scope.$apply(function () {
+              //$scope.debugMessage = err;
+            });
+          });
+      });
+    };
 
     $scope.getJobData = function () {
       var rType = $scope.selectedValues.report.type;
