@@ -112,6 +112,7 @@ app.service("jobcostService", [
         company: companyKey,
         project: projectKey,
         job: jobKey,
+        projectList: options.projects, 
       };
 
       if (type === 'new' || type === 'ka') {
@@ -264,9 +265,9 @@ app.service("jobcostService", [
         range.values = data.sheetData
         range.format.autofitColumns()
 
-        var numberRange = worksheet.getRange('E' + headerOffset + ':' + alphabetRangeValue + sheetLength)
+        var numberRange = worksheet.getRange('G' + headerOffset + ':' + alphabetRangeValue + sheetLength)
         var format = '_($* #,##0.00_);_($* (#,##0.00);_($* "-"??_);_(@_)';
-        numberRange.numberFormat = _.fill(Array(data.sheetData.length),_.fill(Array(7), format));
+        numberRange.numberFormat = _.fill(Array(data.sheetData.length),_.fill(Array(5), format));
         return ctx.sync()
           .then(function (res) {
             next(null, data);
@@ -292,7 +293,7 @@ app.service("jobcostService", [
         var headerOffset = 6;
         var sheetLength = data.sheetData.length + headerOffset - 1;
         var range = worksheet.getRange('E' + headerOffset + ':K' + sheetLength)
-        range.format.columnWidth = 85;
+        range.format.columnWidth = 110;
 
         return ctx.sync()
           .then(function (res) {
@@ -309,7 +310,7 @@ app.service("jobcostService", [
 
         var header = [
           ['', '', '', 'City of Denton - Job Cost Summary', '', '', 'Dept:', data.scope.selectedValues.department.name, 'Month:', data.scope.selectedValues.dates.monthStart, ''],
-          ['', '', '', 'Date Run', '', '', 'Company:', data.scope.selectedValues.company.name, 'JDE Fiscal Year:', data.scope.selectedValues.dates.jdeFiscalYear, ''],
+          ['', '', '', 'Date Run', '', '', 'Company:', data.scope.selectedValues.company.name, 'JDE Fiscal Year:', data.scope.selectedValues.dates.jdeYear + ' - ' + (parseInt(data.scope.selectedValues.dates.jdeYear)+1), ''],
           ['', '', '', 'Unaudited/Unofficial-Not intended for public distribution', '', '', 'Project:', data.scope.selectedValues.project.name, 'Layout:', 'Cost Code/Type Details', ''],
           ['', '', '', '', '', '', 'Job:', data.scope.selectedValues.job.name, '', '', ''],
           ["Dept", "Company", "Project", "Bus Unit", "Object", "Subsidary", "Budget", "Expendatures", "Remaining", "Encumbrances", "Unencumbered"]
@@ -350,6 +351,9 @@ app.service("jobcostService", [
         var fullSheetRange = worksheet.getRange('A1:K' + sheetLength);
         fullSheetRange.load('values');
         fullSheetRange.format.autofitColumns();
+
+        var gCol = worksheet.getRange('G1:G' + sheetLength);
+        gCol.format.columnWidth = 110;
 
         return ctx.sync()
           .then(function (res) {

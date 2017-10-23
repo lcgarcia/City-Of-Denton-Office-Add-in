@@ -228,7 +228,7 @@ app.controller('jobcostCtrl', [
 
       
       modalService.showReportLoadingModal();
-      jobcostService.getSheetData(rType, month, year, dKey, cKey, pKey, jKey)
+      jobcostService.getSheetData(rType, month, year, dKey, cKey, pKey, jKey, { projects: $scope.filteredProject })
       .then(function (data) {
         try {
           _.forEach(data.hiddenRows, function(child) {
