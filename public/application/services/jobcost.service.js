@@ -230,8 +230,8 @@ app.service("jobcostService", [
         fullrange.rowHidden = false;
 
         _.forEach(data.hiddenRows, function (rowKey) {
-          var rangeString = 'A'+(parseInt(rowKey)+1)+':Z'+(parseInt(rowKey)+2)
-          var range = worksheet.getRange(rangeString);
+          //var rangeString = 'A'+(parseInt(rowKey)+1)+':Z'+(parseInt(rowKey)+2)
+          var range = worksheet.getRange(rowKey);
           range.rowHidden = true;
         });
 
