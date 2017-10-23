@@ -279,13 +279,6 @@
 
 
 /*TABS*/
-
-p {
-  margin: 0 0 20px;
-  line-height: 1.5;
-}
-
-
 .tab-panel {
   display: none;
   border-top: 1px solid #ddd;
@@ -300,7 +293,8 @@ p {
   display: inline-block;
   margin: 0 0 -1px;
   padding: 15px;
-  width: 130px;
+  width: 100%;
+  min-width: 132px;
   height: 50px;
   text-align: center;
   color: #333;
@@ -308,9 +302,17 @@ p {
   border-bottom: 1px solid #ddd;
   border-right: 1px solid #ddd;
 }
-.tab-td{
 
+.tab-three{
+  float: left;
+  width: 33.3%;
 }
+
+.tab-two{
+  float: left;
+  width: 50%;
+}
+
 .tab-label.last{
   border-right:0;
 }
@@ -326,7 +328,7 @@ p {
   background-color: #ffffff;
   margin-bottom: -2px;
   border-bottom: 0;
-  box-shadow: -1px -3px 2px 1px #5bc0de;
+  box-shadow: -1px -4px 2px 1px #5bc0de;
 }
 
 

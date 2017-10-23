@@ -46,6 +46,7 @@ app.controller('jobcost2Ctrl', [
     $(document).ready(function(){
       //Enables popup help boxes over labels
       $('[data-toggle="popover"]').popover();
+      $("#content1").show();
     });
 
     function buildPage(){
@@ -106,6 +107,22 @@ app.controller('jobcost2Ctrl', [
 
         modalService.hideDataLoadingModal();
       });
+    }
+
+
+    $scope.displayTab = function(tab){
+      $("#content1").hide();
+      $("#content2").hide();
+      $("#content3").hide();
+      if(tab == 'tab1'){
+        $("#content1").show();
+      }
+      else if(tab == 'tab2'){
+        $("#content2").show();
+      }
+      else if(tab == 'tab3'){
+        $("#content3").show();
+      }
     }
 
     $scope.selectedDepartment = function(){

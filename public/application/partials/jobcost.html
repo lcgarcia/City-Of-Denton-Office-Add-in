@@ -10,13 +10,23 @@
       <div id="collapse1" class="panel-collapse collapse in" aria-expanded="true">
          <div class="panel-group" style="margin-bottom:0; margin-left: 0.5px;">
             <div class="panel panel-default">
+               <table style="width: 100%;">
+               <tbody>
+                  <tr>
+                     <td class="tab-two">
+                        <input class="tab-input" id="tab1" type="radio" name="tabs" checked ng-click="displayTab('tab1')">
+                        <label class="tab-label" for="tab1">Report Details</label>
+                     </td>
+                     <td class="tab-two">
+                        <input class="tab-input" id="tab2" type="radio" name="tabs" ng-click="displayTab('tab2')">
+                        <label class="tab-label" for="tab2">Report Period</label>
+                     </td>
+                  </tr>
+               </tbody>
+               </table>
+
                <!-- Panel 1.1 Start-->
-               <div class="panel-heading child" style="border-top: 0;" data-toggle="collapse" data-target="#collapse1_1" aria-expanded="true">
-                  <h4 class="panel-title">
-                     Select Report Details
-                  </h4>
-               </div>
-               <div id="collapse1_1" class="panel-collapse collapse in" aria-expanded="true">
+               <div class="tab-panel" id="content1">
                   <div class="panel-body">
                      <!-- Department Start -->
                      <section >
@@ -130,12 +140,7 @@
                <!-- Panel 1.1 End-->
 
                <!-- Panel 1.2 Start-->
-               <div class="panel-heading child" data-toggle="collapse" data-target="#collapse1_2">
-                  <h4 class="panel-title">
-                     Select Period for Report
-                  </h4>
-               </div>
-               <div id="collapse1_2" class="panel-collapse collapse">
+               <div class="tab-panel" id="content2">
                   <div class="panel-body">
                      <label>
                         <a class="details" data-toggle="popover" data-trigger="hover"
