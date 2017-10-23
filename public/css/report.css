@@ -30,7 +30,7 @@
 }
 
 .panel-report{
-  min-width: 200px; 
+  min-width: 250px; 
   max-width:400px;
 }
 
@@ -292,9 +292,9 @@
 .tab-label {
   display: inline-block;
   margin: 0 0 -1px;
-  padding: 15px;
+  padding: 5px 15px;
   width: 100%;
-  min-width: 132px;
+  min-width: 100px;
   height: 50px;
   text-align: center;
   color: #333;
