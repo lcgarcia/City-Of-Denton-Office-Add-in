@@ -112,6 +112,7 @@ app.service("jobcostService", [
         company: companyKey,
         project: projectKey,
         job: jobKey,
+        projectList: options.projects, 
       };
 
       if (type === 'new' || type === 'ka') {
@@ -157,6 +158,7 @@ app.service("jobcostService", [
           hideRows,
           insertDataToWorkSheet,
           setSubTotalFormat,
+          setHeader,
         ], cb);
       } catch (e) {
         cb(e);
@@ -256,15 +258,21 @@ app.service("jobcostService", [
         fullrange.load('values');
         fullrange.clear();
 
-        var range = worksheet.getRange('A1:' + alphabetRangeValue + data.sheetData.length)
+        var headerOffset = 6;
+        var sheetLength = data.sheetData.length + headerOffset - 1;
+        var range = worksheet.getRange('A' + headerOffset + ':' + alphabetRangeValue + sheetLength)
         range.load('values')
         range.values = data.sheetData
         range.format.autofitColumns()
+
+        var numberRange = worksheet.getRange('G' + headerOffset + ':' + alphabetRangeValue + sheetLength)
+        var format = '_($* #,##0.00_);_($* (#,##0.00);_($* "-"??_);_(@_)';
+        numberRange.numberFormat = _.fill(Array(data.sheetData.length),_.fill(Array(5), format));
         return ctx.sync()
           .then(function (res) {
             next(null, data);
           }).catch(function (err) {
-            next({err: err, stage: 'insertHttpDataIntoSpreadSheet'});
+            next({err: err, stage: 'insertHttpDataIntoSpreadSheet', len: sheetLength });
           });
       });
     };
@@ -282,8 +290,10 @@ app.service("jobcostService", [
           numberRange.numberFormat = [_.fill(Array(7), format)];
         });
 
-        var range = worksheet.getRange('E1:K' + data.sheetData.length)
-        range.format.columnWidth = 85;
+        var headerOffset = 6;
+        var sheetLength = data.sheetData.length + headerOffset - 1;
+        var range = worksheet.getRange('E' + headerOffset + ':K' + sheetLength)
+        range.format.columnWidth = 110;
 
         return ctx.sync()
           .then(function (res) {
@@ -292,6 +302,66 @@ app.service("jobcostService", [
             next({err: err, stage: 'setSubTotalColor'});
           });
       })
+    };
+
+    var setHeader = function (data, next) {
+      Excel.run(function (ctx) {
+        var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+
+        var header = [
+          ['', '', '', 'City of Denton - Job Cost Summary', '', '', 'Dept:', data.scope.selectedValues.department.name, 'Month:', data.scope.selectedValues.dates.monthStart, ''],
+          ['', '', '', 'Date Run', '', '', 'Company:', data.scope.selectedValues.company.name, 'JDE Fiscal Year:', data.scope.selectedValues.dates.jdeYear + ' - ' + (parseInt(data.scope.selectedValues.dates.jdeYear)+1), ''],
+          ['', '', '', 'Unaudited/Unofficial-Not intended for public distribution', '', '', 'Project:', data.scope.selectedValues.project.name, 'Layout:', 'Cost Code/Type Details', ''],
+          ['', '', '', '', '', '', 'Job:', data.scope.selectedValues.job.name, '', '', ''],
+          ["Dept", "Company", "Project", "Bus Unit", "Object", "Subsidary", "Budget", "Expendatures", "Remaining", "Encumbrances", "Unencumbered"]
+        ];
+
+        var range = worksheet.getRange('A1:K5');
+        range.load('values');
+        range.values = header;
+
+        var titleSection = worksheet.getRange('D1:D2');
+        titleSection.format.font.color = '#174888';
+
+        var titleCell = worksheet.getRange('D1');
+        titleCell.format.font.bold = true;
+
+
+        var infoCell = worksheet.getRange('D3');
+        infoCell.format.font.color = 'red';
+        infoCell.format.font.italic = true;
+
+        var reportheaders = worksheet.getRange('G1:G4');
+        reportheaders.format.font.color = '#174888';
+        reportheaders.format.font.bold = true;
+
+        var reportRangeHeader = worksheet.getRange('I1:I4');
+        reportRangeHeader.format.font.color = '#174888';
+        reportRangeHeader.format.font.bold = true;
+
+        var tableHeader = worksheet.getRange('A5:K5');
+        tableHeader.format.fill.color = '#174888';
+        tableHeader.format.font.color = 'white';
+
+        var leftColumns = worksheet.getRange('A:C');
+        leftColumns.format.horizontalAlignment = 'Center';
+
+        var headerOffset = 6;
+        var sheetLength = data.sheetData.length + headerOffset - 1;
+        var fullSheetRange = worksheet.getRange('A1:K' + sheetLength);
+        fullSheetRange.load('values');
+        fullSheetRange.format.autofitColumns();
+
+        var gCol = worksheet.getRange('G1:G' + sheetLength);
+        gCol.format.columnWidth = 110;
+
+        return ctx.sync()
+          .then(function (res) {
+            next(null, {header: header});
+          }).catch(function (err) {
+            next({err: err, stage: 'setHeader', range: 'A1:K' + sheetLength, header: header});
+          });
+      });
     };
   }
 ]);

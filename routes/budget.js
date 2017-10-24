@@ -43,11 +43,12 @@ router.post('/sheet/data', (req, res) => {
         id: key
       }
     }
-  })
+  });
   
   const queries = {};
   _.forEach(querySets, data => {
     queries[data.id] = (next) => {
+      console.log(data.sql);
       knexQuery.query(data.sql)
       .then(result => {
         next(null, result)

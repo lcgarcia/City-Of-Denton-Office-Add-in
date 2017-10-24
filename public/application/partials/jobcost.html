@@ -205,7 +205,7 @@
 <!-- Panel 1 End--> 
 
 <!-- Panel Report Deatils Start--> 
-<div class="panel-group" style="margin-bottom:0; margin-left: 0.5px;" ng-show="showReportDetails">
+<div class="panel-group" style="margin-bottom:0; margin-left: 0.5px;" ng-show="sheetData.hiddenRows && sheetData.hiddenRows.length > 0">
    <div class="panel panel-default panel-report">
       <div class="panel-heading" style="border-top: 0;">
          <h4 class="panel-title">        
@@ -223,6 +223,7 @@
                         style="margin: 0; margin-left: 4px; width: 16px; cursor: pointer;" 
                         ng-model="selectedValues.data.selectAll"
                         ng-change="selectedDataAll()"
+                        ng-click="toggleAllRows(selectedValues.data.selectAll)"
                         >
                      </div>
                   </td>
@@ -243,7 +244,7 @@
             <ul id="myUL" style="list-style: none; width: 120%">
                <li class="parentLi" style="margin-top: 6px;" ng-repeat="label in sheetData.hiddenRows" >
                   <div class="parentOptions">
-                     <input id="{{'parentInput-'+ label.key}}" type="checkbox" ng-model="label.selected" style="cursor: pointer;">
+                     <input id="{{'parentInput-'+ label.key}}" type="checkbox" ng-model="label.selected" ng-click="toggleRow(label)" style="cursor: pointer;">
                      <label id="{{'parentLabel-'+ label.key}}"
                         style="display: inline; font-weight: normal;">
                         {{label.key}}

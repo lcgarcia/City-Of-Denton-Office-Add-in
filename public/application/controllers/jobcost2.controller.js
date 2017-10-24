@@ -241,7 +241,57 @@ app.controller('jobcost2Ctrl', [
       $("#jdeCalendar").click();
     }
 
-    
+    $scope.getJobData = function () {
+      var rType = $scope.selectedValues.report.type;
+      var dKey = $scope.selectedValues.department.key;
+      var cKey = $scope.selectedValues.company.key;
+      var pKey = $scope.selectedValues.project.key;
+      var jKey = $scope.selectedValues.job.key;
+      var year = $scope.selectedValues.dates.jdeYear;
+      var month = $scope.selectedValues.dates.monthStart;
+      var jobStatus = $scope.selectedValues.jobStatus.key;
+      var catField = $scope.selectedValues.optional.cat1.key;
+      var catField1 = $scope.selectedValues.optional.cat1Description.key;
+      var catCode = $scope.selectedValues.optional.cat2.key;
+      var catCode1 = $scope.selectedValues.optional.cat2Description.key;
+
+      var options = {
+        projects: $scope.filteredProject,
+        jobStatus: jobStatus,
+        catField: catField,
+        catField1: catField1,
+        catCode: catCode,
+        catCode1: catCode1
+      }
+
+      
+      modalService.showReportLoadingModal();
+      jobcostService.getSheetData(rType, month, year, dKey, cKey, pKey, jKey, options)
+      .then(function (data) {
+        try {
+          _.forEach(data.hiddenRows, function(child) {
+            child.selected = false;
+          });
+          $scope.sheetData = data;
+          data.scope = $scope;
+          jobcostService.insertSpreadSheetData(data, function(err, response){
+            modalService.hideReportLoadingModal();
+            if (err) {
+              /*
+              $scope.$apply(function () {
+                $scope.debugMessage = err;
+              })
+              */ 
+            } else {
+              //$scope.debugMessage = 'DONE';
+            }
+          });
+        } catch (e) {
+          console.log(data);
+        }
+        
+      });
+    };
 
     
 

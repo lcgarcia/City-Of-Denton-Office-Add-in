@@ -194,7 +194,40 @@ app.controller('jobcostCtrl', [
           li[i].style.display = "none";
         }
       }
+    };
+
+    $scope.toggleAllRows = function (show) {
+      Excel.run(function (ctx) {
+        var worksheet = ctx.workbook.worksheets.getItem('Jobcost-90');
+
+        _.forEach($scope.sheetData.hiddenRows, function (row) {
+          var range = worksheet.getRange(row.range);
+          range.rowHidden = !show;
+        });
+
+        return ctx.sync()
+          .then(function () {}).catch(function (err) {
+            $scope.$apply(function () {
+              $scope.debugMessage = err;
+            });
+          });
+      });
     }
+
+    $scope.toggleRow = function (label) {
+      Excel.run(function (ctx) {
+        var worksheet = ctx.workbook.worksheets.getItem('Jobcost-90');
+        var range = worksheet.getRange(label.range);
+        range.rowHidden = !label.selected;
+
+        return ctx.sync()
+          .then(function () {}).catch(function (err) {
+            $scope.$apply(function () {
+              //$scope.debugMessage = err;
+            });
+          });
+      });
+    };
 
     $scope.getJobData = function () {
       var rType = $scope.selectedValues.report.type;
@@ -207,7 +240,7 @@ app.controller('jobcostCtrl', [
 
       
       modalService.showReportLoadingModal();
-      jobcostService.getSheetData(rType, month, year, dKey, cKey, pKey, jKey)
+      jobcostService.getSheetData(rType, month, year, dKey, cKey, pKey, jKey, { projects: $scope.filteredProject })
       .then(function (data) {
         try {
           _.forEach(data.hiddenRows, function(child) {
@@ -216,23 +249,19 @@ app.controller('jobcostCtrl', [
           $scope.sheetData = data;
           data.scope = $scope;
           jobcostService.insertSpreadSheetData(data, function(err, response){
+            modalService.hideReportLoadingModal();
             if (err) {
+              /*
               $scope.$apply(function () {
-                $scope.debugMessage = JSON.stringify(err);
-              }) 
+                $scope.debugMessage = err;
+              })
+              */ 
             } else {
               //$scope.debugMessage = 'DONE';
             }
           });
         } catch (e) {
           console.log(data);
-        }
-        modalService.hideReportLoadingModal();
-        if($scope.sheetData.hiddenRows && $scope.sheetData.hiddenRows.length>0){
-          $scope.showReportDetails = true;
-        }
-        else{
-          $scope.showReportDetails = false;
         }
         
       });
