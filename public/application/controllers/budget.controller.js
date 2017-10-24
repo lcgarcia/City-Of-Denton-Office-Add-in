@@ -23,7 +23,7 @@ app.controller('budgetCtrl', [
     $scope.budgetList = [];
     $scope.parentList = [];
     $scope.filteredBooks = [
-      {id:"00", name:"--Please select---", user:"default",
+      {id:"00", name:"---Select Book---", user:"default",
         selectionList:[]
       }
     ];
