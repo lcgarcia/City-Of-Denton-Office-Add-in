@@ -258,15 +258,7 @@ app.controller('jobcost2Ctrl', [
           $scope.sheetData = data;
           data.scope = $scope;
           jobcostService.insertSpreadSheetData(data, function(err, response){
-            
             modalService.hideReportLoadingModal();
-            if($scope.sheetData.hiddenRows && $scope.sheetData.hiddenRows.length>0){
-              $scope.showReportDetails = true;
-            }
-            else{
-              $scope.showReportDetails = false;
-            }
-
             if (err) {
               /*
               $scope.$apply(function () {
