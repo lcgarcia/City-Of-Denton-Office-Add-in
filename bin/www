@@ -38,7 +38,11 @@ const listening = () => {
   });
 }
 
-server.listen(port, listening);
+if (process.env.VCAP_APPLICATION) {
+  server.listen(port);
+} else {
+  server.listen(port, listening);
+}
 server.on('error', onError);
 server.on('listening', onListening);
 
