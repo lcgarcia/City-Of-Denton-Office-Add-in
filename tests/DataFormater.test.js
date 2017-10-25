@@ -10,7 +10,7 @@ describe('Data Formater', () => {
         {mcco: 'yyy', ccname: 'Blah', mcmcu: 2, mcdl01: 'Name2'},
         {mcco: 'zzz', ccname: 'Blah', mcmcu: 2, mcdl01: 'Name2'},
       ]
-      expect(dataFormater.formatBusinessUnit(testData)[0]).to.deep.equal({mcco: 'xxx', ccname: 'Blah', id: 1, name: 'Name1', childList: []});
+      expect(dataFormater.formatBusinessUnit(testData)[0]).to.deep.equal({mcco: 'xxx', ccname: 'Blah', id: 'xxx', name: 'Name1', childList: []});
     })
 
     it('shold group by mcco', () => {

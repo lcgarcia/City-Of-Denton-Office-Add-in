@@ -227,7 +227,7 @@ app.controller('jobcostCtrl', [
       var month = $scope.selectedValues.dates.monthStart;
 
       
-      modalService.showReportLoadingModal();
+      //modalService.showReportLoadingModal();
       jobcostService.getSheetData(rType, month, year, dKey, cKey, pKey, jKey, { projects: $scope.filteredProject })
       .then(function (data) {
         try {
@@ -238,15 +238,14 @@ app.controller('jobcostCtrl', [
           data.scope = $scope;
           jobcostService.insertSpreadSheetData(data, function(err, response){
             if (err) {
-              /*
               $scope.$apply(function () {
                 $scope.debugMessage = err;
               })
-              */ 
             } else {
               //$scope.debugMessage = 'DONE';
             }
           });
+          //modalService.hideDataLoadingModal();
         } catch (e) {
           console.log(data);
         }

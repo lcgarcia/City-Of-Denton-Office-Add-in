@@ -182,7 +182,7 @@
                               <div id="{{'childOptions-'+ label.id}}" aria-expanded="false" class="collapse">
                                  <ul style="list-style: none;">
                                     <li class="childLi" style="margin-left: 1em;" ng-repeat="childList in label.childList">
-                                       <input id="{{'childInput-'+ childList.id}}" type="checkbox" ng-model="childList.selected" ng-change="selectedChild(label)" style="cursor: pointer;">
+                                       <input id="{{'childInput-'+ childList.id}}" type="checkbox" ng-model="childList.selected" ng-change="selectedChild(label, childList)" style="cursor: pointer;">
                                        <label style="font-size: 12px; font-weight: normal;">
                                           {{childList.id + '-' + childList.name }}
                                        </label>
@@ -211,9 +211,11 @@
          </div>
       </div>
 
+      <p>{{debugMessage}}</p>
+
       <!-- Panel Run Start-->
       <div class="panel-run">
-         <button type="button" class="btn btn-info btn-block btn-run" ng-click="getJobData()" 
+         <button type="button" class="btn btn-info btn-block btn-run" ng-click="getSheetData()" 
          data-toggle="modal" data-target="#modalLoad">
             Run Report
          </button>

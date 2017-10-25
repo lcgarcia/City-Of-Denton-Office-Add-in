@@ -19,6 +19,7 @@ app.controller('budgetCtrl', [
       detailList:[],
       error:""
     };
+    $scope.selectedKeys = [];
     $scope.modalLoad = {};
     $scope.budgetList = [];
     $scope.parentList = [];
@@ -343,6 +344,12 @@ app.controller('budgetCtrl', [
     $scope.selectedParent = function(parentSelected) {
       var parent = _.find($scope.parentList, ['id', parentSelected.id]);
 
+      if (parent.selected) {
+        $scope.selectedKeys.push(parent);
+      } else {
+        _.remove($scope.selectedKeys, { id: parent.id });
+      }
+
       _.forEach(parent.childList, function(child) {
         child.selected = parent.selected;
       });
@@ -352,8 +359,12 @@ app.controller('budgetCtrl', [
      * [selectedChild child value selected. Parent value selected if all children are selected. Otherwise, parent will not be selected.]
      * @param parent [parent of selected child]
      */
-    $scope.selectedChild = function(parent) {
+    $scope.selectedChild = function(parent, child) {
       var test = $scope.parentList;
+      
+      if (child.selected) $scope.selectedKeys.push(child);
+      else _.remove($scope.selectedKeys, { id: child.id });
+
       if(_.findIndex(parent.childList, ['selected', false]) == -1){
         //all children are selected
         parent.selected = true;
@@ -514,6 +525,32 @@ app.controller('budgetCtrl', [
       modalService.hideReportLoadingModal();
       $scope.showReportDetails = true;
     }
+
+    $scope.getSheetData = function () {
+      var keys = _.map($scope.selectedKeys, function (key) { return key.id });
+      modalService.showReportLoadingModal();
+      budgetService.getSheetData($scope.selectedValues.report.type, keys, $scope.selectedValues.month, 'Comp', $scope.selectedValues.dates.jdeYear)
+      .then(function (data) {
+        //$scope.debugMessage = data['00100'].sheetData.slice(193, 197);
+        _.forEach(data, function (sheetData, key) {
+          sheetData.scope = $scope;
+          sheetData.sheetKey = key;
+          budgetService.insertSpreadSheetData(sheetData, function (err, data) {
+            //modalService.showDataLoadingModal();
+            modalService.hideReportLoadingModal();
+            if (err) {
+              $scope.$apply(function () {
+                //$scope.debugMessage = err;
+              })
+            } else {
+              //$scope.debugMessage = 'DONE';
+            }
+          });
+        });
+      }).catch(function (err) {
+        console.log(err);
+      });
+    };
 
     buildPage();
 

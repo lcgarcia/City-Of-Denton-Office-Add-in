@@ -3,7 +3,7 @@ var expect = chai.expect
 // We may need fuzzy later so I included it as a dev dependancy just incase
 //chai.use(require('chai-fuzzy'))
 
-describe('SQL Generator individual function tests for Budrpt-90', () => {
+describe('Budget SQL Generator individual function tests for Budrpt-90', () => {
 	var Generator = require('./../lib/BudgetSQLGenerator')
 	var generator = new Generator()
 
@@ -22,7 +22,7 @@ describe('SQL Generator individual function tests for Budrpt-90', () => {
 			accounts: 'acc',
 			forYear: 2017
 		}
-		expect(generator.whereClause(data)).to.be.equal(`WHERE ( (b.GMAID = a.GBAID(+)) AND ((b.GMOBJ acc)) AND ((b.GMCO = 'Hello' )) AND ((a.GBLT in ('AA','PA','BA') OR a.GBLT IS NULL )) AND ((a.GBFY in (16,17,18) OR a.GBFY IS NULL )))`)
+		expect(generator.whereClause(data)).to.be.equal(`WHERE ( (b.GMAID = a.GBAID(+)) AND ((b.GMOBJ acc)) AND ((b.GMCO = 'Hello World' )) AND ((a.GBLT in ('AA','PA','BA') OR a.GBLT IS NULL )) AND ((a.GBFY in (16,17,18) OR a.GBFY IS NULL )))`)
 		data.buLevel = 'BusU'
 		expect(generator.whereClause(data)).to.be.equal(`WHERE ( (b.GMAID = a.GBAID(+)) AND ((b.GMOBJ acc)) AND ((b.GMMCU = ' Hello World' )) AND ((a.GBLT in ('AA','PA','BA') OR a.GBLT IS NULL )) AND ((a.GBFY in (16,17,18) OR a.GBFY IS NULL )))`)
 	})
@@ -111,7 +111,7 @@ describe('SQL Generator individual function tests for Budrpt_f-90', () => {
       forYear: 2017,
       subledgers: 'sub'
     }
-    expect(generator.whereClause(data)).to.be.equal(`WHERE (((a.GBAID = c.GMAID)) AND ((to_number(decode(a.GBSBL,'        ','0',substr(a.GBSBL,5))) = b.aban8(+))) AND ((a.GBOBJ acc)) AND ((a.GBCO = 'Hello' )) AND ((a.GBSBL sub)) AND ((a.GBLT in ('AA','PA','BA') OR a.GBLT IS NULL )) AND ((a.GBFY in (16,17,18) OR a.GBFY IS NULL )))`)
+    expect(generator.whereClause(data)).to.be.equal(`WHERE (((a.GBAID = c.GMAID)) AND ((to_number(decode(a.GBSBL,'        ','0',substr(a.GBSBL,5))) = b.aban8(+))) AND ((a.GBOBJ acc)) AND ((a.GBCO = 'Hello World' )) AND ((a.GBSBL sub)) AND ((a.GBLT in ('AA','PA','BA') OR a.GBLT IS NULL )) AND ((a.GBFY in (16,17,18) OR a.GBFY IS NULL )))`)
     data.buLevel = 'BusU'
     expect(generator.whereClause(data)).to.be.equal(`WHERE (((a.GBAID = c.GMAID)) AND ((to_number(decode(a.GBSBL,'        ','0',substr(a.GBSBL,5))) = b.aban8(+))) AND ((a.GBOBJ acc)) AND ((a.GBMCU = ' Hello World' )) AND ((a.GBSBL sub)) AND ((a.GBLT in ('AA','PA','BA') OR a.GBLT IS NULL )) AND ((a.GBFY in (16,17,18) OR a.GBFY IS NULL )))`)
   })
@@ -196,7 +196,7 @@ describe('SQL Generator individual function tests for Budrpt_a-90', () => {
 			accounts: 'acc',
 			forYear: 2017
 		}
-		expect(generator.whereClause(data)).to.be.equal(`WHERE ( (b.GMAID = a.GBAID(+)) AND ((b.GMOBJ acc)) AND ((b.GMCO = 'Hello' )) AND ((a.GBLT in ('AA','PA','BA','B3') OR a.GBLT IS NULL )) AND ((a.GBFY in (16,17,18) OR a.GBFY IS NULL )))`)
+		expect(generator.whereClause(data)).to.be.equal(`WHERE ( (b.GMAID = a.GBAID(+)) AND ((b.GMOBJ acc)) AND ((b.GMCO = 'Hello World' )) AND ((a.GBLT in ('AA','PA','BA','B3') OR a.GBLT IS NULL )) AND ((a.GBFY in (16,17,18) OR a.GBFY IS NULL )))`)
 		data.buLevel = 'BusU'
 		expect(generator.whereClause(data)).to.be.equal(`WHERE ( (b.GMAID = a.GBAID(+)) AND ((b.GMOBJ acc)) AND ((b.GMMCU = ' Hello World' )) AND ((a.GBLT in ('AA','PA','BA','B3') OR a.GBLT IS NULL )) AND ((a.GBFY in (16,17,18) OR a.GBFY IS NULL )))`)
 	})
@@ -251,7 +251,7 @@ describe('SQL Generator individual function tests for Budrpt_e-90', () => {
 			accounts: 'acc',
 			forYear: 2017
 		}
-		expect(generator.whereClause(data)).to.be.equal(`WHERE ( (b.GMAID = a.GBAID(+)) AND ((b.GMOBJ acc)) AND ((b.GMCO = 'Hello' )) AND ((a.GBLT in ('AA','PA','BA','B3') OR a.GBLT IS NULL )) AND ((a.GBFY in (16,17,18) OR a.GBFY IS NULL )))`)
+		expect(generator.whereClause(data)).to.be.equal(`WHERE ( (b.GMAID = a.GBAID(+)) AND ((b.GMOBJ acc)) AND ((b.GMCO = 'Hello World' )) AND ((a.GBLT in ('AA','PA','BA','B3') OR a.GBLT IS NULL )) AND ((a.GBFY in (16,17,18) OR a.GBFY IS NULL )))`)
 		data.buLevel = 'BusU'
 		expect(generator.whereClause(data)).to.be.equal(`WHERE ( (b.GMAID = a.GBAID(+)) AND ((b.GMOBJ acc)) AND ((b.GMMCU = ' Hello World' )) AND ((a.GBLT in ('AA','PA','BA','B3') OR a.GBLT IS NULL )) AND ((a.GBFY in (16,17,18) OR a.GBFY IS NULL )))`)
 	})
