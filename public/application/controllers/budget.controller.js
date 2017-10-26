@@ -41,6 +41,9 @@ app.controller('budgetCtrl', [
       });
     });
 
+    $scope.budgetSheetData = [];
+    $scope.showReportDetails = false;
+
     /**
      * [buildPage sets selected values]
      */
@@ -57,6 +60,8 @@ app.controller('budgetCtrl', [
       $scope.selectedValues.searchInput = ""; 
       $scope.selectedValues.book = {};
       $scope.selectedValues.selectAll = false;
+
+      $scope.selectedValues.worksheet = "";
 
       if($scope.user && $scope.user.name){
         $scope.userSelection.user = $scope.user.name
@@ -344,12 +349,9 @@ app.controller('budgetCtrl', [
     $scope.selectedParent = function(parentSelected) {
       var parent = _.find($scope.parentList, ['id', parentSelected.id]);
 
-      if (parent.selected) {
-        $scope.selectedKeys.push(parent);
-      } else {
-        _.remove($scope.selectedKeys, { id: parent.id });
-      }
-
+      if (parent.selected) $scope.selectedKeys.push(parent);
+      else _.remove($scope.selectedKeys, { id: parent.id });
+      
       _.forEach(parent.childList, function(child) {
         child.selected = parent.selected;
       });
@@ -443,6 +445,7 @@ app.controller('budgetCtrl', [
      */
     $scope.clearAll = function() {  
       $scope.selectedValues.book = $scope.filteredBooks[0];
+      $scope.selectedKeys = [];
       $scope.changeBook();
     }
 
@@ -519,13 +522,6 @@ app.controller('budgetCtrl', [
       $("#jdeCalendar").click();
     }
 
-
-    $scope.getJobData = function () {
-      modalService.showReportLoadingModal();
-      modalService.hideReportLoadingModal();
-      $scope.showReportDetails = true;
-    }
-
     $scope.getKeysAndSubledgers = function () {
       var keys = [], subledgers = [];
       _.forEach($scope.selectedKeys, function (val) {
@@ -541,6 +537,73 @@ app.controller('budgetCtrl', [
       return { keys: keys, subledgers: ledgerText };
     };
 
+    $scope.getActiveSheet = function(){
+      Excel.run(function (ctx) {
+        var activeWorksheet = ctx.workbook.worksheets.getActiveWorksheet();
+        activeWorksheet.load('name');
+        
+        return ctx.sync()
+          .then(function(response) {
+            changeReportDetails(activeWorksheet.name);
+          }).catch(function (err) {
+            $scope.$apply(function () {
+              // $scope.debugMessage = err;
+            });
+          });
+
+      });
+    }
+
+    function changeReportDetails(sheetName){
+      $scope.selectedValues.worksheet = sheetName;
+      var index = sheetName.indexOf('_');
+      if(index != -1){
+        var name = sheetName.substring(0, index);
+        if($scope.budgetSheetData[name]){
+          $scope.sheetData = $scope.budgetSheetData[name];
+        }
+        else{
+          $scope.sheetData = [];
+        }
+      }
+      else{
+        $scope.sheetData = [];
+      }
+    }
+
+    $scope.toggleAllRows = function (show) {
+      Excel.run(function (ctx) {
+        var worksheet = ctx.workbook.worksheets.getItem($scope.selectedValues.worksheet);
+
+        _.forEach($scope.sheetData.hiddenRows, function (row) {
+          var range = worksheet.getRange(row.range);
+          range.rowHidden = !show;
+        });
+
+        return ctx.sync()
+          .then(function () {}).catch(function (err) {
+            $scope.$apply(function () {
+              $scope.debugMessage = err;
+            });
+          });
+      });
+    }
+
+    $scope.toggleRow = function (label) {
+      Excel.run(function (ctx) {
+        var worksheet = ctx.workbook.worksheets.getItem($scope.selectedValues.worksheet);
+        var range = worksheet.getRange(label.range);
+        range.rowHidden = !label.selected;
+
+        return ctx.sync()
+          .then(function () {}).catch(function (err) {
+            $scope.$apply(function () {
+              //$scope.debugMessage = err;
+            });
+          });
+      });
+    };
+
     $scope.getSheetData = function () {
       var keys = _.map($scope.selectedKeys, function (key) { return key.id });
       var accounts = $scope.selectedValues.reportType;
@@ -552,9 +615,11 @@ app.controller('budgetCtrl', [
       }
       
       modalService.showReportLoadingModal();
+      $scope.showReportDetails = true;
       budgetService.getSheetData($scope.selectedValues.report.type, keys, $scope.selectedValues.month, 'Comp', $scope.selectedValues.dates.jdeYear, accounts, { subledgers: subledgers })
       .then(function (data) {
-        //$scope.debugMessage = data['00100'].sheetData.slice(193, 197);
+
+        $scope.budgetSheetData = data;
         _.forEach(data, function (sheetData, key) {
           _.forEach(sheetData.hiddenRows, function(child) {
             child.selected = false;
@@ -567,7 +632,6 @@ app.controller('budgetCtrl', [
 
           $scope.sheetData = sheetData;
           budgetService.insertSpreadSheetData(sheetData, function (err, data) {
-
             modalService.hideReportLoadingModal();
             if (err) {
               $scope.$apply(function () {

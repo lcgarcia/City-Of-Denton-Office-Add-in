@@ -24,63 +24,8 @@
       </div>
 
 
-   <!-- *************** REPORT DEATILS START *************** -->
-      <!-- *************** HARVEST START *************** -->
-      <!-- HIDEN DATE RANGE FOR HARVEST -->
-      <span style="margin:20px 0; display:none">
-         <div class="input-group input-daterange" id="datepicker">
-            <input id="startdate" type="text" name="start" ng-model="dates.start" class="form-control input-dates"/>
-            <span class="input-group-addon"> to </span>
-            <input id="enddate" type="text" name="end" ng-model="dates.end" class="form-control input-dates"/>
-         </div>
-      </span>
-      <!-- HIDEN DATE RANGE FOR HARVEST End-->
-
-      <!-- HARVEST Data Run -->
-      <div class="panel-group" style="display:none">
-         <div class="panel-run">
-            <button style="height: 40px; font-size: 18px;" type="button" class="btn btn-info btn-block" ng-click="runData()" 
-            data-toggle="modal" data-target="#modalLoad">
-               Run
-            </button>
-         </div>
-      </div>
-      <p>{{debugMessage}}</p>
-      <!-- HARVEST Data Run -->
-      <!-- *************** HARVEST END *************** -->
-
-
-      <!-- Panel Report Deatils Start-->
-      <div class="panel-group" ng-show="showReportDetails">
-         <div class="panel panel-default" style="width:100%;">
-            <div class="panel-heading">
-               <h4 class="panel-title">
-                  <a data-toggle="collapse" href="#collapse10" aria-expanded="true">
-                     Report Deatils
-                  </a>
-               </h4>
-            </div>
-            <div id="collapse10" class="panel-collapse collapse in" aria-expanded="true">
-               <div class="panel-body" style="min-width: 200px;">
-                  <div style="padding-bottom:10px;">
-                     <button style="cursor:pointer; width: 100%;" type="button" class="btn btn-primary" ng-click="home.getDetail()">
-                        Toggle Detail
-                     </button>
-                  </div>
-                  <select name="singleSelect" id="singleSelect" ng-model="test" class="form-control" ng-model="test" ng-change="home.showClientDetail()">
-                     <option value="">---Please select---</option> <!-- not selected / blank option -->
-                     <option ng-repeat="(value, key) in hideByClient" value="{{ key }}">{{ value }}</option> <!-- interpolation -->
-                  </select>
-               </div>
-            </div>
-
-         </div>
-      </div>
-      <!-- Panel Report Deatils End--> 
    </div>
 </div>
-
-<!-- *************** REPORT DEATILS END *************** -->
 
 
 <!-- *************** MODALS START *************** -->

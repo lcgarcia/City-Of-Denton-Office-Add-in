@@ -28,6 +28,7 @@ app.controller('jobcostCtrl', [
 
     $scope.allOptionValue = {key:"*All", name:"*All"};
     $scope.sheetData = {};
+    $scope.showReportDetails = false;
 
     $rootScope.$on('$viewContentLoaded', jobcostReportDates);
 
@@ -217,7 +218,7 @@ app.controller('jobcostCtrl', [
       });
     };
 
-    $scope.getJobData = function () {
+    $scope.getSheetData = function () {
       var rType = $scope.selectedValues.report.type;
       var dKey = $scope.selectedValues.department.key;
       var cKey = $scope.selectedValues.company.key;
@@ -228,6 +229,7 @@ app.controller('jobcostCtrl', [
 
       
       modalService.showReportLoadingModal();
+      $scope.showReportDetails = true;
       jobcostService.getSheetData(rType, month, year, dKey, cKey, pKey, jKey, { projects: $scope.filteredProject })
       .then(function (data) {
         try {

@@ -87,7 +87,7 @@ app.service("budgetService", [
       var allWorksheets = data.sheets;
       Excel.run(function (ctx) {
         var dataCreated = false;
-        var dataSheetName = data.sheetKey + 'BudgetReport-90';
+        var dataSheetName = data.sheetKey + '_BudgetReport-90';
         
         _.forEach(data.sheets.items, function (sheet) {
           if(sheet.name == dataSheetName)

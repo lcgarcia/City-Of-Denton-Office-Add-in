@@ -41,6 +41,7 @@ app.controller('jobcost2Ctrl', [
 
     $scope.allOptionValue = {key:"*All", name:"*All"};
     $scope.selectedValues.optional = {};
+    $scope.showReportDetails = false;
 
     $rootScope.$on('$viewContentLoaded', jobcost2ReportDates);
     $(document).ready(function(){
@@ -196,8 +197,7 @@ app.controller('jobcost2Ctrl', [
       var jsKey = $scope.selectedValues.jobStatus.key;
       var jKey = $scope.selectedValues.job.key;
       var ccKey = $scope.selectedValues.optional.cat2.key;
-
-      $scope.showReportDetails = true;
+      
       modalService.showDataLoadingModal();
       jobcostService.getCatCodeDescription(rType, dKey, cKey, pKey, jsKey, jKey, ccKey).then(function(data){
         $scope.filteredCC2Descriptions = [];
@@ -224,7 +224,40 @@ app.controller('jobcost2Ctrl', [
       $("#jdeCalendar").click();
     }
 
-    $scope.getJobData = function () {
+    $scope.toggleAllRows = function (show) {
+      Excel.run(function (ctx) {
+        var worksheet = ctx.workbook.worksheets.getItem('Jobcost-90');
+
+        _.forEach($scope.sheetData.hiddenRows, function (row) {
+          var range = worksheet.getRange(row.range);
+          range.rowHidden = !show;
+        });
+
+        return ctx.sync()
+          .then(function () {}).catch(function (err) {
+            $scope.$apply(function () {
+              $scope.debugMessage = err;
+            });
+          });
+      });
+    }
+
+    $scope.toggleRow = function (label) {
+      Excel.run(function (ctx) {
+        var worksheet = ctx.workbook.worksheets.getItem('Jobcost-90');
+        var range = worksheet.getRange(label.range);
+        range.rowHidden = !label.selected;
+
+        return ctx.sync()
+          .then(function () {}).catch(function (err) {
+            $scope.$apply(function () {
+              //$scope.debugMessage = err;
+            });
+          });
+      });
+    };
+
+    $scope.getSheetData = function () {
       var rType = $scope.selectedValues.report.type;
       var dKey = $scope.selectedValues.department.key;
       var cKey = $scope.selectedValues.company.key;
@@ -249,6 +282,7 @@ app.controller('jobcost2Ctrl', [
 
       
       modalService.showReportLoadingModal();
+      $scope.showReportDetails = true;
       jobcostService.getSheetData(rType, month, year, dKey, cKey, pKey, jKey, options)
       .then(function (data) {
         try {
