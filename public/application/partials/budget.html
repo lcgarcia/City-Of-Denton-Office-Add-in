@@ -229,15 +229,56 @@
 
 
 <!-- Panel Report Deatils Start--> 
-<div class="panel-group" style="margin-bottom:0; margin-left: 0.5px;" ng-show="showReportDetails">
-   <div class="panel panel-default">
+<div class="panel-group" style="margin-bottom:0; margin-left: 0.5px;" ng-show="sheetData.hiddenRows && sheetData.hiddenRows.length > 0">
+   <div class="panel panel-default panel-report">
       <div class="panel-heading" style="border-top: 0;">
          <h4 class="panel-title">        
             Report Details
          </h4>
       </div>
       <div class="panel-body">
-         <label>Details</label>
+         <div class="modal-header" style="padding: 10px 0px 0px 0px;">
+            <table width="100%;">
+               <tbody>
+               <tr>
+                  <td>
+                     <div class="panel-addon" style="border-top-left-radius: 6px;">
+                        <input type="checkbox" 
+                        style="margin: 0; margin-left: 4px; width: 16px; cursor: pointer;" 
+                        ng-model="selectedValues.data.selectAll"
+                        ng-change="selectedDataAll()"
+                        ng-click="toggleAllRows(selectedValues.data.selectAll)"
+                        >
+                     </div>
+                  </td>
+                  <td>
+                     <input type="text" 
+                     class="searchBox" 
+                     ng-model="selectedValues.data.searchInput" 
+                     ng-keyup="searchData()"
+                     placeholder="Search.." 
+                     title="SearchField"
+                     style="border-top-right-radius: 6px;">
+                  </td>
+               </tr>
+               </tbody>
+            </table>
+         </div>
+         <div class="container scroll">
+            <ul id="containerList" style="list-style: none; width: 120%">
+               <li class="containerData" style="margin-top: 6px;" ng-repeat="label in sheetData.hiddenRows" >
+                  <div class="parentOptions">
+                     <input id="{{'dataInput-'+ label.key}}" type="checkbox" ng-model="label.selected" ng-click="toggleRow(label)" style="cursor: pointer;">
+                     <label id="{{'dataLabel-'+ label.key}}"
+                        style="display: inline; font-weight: normal;">
+                        {{label.key}}
+                     </label>
+                  </div>
+               </li>
+            </ul>
+            <br>
+         </div>
+         
       </div>
    </div>
 </div>

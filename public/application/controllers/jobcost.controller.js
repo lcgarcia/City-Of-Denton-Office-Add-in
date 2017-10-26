@@ -171,7 +171,7 @@ app.controller('jobcostCtrl', [
       var filter, ul, li, parentText, i;
       filter = $scope.selectedValues.data.searchInput.toUpperCase();
       ul = document.getElementById("containerList");
-      li = ul.getElementsById("containerData");
+      li = ul.getElementsByClassName("containerData");
       for (i = 0; i < li.length; i++) {
         parentText = li[i].getElementsByTagName("label")[0].innerText.toUpperCase().trim();
         

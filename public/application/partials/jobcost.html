@@ -237,7 +237,7 @@
          </div>
          <div class="container scroll">
             <ul id="containerList" style="list-style: none; width: 120%">
-               <li id="containerData" style="margin-top: 6px;" ng-repeat="label in sheetData.hiddenRows" >
+               <li class="containerData" style="margin-top: 6px;" ng-repeat="label in sheetData.hiddenRows" >
                   <div class="parentOptions">
                      <input id="{{'dataInput-'+ label.key}}" type="checkbox" ng-model="label.selected" ng-click="toggleRow(label)" style="cursor: pointer;">
                      <label id="{{'dataLabel-'+ label.key}}"
@@ -249,7 +249,6 @@
             </ul>
             <br>
          </div>
-         
          
       </div>
    </div>

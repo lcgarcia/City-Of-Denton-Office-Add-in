@@ -556,11 +556,16 @@ app.controller('budgetCtrl', [
       .then(function (data) {
         //$scope.debugMessage = data['00100'].sheetData.slice(193, 197);
         _.forEach(data, function (sheetData, key) {
+          _.forEach(sheetData.hiddenRows, function(child) {
+            child.selected = false;
+          });
           sheetData.scope = $scope;
           sheetData.accountType = accounts;
           sheetData.month = $scope.selectedValues.month;
           sheetData.year = $scope.selectedValues.dates.jdeYear;
           sheetData.sheetKey = key;
+
+          $scope.sheetData = sheetData;
           budgetService.insertSpreadSheetData(sheetData, function (err, data) {
 
             modalService.hideReportLoadingModal();
