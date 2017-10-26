@@ -170,8 +170,8 @@ app.controller('jobcostCtrl', [
     $scope.searchData = function(){
       var filter, ul, li, parentText, i;
       filter = $scope.selectedValues.data.searchInput.toUpperCase();
-      ul = document.getElementById("myUL");
-      li = ul.getElementsByClassName("parentLi");
+      ul = document.getElementById("containerList");
+      li = ul.getElementsById("containerData");
       for (i = 0; i < li.length; i++) {
         parentText = li[i].getElementsByTagName("label")[0].innerText.toUpperCase().trim();
         
@@ -227,7 +227,7 @@ app.controller('jobcostCtrl', [
       var month = $scope.selectedValues.dates.monthStart;
 
       
-      //modalService.showReportLoadingModal();
+      modalService.showReportLoadingModal();
       jobcostService.getSheetData(rType, month, year, dKey, cKey, pKey, jKey, { projects: $scope.filteredProject })
       .then(function (data) {
         try {
