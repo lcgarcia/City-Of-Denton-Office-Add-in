@@ -20,7 +20,7 @@ app.service("budgetService", [
       );
   	};
 
-    this.getSheetData = function (type, keys, month, buLevel, year, options) {
+    this.getSheetData = function (type, keys, month, buLevel, year, accounts, options) {
       var data = {
         type: type,
         keys: keys,
@@ -29,6 +29,11 @@ app.service("budgetService", [
         year: year,
         accounts: "Between '0' and '3999'"
       };
+      data.accounts = accounts == 'Income Statement' ? "Between '4000' and '9999'" : data.accounts;
+
+      if ('subledgers' in options) {
+        data.subledgers = options.subledgers;
+      }
 
       return $http.post('/ks2inc/budget/sheet/data', JSON.stringify(data), {headers: {'Content-Type': 'application/json'} })
       .then(function (response) {
@@ -200,24 +205,28 @@ app.service("budgetService", [
     };
 
     var setMainHeaderFormat = function (data, next) {
-      Excel.run(function (ctx) {
-        var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+      if ('mainHeaders' in data) {
+        Excel.run(function (ctx) {
+          var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
 
-        _.forEach(data.mainHeaders, function (val) {
-          var numberRange = worksheet.getRange('F'+val+':S'+val);
-          var range = worksheet.getRange('E'+val+':Z'+val);
-          range.format.font.bold = false;
-          var format = '_($* #,##0.00_);[Red]_($* (#,##0.00);_(" "_);_(@_)';
-          numberRange.numberFormat = [_.fill(Array(14), format)];
-        });
-
-        return ctx.sync()
-          .then(function (res) {
-            next(null, data);
-          }).catch(function (err) {
-            next({err: err, stage: 'setSubTotalColor'});
+          _.forEach(data.mainHeaders, function (val) {
+            var numberRange = worksheet.getRange('F'+val+':S'+val);
+            var range = worksheet.getRange('E'+val+':Z'+val);
+            range.format.font.bold = false;
+            var format = '_($* #,##0.00_);[Red]_($* (#,##0.00);_(" "_);_(@_)';
+            numberRange.numberFormat = [_.fill(Array(14), format)];
           });
-      });
+
+          return ctx.sync()
+            .then(function (res) {
+              next(null, data);
+            }).catch(function (err) {
+              next({err: err, stage: 'setSubTotalColor'});
+            });
+        });
+      } else {
+        next(null, data);
+      }
     };
 
     var setHeader = function (data, next) {
@@ -239,65 +248,111 @@ app.service("budgetService", [
         disclaimerRange.values = disclaimeValues;
         disclaimerRange.merge(true);
 
-        // Prior Year 
-        var priorHeader = worksheet.getRange('F4:G4');
-        var priorHeaderValues = [['Prior Year Actuals', '']];
-        priorHeader.load('values');
-        priorHeader.values = priorHeaderValues;
-        priorHeader.format.horizontalAlignment = 'Center';
-        priorHeader.format.font.color = 'white';
-        priorHeader.format.fill.color = '#325694';
-        priorHeader.merge(true);
-        var priorRow = worksheet.getRange('F5:G5');
-        var prValues = [['Annual', 'YTD']];
-        priorRow.load('values');
-        priorRow.values = prValues;
-        priorRow.format.horizontalAlignment = 'Center';
-        var fullPrior = worksheet.getRange('F4:G5');
-        fullPrior.format.borders.getItem('EdgeBottom').style = 'Continuous';
-        fullPrior.format.borders.getItem('EdgeLeft').style = 'Continuous';
-        fullPrior.format.borders.getItem('EdgeRight').style = 'Continuous';
-        fullPrior.format.borders.getItem('EdgeTop').style = 'Continuous';
+        // This is just so it is more readable
+        var ranges = [
+          { fullRange: 'F4:G5', title: 'F4:G4', titleText: [['Prior Year Actuals', '']], subTitle: 'F5:G5',  subText: [['Annual', 'YTD']] },
+          { fullRange: 'H4:J5', title: 'H4:J4', titleText: [['Current Annual Budget', '', '']], subTitle: 'H5:J5',  subText: [['Original', 'Modified', 'Avail Balance']] },
+          { fullRange: 'K4:N5', title: 'K4:N4', titleText: [['Current Year to Date', '', '', '']], subTitle: 'K5:N5',  subText: [['Budget', 'Encumberances', '(Rev)/Expanded', 'Total']] },
+          { fullRange: 'O4:R5', title: 'O4:R4', titleText: [['Current Period', '', '', '']], subTitle: 'O5:R5',  subText: [['Budget', 'Encumberances', '(Rev)/Expanded', 'Total']] },
+          { fullRange: 'S4:S5', title: 'S4:S4', titleText: [['Proposed']], subTitle: 'S5:S5',  subText: [['Budget']] },
+        ];
 
-        // Current annual budget
-        var currentAnnual = worksheet.getRange('H4:J4');
-        var currentAnnualValues = [['Current Annual Budget', '', '']];
-        currentAnnual.load('values');
-        currentAnnual.values = currentAnnualValues;
-        currentAnnual.format.horizontalAlignment = 'Center';
-        currentAnnual.format.font.color = 'white';
-        currentAnnual.format.fill.color = '#325694';
-        currentAnnual.merge(true);
-        var annualRow = worksheet.getRange('H5:J5');
-        var arValues = [['Original', 'Modified', 'Avail Balance']];
-        annualRow.load('values');
-        annualRow.values = arValues;
-        annualRow.format.horizontalAlignment = 'Center';
-        var fullAnnual = worksheet.getRange('H4:J5');
-        fullAnnual.format.borders.getItem('EdgeBottom').style = 'Continuous';
-        fullAnnual.format.borders.getItem('EdgeLeft').style = 'Continuous';
-        fullAnnual.format.borders.getItem('EdgeRight').style = 'Continuous';
-        fullAnnual.format.borders.getItem('EdgeTop').style = 'Continuous';
+        var titles = _.flattenDeep(_.map(ranges, function(val){ return val.titleText }));
+        var subTitles = _.flattenDeep(_.map(ranges, function(val){ return val.subText }));
 
-        // Current YTD
-        var ytdHeader = worksheet.getRange('K4:N4');
-        var ytdHeaderValues = [['Current Year to Date', '', '', '']];
-        ytdHeader.load('values');
-        ytdHeader.values = ytdHeaderValues;
-        ytdHeader.format.horizontalAlignment = 'Center';
-        ytdHeader.format.font.color = 'white';
-        ytdHeader.format.fill.color = '#325694';
-        ytdHeader.merge(true);
-        var ytdRow = worksheet.getRange('K5:N5');
-        var ytdrValues = [['Budget', 'Encumberances', '(Rev)/Expanded', 'Total']];
-        ytdRow.load('values');
-        ytdRow.values = ytdrValues;
-        ytdRow.format.horizontalAlignment = 'Center';
-        var fullYTD = worksheet.getRange('K4:N5');
-        fullYTD.format.borders.getItem('EdgeBottom').style = 'Continuous';
-        fullYTD.format.borders.getItem('EdgeLeft').style = 'Continuous';
-        fullYTD.format.borders.getItem('EdgeRight').style = 'Continuous';
-        fullYTD.format.borders.getItem('EdgeTop').style = 'Continuous';
+        var titleRange = worksheet.getRange('F4:S4');
+        titleRange.load('values');
+        titleRange.values = [titles];
+        //titleRange.format.horizontalAlignment = 'Center';
+        titleRange.format.font.color = 'white';
+        titleRange.format.fill.color = '#325694';
+
+        var t0 = worksheet.getRange(ranges[0].title);
+        var t1 = worksheet.getRange(ranges[1].title);
+        var t2 = worksheet.getRange(ranges[2].title);
+        var t3 = worksheet.getRange(ranges[3].title);
+        var t4 = worksheet.getRange(ranges[4].title);
+        t0.format.horizontalAlignment = 'Center';
+        t1.format.horizontalAlignment = 'Center';
+        t2.format.horizontalAlignment = 'Center';
+        t3.format.horizontalAlignment = 'Center';
+        t4.format.horizontalAlignment = 'Center';
+
+        var subTitleRange = worksheet.getRange('F5:S5');
+        subTitleRange.load('values');
+        subTitleRange.values = [subTitles];
+        subTitleRange.format.horizontalAlignment = 'Center';
+
+        var rangeGroup1 = worksheet.getRange(ranges[0].fullRange);
+        var rangeGroup2 = worksheet.getRange(ranges[1].fullRange);
+        var rangeGroup3 = worksheet.getRange(ranges[2].fullRange);
+        var rangeGroup4 = worksheet.getRange(ranges[3].fullRange);
+        var rangeGroup5 = worksheet.getRange(ranges[4].fullRange);
+        rangeGroup1.format.borders.getItem('EdgeBottom').style = 'Continuous';
+        rangeGroup1.format.borders.getItem('EdgeLeft').style = 'Continuous';
+        rangeGroup1.format.borders.getItem('EdgeRight').style = 'Continuous';
+        rangeGroup1.format.borders.getItem('EdgeTop').style = 'Continuous';
+        rangeGroup2.format.borders.getItem('EdgeBottom').style = 'Continuous';
+        rangeGroup2.format.borders.getItem('EdgeLeft').style = 'Continuous';
+        rangeGroup2.format.borders.getItem('EdgeRight').style = 'Continuous';
+        rangeGroup2.format.borders.getItem('EdgeTop').style = 'Continuous';
+        rangeGroup3.format.borders.getItem('EdgeBottom').style = 'Continuous';
+        rangeGroup3.format.borders.getItem('EdgeLeft').style = 'Continuous';
+        rangeGroup3.format.borders.getItem('EdgeRight').style = 'Continuous';
+        rangeGroup3.format.borders.getItem('EdgeTop').style = 'Continuous';
+        rangeGroup4.format.borders.getItem('EdgeBottom').style = 'Continuous';
+        rangeGroup4.format.borders.getItem('EdgeLeft').style = 'Continuous';
+        rangeGroup4.format.borders.getItem('EdgeRight').style = 'Continuous';
+        rangeGroup4.format.borders.getItem('EdgeTop').style = 'Continuous';
+        rangeGroup5.format.borders.getItem('EdgeBottom').style = 'Continuous';
+        rangeGroup5.format.borders.getItem('EdgeLeft').style = 'Continuous';
+        rangeGroup5.format.borders.getItem('EdgeRight').style = 'Continuous';
+        rangeGroup5.format.borders.getItem('EdgeTop').style = 'Continuous';
+
+        var titleWithKey = data.sheetKey + '- General Fund';
+        var mainTitle = worksheet.getRange('F1:N1');
+        mainTitle.load('values');
+        mainTitle.values = [[titleWithKey, '', '', '', '', '', '', '', '']];
+        mainTitle.format.horizontalAlignment = 'Center';
+        mainTitle.format.font.size = 15;
+        mainTitle.format.font.bold = true;
+        mainTitle.merge(true);
+        var mainTitle2 = worksheet.getRange('O1:S1');
+        mainTitle2.load('values');
+        mainTitle2.values = [[titleWithKey, '', '', '', '']];
+        mainTitle2.format.horizontalAlignment = 'Center';
+        mainTitle2.format.font.size = 15;
+        mainTitle2.format.font.bold = true;
+        mainTitle2.merge(true);
+
+        var sheetTypeLabel = data.accountType;
+        var sheetTypeTitle = worksheet.getRange('F2:N2');
+        sheetTypeTitle.load('values');
+        sheetTypeTitle.values = [[sheetTypeLabel, '', '', '', '', '', '', '', '']];
+        sheetTypeTitle.format.horizontalAlignment = 'Center';
+        sheetTypeTitle.format.font.size = 13;
+        sheetTypeTitle.format.font.bold = true;
+        sheetTypeTitle.merge(true);
+        var sheetTypeTitle2 = worksheet.getRange('O2:S2');
+        sheetTypeTitle2.load('values');
+        sheetTypeTitle2.values = [[sheetTypeLabel, '', '', '', '']];
+        sheetTypeTitle2.format.horizontalAlignment = 'Center';
+        sheetTypeTitle2.format.font.size = 13;
+        sheetTypeTitle2.format.font.bold = true;
+        sheetTypeTitle2.merge(true);
+
+        var dateFormatted = moment(data.year + ' ' + data.month, 'YYYY MMM', 'en').endOf('month').format('MMMM D, YYYY');
+        var dateLabelValues = 'For the Twelve Periods Ending ' + dateFormatted;
+        var dateLabel = worksheet.getRange('F3:N3');
+        dateLabel.load('values');
+        dateLabel.values = [[dateLabelValues, '', '', '', '', '', '', '', '']];
+        dateLabel.format.horizontalAlignment = 'Center';
+        dateLabel.merge(true);
+        var dateLabel2 = worksheet.getRange('O3:S3');
+        dateLabel2.load('values');
+        dateLabel2.values = [[dateLabelValues, '', '', '', '']];
+        dateLabel2.format.horizontalAlignment = 'Center';
+        dateLabel2.merge(true);
 
         return ctx.sync()
           .then(function (res) {

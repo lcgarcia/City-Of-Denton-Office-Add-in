@@ -7,12 +7,41 @@ const oracleQuery = require('../lib/OracleQuery')
 const knexQuery = require('../lib/KnexQuery')
 const dataFormater = require('../lib/DataFormater')
 
+var normalBusinessQuery = (generator) => {
+  return knexQuery.query(generator.getBusinessUnitData(), dataFormater.formatBusinessUnit)
+  .then(result => result)
+  .catch(err => err);
+}
+
+var fercQuery = (req, res) => {
+  async.waterfall([
+    (next) => {
+
+    }
+  ]);
+}
+
 router.get('/business/unit', (req, res) => {
   var generator = new Generator({ type: req.query.type || '' })
 
-  knexQuery.query(generator.getBusinessUnitData(), dataFormater.formatBusinessUnit)
-  .then(result => res.send(result))
-  .catch(err => res.send(err))
+  if (req.query.type != 'f') {
+    knexQuery.query(generator.getBusinessUnitData(), dataFormater.formatBusinessUnit)
+    .then(data => res.send(data))
+    .catch(err => res.send(err));
+  } else {
+    async.waterfall([
+      (next) => {
+        knexQuery.query(generator.getBusinessUnitData(), dataFormater.formatBusinessUnit)
+        .then(data => next(null, data))
+        .catch(err => next(err));
+      }, 
+      (data, next) => {
+        knexQuery.query(generator.getFERCData(), dataFormater.formatFercCodes)
+        .then(ferc => res.send([...data, ...ferc]))
+        .catch(err => next(err));
+      }
+    ], (err) => res.send(err));
+  }
 });
 
 // accounts values
@@ -34,7 +63,7 @@ router.post('/sheet/data', (req, res) => {
   let querySets = _.map(keys, key => {
     if (type === 'f') {
       return { 
-        sql: generator.createSelectStatement(false, type, year, month, accounts, { buLevel, key, subledgers: generator.getSubledger() }),
+        sql: generator.createSelectStatement(false, type, year, month, accounts, { buLevel, key, subledgers: subledgers }),
         id: key
       }
     } else {
@@ -48,12 +77,21 @@ router.post('/sheet/data', (req, res) => {
   const queries = {};
   _.forEach(querySets, data => {
     queries[data.id] = (next) => {
-      knexQuery.budgetSheetDataQuery(data.sql)
-      .then(result => {
-        next(null, result)
-      }).catch(err => {
-        next(err)
-      });
+      if (req.body.type != 'f') {
+        knexQuery.budgetSheetDataQuery(data.sql)
+        .then(result => {
+          next(null, result)
+        }).catch(err => {
+          next(err)
+        });
+      } else {
+        knexQuery.budgetSheetFDataQuery(data.sql)
+        .then(result => {
+          next(null, result)
+        }).catch(err => {
+          next(err)
+        });
+      }
     };
   });
   async.parallel(queries, (err, results) => {

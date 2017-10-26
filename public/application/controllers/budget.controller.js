@@ -46,7 +46,7 @@ app.controller('budgetCtrl', [
      */
     function buildPage(){
       $scope.selectedValues.dates = {};
-      $scope.selectedValues.reportType ="Balance";
+      $scope.selectedValues.reportType ="Balance Sheet";
       $scope.selectedValues.totalSheet = "No";
       $scope.selectedValues.month = "";
       $scope.selectedValues.year = "";
@@ -526,14 +526,39 @@ app.controller('budgetCtrl', [
       $scope.showReportDetails = true;
     }
 
+    $scope.getKeysAndSubledgers = function () {
+      var keys = [], subledgers = [];
+      _.forEach($scope.selectedKeys, function (val) {
+        if (val.id == 'ferc') {
+          subledgers = _.map(val.childList, function(val){ return val.id });
+        } else if ('subledger' in val) {
+          subledgers.push(val.id);
+        } else {
+          keys.push(val.id);
+        }
+      });
+      var ledgerText = 'in ' + JSON.stringify(subledgers).replace(/"/gi,"'").replace(/\[/gi,"(").replace(/\]/gi,")");
+      return { keys: keys, subledgers: ledgerText };
+    };
+
     $scope.getSheetData = function () {
       var keys = _.map($scope.selectedKeys, function (key) { return key.id });
+      var subledgers;
+      if ($scope.selectedValues.report.type == 'f') {
+        var keysAndSubledgers = $scope.getKeysAndSubledgers();
+        keys = keysAndSubledgers.keys;
+        subledgers = keysAndSubledgers.subledgers;
+      }
       modalService.showReportLoadingModal();
-      budgetService.getSheetData($scope.selectedValues.report.type, keys, $scope.selectedValues.month, 'Comp', $scope.selectedValues.dates.jdeYear)
+      var accounts = $scope.selectedValues.reportType;
+      budgetService.getSheetData($scope.selectedValues.report.type, keys, $scope.selectedValues.month, 'Comp', $scope.selectedValues.dates.jdeYear, accounts, { subledgers: subledgers })
       .then(function (data) {
         //$scope.debugMessage = data['00100'].sheetData.slice(193, 197);
         _.forEach(data, function (sheetData, key) {
           sheetData.scope = $scope;
+          sheetData.accountType = accounts;
+          sheetData.month = $scope.selectedValues.month;
+          sheetData.year = $scope.selectedValues.dates.jdeYear;
           sheetData.sheetKey = key;
           budgetService.insertSpreadSheetData(sheetData, function (err, data) {
             //modalService.showDataLoadingModal();
