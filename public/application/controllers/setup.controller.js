@@ -44,11 +44,11 @@ app.controller('setupCtrl', [
       if($stateParams.data.user){
         //page load after login, set user info
         $scope.user = $stateParams.data.user;
-        sessionStorage.setItem('user', $scope.user.name);
+        sessionStorage.setItem('user', JSON.stringify({ name: $scope.user.name, id: 1 }));
       }
       else{
         //page refreshed, grab user name from session
-        $scope.user.name = sessionStorage.getItem('user');
+        $scope.user = JSON.parse(sessionStorage.getItem('user'));
       }
       //Set Report IDs
       var i;

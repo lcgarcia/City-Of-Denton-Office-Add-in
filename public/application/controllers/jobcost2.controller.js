@@ -266,6 +266,7 @@ app.controller('jobcost2Ctrl', [
       var year = $scope.selectedValues.dates.jdeYear;
       var month = $scope.selectedValues.dates.monthStart;
       var jobStatus = $scope.selectedValues.jobStatus.key;
+      var layout = $scope.selectedValues.details;
       var catField = $scope.selectedValues.optional.cat1.key;
       var catField1 = $scope.selectedValues.optional.cat1Description.key;
       var catCode = $scope.selectedValues.optional.cat2.key;
@@ -283,7 +284,7 @@ app.controller('jobcost2Ctrl', [
       
       modalService.showReportLoadingModal();
       $scope.showReportDetails = true;
-      jobcostService.getSheetData(rType, month, year, dKey, cKey, pKey, jKey, options)
+      jobcostService.getSheetData(rType, month, year, dKey, cKey, pKey, jKey, layout, options)
       .then(function (data) {
         try {
           _.forEach(data.hiddenRows, function(child) {

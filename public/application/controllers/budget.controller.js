@@ -10,7 +10,8 @@ app.controller('budgetCtrl', [
   '$stateParams',
   'budgetService',
   'modalService',
-  function ($http, $scope, $rootScope, $state, $stateParams, budgetService, modalService) {
+  'BookService',
+  function ($http, $scope, $rootScope, $state, $stateParams, budgetService, modalService, BookService) {
     $scope.modalBook = {
       msg:"",
       title:"",
@@ -28,7 +29,7 @@ app.controller('budgetCtrl', [
         selectionList:[]
       }
     ];
-    $scope.userSelection = {id:"", name:"", user:"defaultUser",
+    $scope.userSelection = {id:"1", name:"", user:"defaultUser",
       selectionList:[]
     };
 
@@ -48,6 +49,9 @@ app.controller('budgetCtrl', [
      * [buildPage sets selected values]
      */
     function buildPage(){
+      // Get books
+      //BookService.getBooks
+
       $scope.selectedValues.dates = {};
       $scope.selectedValues.reportType ="Balance Sheet";
       $scope.selectedValues.totalSheet = "No";
@@ -64,10 +68,18 @@ app.controller('budgetCtrl', [
       $scope.selectedValues.worksheet = "";
 
       if($scope.user && $scope.user.name){
+        $scope.userSelection.userId = $scope.user.id;
         $scope.userSelection.user = $scope.user.name
       }
       $scope.selectedValues.book = $scope.filteredBooks[0];
       setReportData();
+
+      BookService.getUserBooks($scope.userSelection.userId)
+        .then(function (books) {
+          $scope.filteredBooks = _.concat($scope.filteredBooks, books);
+        }).catch(function (err) {
+          console.log(err);
+        })
     }
 
 
@@ -190,6 +202,8 @@ app.controller('budgetCtrl', [
         
         //
         _.forEach($scope.parentList, function(parent) {
+          if (parent.selected)
+            noSelections = false;
           if(_.findIndex(parent.childList, ['selected', true]) != -1){
             noSelections = false;
           }
@@ -225,6 +239,14 @@ app.controller('budgetCtrl', [
         $scope.modalBook.error = getBookSaveError(name);
         if($scope.modalBook.error == ""){
           book.name = name;
+          // Save book to cloudant 
+          BookService.updateBook(book)
+            .then(function (data) {
+              var bookIndex = _.findIndex($scope.filteredBooks, ['id', $scope.selectedValues.book.id]);
+              $scope.filteredBooks[bookIndex] = data;
+            }).catch(function (err) {
+              console.log(err);
+            });
         }
       }
       else if(option == 'Copy'){
@@ -233,19 +255,47 @@ app.controller('budgetCtrl', [
           var bookCopy = _.clone(book);
           
           delete bookCopy["$$hashKey"];
+          delete bookCopy.rev;
           bookCopy.name = name;
           bookCopy.id = bookCopy.id+"0";
           $scope.filteredBooks.push(bookCopy);
           $scope.selectedValues.book = $scope.filteredBooks[$scope.filteredBooks.length-1];
+
+          // Save book to cloudant 
+          BookService.createBook(bookCopy)
+            .then(function (data) {
+              var bookIndex = _.findIndex($scope.filteredBooks, ['id', $scope.selectedValues.book.id]);
+              $scope.filteredBooks[bookIndex] = data;
+            }).catch(function (err) {
+              console.log(err);
+            });
         }
       }
       else if(option == 'Delete'){
         var bookIndex = _.findIndex($scope.filteredBooks, ['id', book.id]);
+        var bookCopy = _.clone($scope.filteredBooks.splice(bookIndex, 1));
         $scope.filteredBooks.splice(bookIndex, 1);
+        $scope.selectedValues.book = $scope.filteredBooks[0];
+        $scope.changeBook();
+        BookService.deleteBook(book)
+          .then(function (data) {
+            if ($scope.filteredBooks.length === 1) {
+              $('#menu1').addClass("disabled");
+            }
+          }).catch(function (err) {
+            console.log(err);
+          });
       }
       else if(option == 'Save Changes'){
         var selectionCopy = _.cloneDeep($scope.parentList);
         book.selectionList = selectionCopy;
+        BookService.updateBook(book)
+          .then(function (data) {
+            var bookIndex = _.findIndex($scope.filteredBooks, ['id', $scope.selectedValues.book.id]);
+            $scope.filteredBooks[bookIndex] = data;
+          }).catch(function (err) {
+            console.log(err);
+          });
       }
       else if(option == 'Save'){
         $scope.modalBook.error = getBookSaveError(name);
@@ -258,6 +308,15 @@ app.controller('budgetCtrl', [
           bookCopy.selectionList = selectionCopy;
           $scope.filteredBooks.push(bookCopy);
           $scope.selectedValues.book = $scope.filteredBooks[$scope.filteredBooks.length-1];
+
+          // Save book to cloudant 
+          BookService.createBook(bookCopy)
+            .then(function (data) {
+              var bookIndex = _.findIndex($scope.filteredBooks, ['id', $scope.selectedValues.book.id]);
+              $scope.filteredBooks[bookIndex] = data;
+            }).catch(function (err) {
+              console.log(err);
+            });
 
           //enable book menu options
           $('#menu1').removeClass("disabled");
@@ -302,13 +361,9 @@ app.controller('budgetCtrl', [
             item = book.selectionList[i];
             parent = _.find($scope.parentList, ['id', item.id]);
             if(item.selected){
-              //select all parent and children
               parent.selected = true;
-              _.forEach(parent.childList, function(children) {
-                children.selected = true;
-              });
             }
-            else if(item.childList && item.childList.length > 0){
+            if(item.childList && item.childList.length > 0){
               //check for children selections
               if((_.findIndex(item.childList, ['selected', true])) != -1){
                 //open children options
@@ -351,10 +406,6 @@ app.controller('budgetCtrl', [
 
       if (parent.selected) $scope.selectedKeys.push(parent);
       else _.remove($scope.selectedKeys, { id: parent.id });
-      
-      _.forEach(parent.childList, function(child) {
-        child.selected = parent.selected;
-      });
     }
 
     /**
@@ -366,15 +417,6 @@ app.controller('budgetCtrl', [
       
       if (child.selected) $scope.selectedKeys.push(child);
       else _.remove($scope.selectedKeys, { id: child.id });
-
-      if(_.findIndex(parent.childList, ['selected', false]) == -1){
-        //all children are selected
-        parent.selected = true;
-      }
-      else{
-        //one or more children are not selected
-        parent.selected = false;
-      }
     }
 
     /**

@@ -103,7 +103,7 @@ app.service("jobcostService", [
      *                                { status: jobStatus, catField, catField1, catCode, catCode1 }
      * @return {promise}              Promise from the $http request
      */
-    this.getSheetData = function (type, month, year, departmentKey, companyKey, projectKey, jobKey, options) {
+    this.getSheetData = function (type, month, year, departmentKey, companyKey, projectKey, jobKey, layout, options) {
       var requestData = {
         month: month,
         year: year,

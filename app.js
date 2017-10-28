@@ -1,3 +1,6 @@
+if (!('VCAP_SERVICES' in process.env)) {
+  require('dotenv').config({ path: process.env.ENVPATH });
+}
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -5,21 +8,9 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-/*
-const oracle = require('oracledb');
-
-oracle.createPool({
-  user: 'jdeview',
-  password: 'viewonly',
-  connectString: 'cap-sg-prd-1.integration.ibmcloud.com:16019/JDEPD910'
-}, (err, pool) => {
-  console.log('created pool');
-});
-
-*/
-
 var routes = require('./routes/index');
 var budget = require('./routes/budget');
+var book = require('./routes/book');
 var job = require('./routes/job');
 
 var app = express();
@@ -43,6 +34,7 @@ app.use('/node_modules/core-js', express.static(__dirname + '/node_modules/core-
 
 app.use('/', routes);
 app.use('/ks2inc/budget', budget);
+app.use('/ks2inc/book', book);
 app.use('/ks2inc/job', job);
 
 // catch 404 and forward to error handler

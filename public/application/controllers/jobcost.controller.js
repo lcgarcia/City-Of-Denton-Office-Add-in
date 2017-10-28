@@ -227,10 +227,11 @@ app.controller('jobcostCtrl', [
       var year = $scope.selectedValues.dates.jdeYear;
       var month = $scope.selectedValues.dates.monthStart;
 
+      var layout = $scope.selectedValues.details;
       
       modalService.showReportLoadingModal();
       $scope.showReportDetails = true;
-      jobcostService.getSheetData(rType, month, year, dKey, cKey, pKey, jKey, { projects: $scope.filteredProject })
+      jobcostService.getSheetData(rType, month, year, dKey, cKey, pKey, jKey, layout, { projects: $scope.filteredProject })
       .then(function (data) {
         try {
           _.forEach(data.hiddenRows, function(child) {
