@@ -226,7 +226,6 @@ app.controller('jobcostCtrl', [
       var jKey = $scope.selectedValues.job.key;
       var year = $scope.selectedValues.dates.jdeYear;
       var month = $scope.selectedValues.dates.monthStart;
-
       var layout = $scope.selectedValues.details;
       
       modalService.showReportLoadingModal();

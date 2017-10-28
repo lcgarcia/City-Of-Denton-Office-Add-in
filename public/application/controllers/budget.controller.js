@@ -74,7 +74,7 @@ app.controller('budgetCtrl', [
       $scope.selectedValues.book = $scope.filteredBooks[0];
       setReportData();
 
-      BookService.getUserBooks($scope.userSelection.userId)
+      BookService.getUserBooks($scope.userSelection.userId, ($stateParams.type || 'default'))
         .then(function (books) {
           $scope.filteredBooks = _.concat($scope.filteredBooks, books);
         }).catch(function (err) {
@@ -239,11 +239,13 @@ app.controller('budgetCtrl', [
         $scope.modalBook.error = getBookSaveError(name);
         if($scope.modalBook.error == ""){
           book.name = name;
+          book.reportType = $stateParams.type || 'default';
           // Save book to cloudant 
           BookService.updateBook(book)
             .then(function (data) {
               var bookIndex = _.findIndex($scope.filteredBooks, ['id', $scope.selectedValues.book.id]);
               $scope.filteredBooks[bookIndex] = data;
+              $scope.selectedValues.book = data;
             }).catch(function (err) {
               console.log(err);
             });
@@ -256,16 +258,15 @@ app.controller('budgetCtrl', [
           
           delete bookCopy["$$hashKey"];
           delete bookCopy.rev;
+          delete bookCopy.id;
           bookCopy.name = name;
-          bookCopy.id = bookCopy.id+"0";
-          $scope.filteredBooks.push(bookCopy);
-          $scope.selectedValues.book = $scope.filteredBooks[$scope.filteredBooks.length-1];
+          bookCopy.reportType = $stateParams.type || 'default';
 
           // Save book to cloudant 
           BookService.createBook(bookCopy)
             .then(function (data) {
-              var bookIndex = _.findIndex($scope.filteredBooks, ['id', $scope.selectedValues.book.id]);
-              $scope.filteredBooks[bookIndex] = data;
+              $scope.filteredBooks.push(data);
+              $scope.selectedValues.book = $scope.filteredBooks[$scope.filteredBooks.length-1];
             }).catch(function (err) {
               console.log(err);
             });
@@ -277,6 +278,7 @@ app.controller('budgetCtrl', [
         $scope.filteredBooks.splice(bookIndex, 1);
         $scope.selectedValues.book = $scope.filteredBooks[0];
         $scope.changeBook();
+        book.reportType = $stateParams.type || 'default';
         BookService.deleteBook(book)
           .then(function (data) {
             if ($scope.filteredBooks.length === 1) {
@@ -289,10 +291,12 @@ app.controller('budgetCtrl', [
       else if(option == 'Save Changes'){
         var selectionCopy = _.cloneDeep($scope.parentList);
         book.selectionList = selectionCopy;
+        book.reportType = $stateParams.type || 'default';
         BookService.updateBook(book)
           .then(function (data) {
             var bookIndex = _.findIndex($scope.filteredBooks, ['id', $scope.selectedValues.book.id]);
             $scope.filteredBooks[bookIndex] = data;
+            $scope.selectedValues.book = data;
           }).catch(function (err) {
             console.log(err);
           });
@@ -303,17 +307,18 @@ app.controller('budgetCtrl', [
           var bookCopy = _.clone($scope.userSelection);
           var selectionCopy = _.cloneDeep($scope.parentList);
 
-          bookCopy.id = getNextBookId();
+          //bookCopy.id = getNextBookId();
+          delete bookCopy.id;
           bookCopy.name = name;
           bookCopy.selectionList = selectionCopy;
-          $scope.filteredBooks.push(bookCopy);
-          $scope.selectedValues.book = $scope.filteredBooks[$scope.filteredBooks.length-1];
+
+          bookCopy.reportType = $stateParams.type || 'default';
 
           // Save book to cloudant 
           BookService.createBook(bookCopy)
             .then(function (data) {
-              var bookIndex = _.findIndex($scope.filteredBooks, ['id', $scope.selectedValues.book.id]);
-              $scope.filteredBooks[bookIndex] = data;
+              $scope.filteredBooks.push(data);
+              $scope.selectedValues.book = $scope.filteredBooks[$scope.filteredBooks.length-1];
             }).catch(function (err) {
               console.log(err);
             });

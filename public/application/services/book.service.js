@@ -35,8 +35,8 @@ app.service("BookService", [
       });
     }
 
-    this.getUserBooks = function (userId) {
-      return $http.get('/ks2inc/book/user/' + userId)
+    this.getUserBooks = function (userId, reportType) {
+      return $http.get('/ks2inc/book/user/' + userId + '/' + reportType)
       .then(function (response) {
         return response.data;
       },
