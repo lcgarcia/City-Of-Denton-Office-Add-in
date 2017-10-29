@@ -57,6 +57,7 @@ app.service("budgetService", [
           hideRows,
           insertDataToWorkSheet,
           setSubTotalFormat,
+          addGrandTotal,
           setMainHeaderFormat,
           setHeader,
         ], cb);
@@ -202,6 +203,34 @@ app.service("budgetService", [
             next({err: err, stage: 'setSubTotalColor'});
           });
       })
+    };
+
+    var addGrandTotal = function (data, next) {
+      Excel.run(function (ctx) {
+        var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+        var headerOffset = 6;
+        var length = headerOffset + data.sheetData.length;
+        var range = 'E' + length + ':S' + length;
+        var grandTotalData = [['Net Income/(Loss)', '=SUBTOTAL(9,F6:F' + (length-1) + ')', '=SUBTOTAL(9,G6:G' + (length-1) + ')', '=SUBTOTAL(9,H6:H' + (length-1) + ')', '=SUBTOTAL(9,I6:I' + (length-1) + ')', '=SUBTOTAL(9,J6:J' + (length-1) + ')', '=SUBTOTAL(9,K6:K' + (length-1) + ')', '=SUBTOTAL(9,L6:L' + (length-1) + ')', '=SUBTOTAL(9,M6:M' + (length-1) + ')', '=SUBTOTAL(9,N6:N' + (length-1) + ')', '=SUBTOTAL(9,O6:O' + (length-1) + ')', '=SUBTOTAL(9,P6:P' + (length-1) + ')', '=SUBTOTAL(9,Q6:Q' + (length-1) + ')', '=SUBTOTAL(9,R6:R' + (length-1) + ')', '=SUBTOTAL(9,S6:S' + (length-1) + ')']];
+
+        var range = worksheet.getRange(range);
+        range.load('values');
+        range.values = grandTotalData;
+
+        var format = '_($* #,##0.00_);[Red]_($* (#,##0.00);_($* #,##0.00_);_(@_)';
+        range.numberFormat = [_.fill(Array(15), format)];
+        range.format.font.bold = true;
+        range.format.font.color = '#00037B';
+        range.format.rowHeight = 40;
+        range.format.verticalAlignment = 'Center';
+
+        return ctx.sync()
+          .then(function (res) {
+            next(null, data);
+          }).catch(function (err) {
+            next({err: err, stage: 'addGrandTotal', len: sheetLength });
+          });
+      });
     };
 
     var setMainHeaderFormat = function (data, next) {

@@ -158,6 +158,7 @@ app.service("jobcostService", [
           hideRows,
           insertDataToWorkSheet,
           setSubTotalFormat,
+          addGrandTotal,
           setHeader,
         ], cb);
       } catch (e) {
@@ -302,6 +303,32 @@ app.service("jobcostService", [
             next({err: err, stage: 'setSubTotalColor'});
           });
       })
+    };
+
+    var addGrandTotal = function (data, next) {
+      Excel.run(function (ctx) {
+        var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+        var headerOffset = 6;
+        var length = headerOffset + data.sheetData.length;
+        var range = 'D' + length + ':K' + length;
+        var grandTotalData = [['Grand Total', '', '', '=SUBTOTAL(9,G6:G' + (length-1) + ')', '=SUBTOTAL(9,H6:H' + (length-1) + ')', '=SUBTOTAL(9,I6:I' + (length-1) + ')', '=SUBTOTAL(9,J6:J' + (length-1) + ')', '=SUBTOTAL(9,K6:K' + (length-1) + ')']];
+
+        var range = worksheet.getRange(range);
+        range.load('values');
+        range.values = grandTotalData;
+
+        var format = '_($* #,##0.00_);_($* (#,##0.00);_($* "-"??_);_(@_)';
+        range.numberFormat = [_.fill(Array(8), format)];
+        range.format.font.bold = true;
+        range.format.font.color = 'black';
+
+        return ctx.sync()
+          .then(function (res) {
+            next(null, data);
+          }).catch(function (err) {
+            next({err: err, stage: 'addGrandTotal', len: sheetLength });
+          });
+      });
     };
 
     var setHeader = function (data, next) {
