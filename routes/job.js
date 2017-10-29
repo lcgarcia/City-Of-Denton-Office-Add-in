@@ -3,7 +3,6 @@ const _ = require('lodash');
 const async = require('async');
 const router = express.Router()
 const Generator = require('../lib/JobCostSQLGenerator')
-const oracleQuery = require('../lib/OracleQuery')
 const knexQuery = require('../lib/KnexQuery')
 const dataFormater = require('../lib/DataFormater')
 
