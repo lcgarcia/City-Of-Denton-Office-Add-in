@@ -20,6 +20,10 @@ router.get('/', (req, res, next) => {
   res.render('index', { title: 'Express' });
 });
 
+router.get('/datasource', (req, res, next) => {
+  res.render('datasource', { title: 'Express' });
+});
+
 router.get('/test', (req, res) => {
   oracle.getConnection(connection, (err, connection) => {
     if(err) res.send(err);

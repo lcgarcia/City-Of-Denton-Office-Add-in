@@ -11,6 +11,7 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var budget = require('./routes/budget');
 var book = require('./routes/book');
+var datasource = require('./routes/datasource');
 var job = require('./routes/job');
 
 var app = express();
@@ -35,6 +36,7 @@ app.use('/node_modules/core-js', express.static(__dirname + '/node_modules/core-
 app.use('/', routes);
 app.use('/ks2inc/budget', budget);
 app.use('/ks2inc/book', book);
+app.use('/ks2inc/datasource', datasource);
 app.use('/ks2inc/job', job);
 
 // catch 404 and forward to error handler
