@@ -227,6 +227,27 @@ app.controller('jobcost2Ctrl', [
       $("#jdeCalendar").click();
     }
 
+
+    /**
+     * [searchData shows/hides options depending on the value that is entered in searchbox]
+     */
+    $scope.searchData = function(){
+      var filter, ul, li, parentText, i;
+      filter = $scope.selectedValues.data.searchInput.toUpperCase();
+      ul = document.getElementById("containerList");
+      li = ul.getElementsByClassName("containerData");
+      for (i = 0; i < li.length; i++) {
+        parentText = li[i].getElementsByTagName("label")[0].innerText.toUpperCase().trim();
+        
+        if (parentText.indexOf(filter) > -1) {
+          li[i].style.display = "";
+        }
+        else{
+          li[i].style.display = "none";
+        }
+      }
+    };
+
     $scope.toggleAllRows = function (show) {
       Excel.run(function (ctx) {
         var worksheet = ctx.workbook.worksheets.getItem('Jobcost-90');
