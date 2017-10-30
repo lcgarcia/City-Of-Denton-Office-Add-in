@@ -33,10 +33,18 @@ router.get('/ui/data', (req, res) => {
       };
     });
 
-    async.parallel(queries, (err, results) => {
-      if (err) res.send({err: err});
-      else res.send(results);
+    const queryDB = (cb) => {
+      async.parallel(queries, (err, results) => {
+        if (err) cb(err);
+        else cb(null, results);
+      });
+    };
+
+    async.retry(2, queryDB, (err, result) => {
+      if (err) res.send(err);
+      else res.send(result);
     });
+
   });
 });
 
@@ -73,12 +81,16 @@ router.post('/sheet/data', (req, res) => {
 
     const sql = generator.createSelectStatement(req.body.month, req.body.year, options);
 
-    //console.log(sql);
+    const queryDB = (cb) => {
+      knexQuery.jobSheetDataQuery(sql, req.body.projectList)
+      .then(result => cb(null, result))
+      .catch(err => cb(err));
+    };
 
-    //oracleQuery.jobSheetDataQuery(sql)
-    knexQuery.jobSheetDataQuery(sql, req.body.projectList)
-    .then(result => res.send(result))
-    .catch(err => res.send(err));
+    async.retry(2, queryDB, (err, result) => {
+      if (err) res.send(err);
+      else res.send(result);
+    });
   });
 });
 
@@ -88,9 +100,19 @@ router.get('/departments', (req, res) => {
     const generator = new Generator({ type: req.query.type || '', schema: schema.schema, ctrlSchema: schema.controlSchema })
     var sqlData = generator.getUIData();
 
-    knexQuery.query(sqlData.departments)
-    .then(result => res.send(result))
-    .catch(err => res.send(err))
+    const queryDB = (cb) => {
+      console.log('trying');
+      knexQuery.query(sqlData.departments)
+      .then(result => { console.log('HERE'); cb(null, result); })
+      .catch(err => { knexQuery.reconnect(); cb(err, null); });
+      //.then(result => res.send(result))
+      //.catch(err => res.send(err))
+    }
+
+    async.retry(2, queryDB, (err, result) => {
+      if (err) res.send(err);
+      else res.send(result);
+    });
   });
 });
 
@@ -101,9 +123,16 @@ router.get('/companies/:department', (req, res) => {
     // The type does not matter here but you can included it if you would like
     const generator = new Generator({ type: req.query.type || '', schema: schema.schema, ctrlSchema: schema.controlSchema })
 
-    knexQuery.query(generator.getCompanySelections(req.params.department))
-    .then(result => res.send(result))
-    .catch(err => res.send(err))
+    const queryDB = (cb) => {
+      knexQuery.query(generator.getCompanySelections(req.params.department))
+      .then(result => cb(null, result))
+      .catch(err => cb(err));
+    };
+
+    async.retry(2, queryDB, (err, result) => {
+      if (err) res.send(err);
+      else res.send(result);
+    });
   });
 });
 
@@ -114,9 +143,16 @@ router.get('/project/:department/:company', (req, res) => {
     // you must specify a report type unless it is blank
     const generator = new Generator({ type: req.query.type || '', schema: schema.schema, ctrlSchema: schema.controlSchema })
 
-    knexQuery.query(generator.getProjectSelections(req.params.department, req.params.company))
-    .then(result => res.send(result))
-    .catch(err => res.send(err))
+    const queryDB = (cb) => {
+      knexQuery.query(generator.getProjectSelections(req.params.department, req.params.company))
+      .then(result => cb(null, result))
+      .catch(err => cb(err));
+    };
+
+    async.retry(2, queryDB, (err, result) => {
+      if (err) res.send(err);
+      else res.send(result);
+    });
   });
 });
 
@@ -127,9 +163,16 @@ router.get('/:department/:company/:project', (req, res) => {
     const generator = new Generator({ type: req.query.type || '', schema: schema.schema, ctrlSchema: schema.controlSchema })
     const jobStatus = req.query.jobstatus || '';
 
-    knexQuery.query(generator.getJobSelections(req.params.department, req.params.company, req.params.project, jobStatus))
-    .then(result => res.send(result))
-    .catch(err => res.send(err))
+    const queryDB = (cb) => {
+      knexQuery.query(generator.getJobSelections(req.params.department, req.params.company, req.params.project, jobStatus))
+      .then(result => cb(null, result))
+      .catch(err => cb(err));
+    };
+
+    async.retry(2, queryDB, (err, result) => {
+      if (err) res.send(err);
+      else res.send(result);
+    });
   });
 });
 
@@ -139,9 +182,16 @@ router.get('/code/detail/:department/:company/:project/:status/:job/:catcode', (
     const generator = new Generator({ type: req.query.type || '', schema: schema.schema, ctrlSchema: schema.controlSchema })
     const sql = generator.getCadeCodeDetail(req.params.department, req.params.company, req.params.project, req.params.status, req.params.job, req.params.catcode);
 
-    knexQuery.query(sql)
-    .then(result => res.send(result))
-    .catch(err => res.send(err));
+    const queryDB = (cb) => {
+      knexQuery.query(sql)
+      .then(result => cb(null, result))
+      .catch(err => cb(err));
+    };
+
+    async.retry(2, queryDB, (err, result) => {
+      if (err) res.send(err);
+      else res.send(result);
+    });
   });
 });
 
