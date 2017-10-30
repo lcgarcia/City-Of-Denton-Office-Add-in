@@ -43,9 +43,8 @@ app.controller('budgetCtrl', [
     });
 
     $scope.budgetSheetData = [];
-    $scope.showReportDetails = false;
+    $scope.reportDetails = {};
 
-    $scope.debugMessage = "";
     $scope.dataErrorMsg = "No Data Returned";
 
     /**
@@ -67,6 +66,9 @@ app.controller('budgetCtrl', [
       $scope.selectedValues.searchInput = ""; 
       $scope.selectedValues.book = {};
       $scope.selectedValues.selectAll = false;
+
+      $scope.reportDetails.show = false;
+      $scope.reportDetails.msg = "";
 
       $scope.selectedValues.worksheet = "";
 
@@ -624,7 +626,7 @@ app.controller('budgetCtrl', [
           }).catch(function (err) {
             /*
             $scope.$apply(function () {
-              $scope.debugMessage = err;
+              $scope.reportDetails.msg = err;
             });
             */
           });
@@ -634,6 +636,8 @@ app.controller('budgetCtrl', [
 
     function changeReportDetails(sheetName){
       $scope.selectedValues.worksheet = sheetName;
+      $scope.reportDetails.name = sheetName;
+
       var index = sheetName.indexOf('_');
       if(index != -1){
         var name = sheetName.substring(0, index);
@@ -647,6 +651,24 @@ app.controller('budgetCtrl', [
       else{
         $scope.sheetData = [];
       }
+      
+      if($scope.sheetData && $scope.sheetData.hiddenRows && $scope.sheetData.hiddenRows.length > 0){
+        $scope.reportDetails.msg = "";
+      }
+      else{
+        $scope.reportDetails.msg = $scope.dataErrorMsg;
+      }
+      
+    }
+
+
+    /**
+     * [selectedDataAll selectAll checkbox selected. Set Sheet Data values to selectAll value]
+     */
+    $scope.selectedDataAll = function(){
+      _.forEach($scope.sheetData.hiddenRows, function(parent) {
+        parent.selected = $scope.selectedValues.data.selectAll;
+      });
     }
 
     /**
@@ -682,7 +704,7 @@ app.controller('budgetCtrl', [
           .then(function () {}).catch(function (err) {
             /*
             $scope.$apply(function () {
-              $scope.debugMessage = err;
+              $scope.reportDetails.msg = err;
             });
             */
           });
@@ -699,7 +721,7 @@ app.controller('budgetCtrl', [
           .then(function () {}).catch(function (err) {
             /*
             $scope.$apply(function () {
-              $scope.debugMessage = err;
+              $scope.reportDetails.msg = err;
             });
             */
           });
@@ -712,10 +734,10 @@ app.controller('budgetCtrl', [
       var subledgers;
 
       modalService.showReportLoadingModal();
-      $scope.showReportDetails = true;
+      $scope.reportDetails.show = true;
       
       if(keys && keys.length > 0){
-        $scope.debugMessage = "";
+        $scope.reportDetails.msg = "";
         if ($scope.selectedValues.report.type == 'f') {
           var keysAndSubledgers = $scope.getKeysAndSubledgers();
           keys = keysAndSubledgers.keys;
@@ -739,13 +761,14 @@ app.controller('budgetCtrl', [
             $scope.sheetData = sheetData;
             budgetService.insertSpreadSheetData(sheetData, function (err, data) {
               modalService.hideReportLoadingModal();
+              /*
               if (err) {
-                $scope.debugMessage = $scope.dataErrorMsg;
+                $scope.reportDetails.msg = $scope.dataErrorMsg;
                 $scope.$apply(function () {
-                  $scope.debugMessage = $scope.dataErrorMsg;
+                  $scope.reportDetails.msg = $scope.dataErrorMsg;
                 });
               }
-
+              */
             });
           });
         }).catch(function (err) {
@@ -753,7 +776,7 @@ app.controller('budgetCtrl', [
         });
       }
       else{
-        $scope.debugMessage = $scope.dataErrorMsg;
+        $scope.reportDetails.msg = $scope.dataErrorMsg;
         modalService.hideReportLoadingModal();
       }
     };

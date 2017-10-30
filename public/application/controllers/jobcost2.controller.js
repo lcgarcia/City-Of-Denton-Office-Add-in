@@ -227,6 +227,15 @@ app.controller('jobcost2Ctrl', [
       $("#jdeCalendar").click();
     }
 
+    /**
+     * [selectedDataAll selectAll checkbox selected. Set Sheet Data values to selectAll value]
+     */
+    $scope.selectedDataAll = function(){
+      _.forEach($scope.sheetData.hiddenRows, function(parent) {
+        parent.selected = $scope.selectedValues.data.selectAll;
+      });
+    }
+
 
     /**
      * [searchData shows/hides options depending on the value that is entered in searchbox]
