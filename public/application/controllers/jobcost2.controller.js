@@ -43,6 +43,9 @@ app.controller('jobcost2Ctrl', [
     $scope.selectedValues.optional = {};
     $scope.showReportDetails = false;
 
+    $scope.debugMessage = "";
+    $scope.dataErrorMsg = "No Data Returned";
+
     $rootScope.$on('$viewContentLoaded', jobcost2ReportDates);
     $(document).ready(function(){
       //Enables popup help boxes over labels
@@ -235,9 +238,11 @@ app.controller('jobcost2Ctrl', [
 
         return ctx.sync()
           .then(function () {}).catch(function (err) {
+            /*
             $scope.$apply(function () {
               $scope.debugMessage = err;
             });
+            */
           });
       });
     }
@@ -250,9 +255,11 @@ app.controller('jobcost2Ctrl', [
 
         return ctx.sync()
           .then(function () {}).catch(function (err) {
+            /*
             $scope.$apply(function () {
-              //$scope.debugMessage = err;
+              $scope.debugMessage = err;
             });
+            */
           });
       });
     };
@@ -281,9 +288,10 @@ app.controller('jobcost2Ctrl', [
         catCode1: catCode1
       }
 
-      
       modalService.showReportLoadingModal();
       $scope.showReportDetails = true;
+      $scope.debugMessage = "";
+
       jobcostService.getSheetData(rType, month, year, dKey, cKey, pKey, jKey, layout, options)
       .then(function (data) {
         try {
@@ -295,19 +303,16 @@ app.controller('jobcost2Ctrl', [
           jobcostService.insertSpreadSheetData(data, function(err, response){
             modalService.hideReportLoadingModal();
             if (err) {
-              /*
+              $scope.debugMessage = $scope.dataErrorMsg;
               $scope.$apply(function () {
-                $scope.debugMessage = err;
-              })
-              */ 
-            } else {
-              //$scope.debugMessage = 'DONE';
+                $scope.debugMessage = $scope.dataErrorMsg;
+              });
             }
+
           });
         } catch (e) {
           console.log(data);
-        }
-        
+        }       
       });
     };
 

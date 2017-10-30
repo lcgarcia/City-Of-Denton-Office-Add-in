@@ -193,7 +193,7 @@
             Run Report
          </button>
       </div>
-      <p>{{debugMessage}}</p>
+      
       <!-- Panel Run End-->
    </div>
 </div>
@@ -202,6 +202,11 @@
 <!-- Panel Report Deatils Start--> 
 <div class="panel-group" style="margin-bottom:0; margin-left: 0.5px;" ng-show="showReportDetails" ng-mouseover=getActiveSheet()>
    <div class="panel panel-default panel-report">
+
+      <div class="alert alert-warning" role="alert" style="margin-bottom: 0; padding: 10px;" ng-show="debugMessage">
+        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> 
+        {{debugMessage}}
+      </div>
       <div class="panel-heading" style="border-top: 0;">
          <h4 class="panel-title">        
             Select Excel Report Details

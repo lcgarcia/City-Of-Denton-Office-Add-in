@@ -45,6 +45,9 @@ app.controller('budgetCtrl', [
     $scope.budgetSheetData = [];
     $scope.showReportDetails = false;
 
+    $scope.debugMessage = "";
+    $scope.dataErrorMsg = "No Data Returned";
+
     /**
      * [buildPage sets selected values]
      */
@@ -593,9 +596,11 @@ app.controller('budgetCtrl', [
           .then(function(response) {
             changeReportDetails(activeWorksheet.name);
           }).catch(function (err) {
+            /*
             $scope.$apply(function () {
-              // $scope.debugMessage = err;
+              $scope.debugMessage = err;
             });
+            */
           });
 
       });
@@ -629,9 +634,11 @@ app.controller('budgetCtrl', [
 
         return ctx.sync()
           .then(function () {}).catch(function (err) {
+            /*
             $scope.$apply(function () {
               $scope.debugMessage = err;
             });
+            */
           });
       });
     }
@@ -644,9 +651,11 @@ app.controller('budgetCtrl', [
 
         return ctx.sync()
           .then(function () {}).catch(function (err) {
+            /*
             $scope.$apply(function () {
-              //$scope.debugMessage = err;
+              $scope.debugMessage = err;
             });
+            */
           });
       });
     };
@@ -655,14 +664,17 @@ app.controller('budgetCtrl', [
       var keys = _.map($scope.selectedKeys, function (key) { return key.id });
       var accounts = $scope.selectedValues.reportType;
       var subledgers;
+
+      modalService.showReportLoadingModal();
+      $scope.showReportDetails = true;
+      $scope.debugMessage = "";
+      
       if ($scope.selectedValues.report.type == 'f') {
         var keysAndSubledgers = $scope.getKeysAndSubledgers();
         keys = keysAndSubledgers.keys;
         subledgers = keysAndSubledgers.subledgers;
       }
       
-      modalService.showReportLoadingModal();
-      $scope.showReportDetails = true;
       budgetService.getSheetData($scope.selectedValues.report.type, keys, $scope.selectedValues.month, 'Comp', $scope.selectedValues.dates.jdeYear, accounts, { subledgers: subledgers })
       .then(function (data) {
 
@@ -681,12 +693,12 @@ app.controller('budgetCtrl', [
           budgetService.insertSpreadSheetData(sheetData, function (err, data) {
             modalService.hideReportLoadingModal();
             if (err) {
+              $scope.debugMessage = $scope.dataErrorMsg;
               $scope.$apply(function () {
-                //$scope.debugMessage = err;
-              })
-            } else {
-              //$scope.debugMessage = 'DONE';
+                $scope.debugMessage = $scope.dataErrorMsg;
+              });
             }
+
           });
         });
       }).catch(function (err) {

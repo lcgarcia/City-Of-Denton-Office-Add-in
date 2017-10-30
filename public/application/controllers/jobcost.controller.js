@@ -30,6 +30,9 @@ app.controller('jobcostCtrl', [
     $scope.sheetData = {};
     $scope.showReportDetails = false;
 
+    $scope.debugMessage = "";
+    $scope.dataErrorMsg = "No Data Returned";
+
     $rootScope.$on('$viewContentLoaded', jobcostReportDates);
 
     $(document).ready(function(){
@@ -196,9 +199,11 @@ app.controller('jobcostCtrl', [
 
         return ctx.sync()
           .then(function () {}).catch(function (err) {
+            /*
             $scope.$apply(function () {
               $scope.debugMessage = err;
             });
+            */
           });
       });
     }
@@ -211,9 +216,11 @@ app.controller('jobcostCtrl', [
 
         return ctx.sync()
           .then(function () {}).catch(function (err) {
+            /*
             $scope.$apply(function () {
-              //$scope.debugMessage = err;
+              $scope.debugMessage = err;
             });
+            */
           });
       });
     };
@@ -230,6 +237,8 @@ app.controller('jobcostCtrl', [
       
       modalService.showReportLoadingModal();
       $scope.showReportDetails = true;
+      $scope.debugMessage = "";
+      
       jobcostService.getSheetData(rType, month, year, dKey, cKey, pKey, jKey, layout, { projects: $scope.filteredProject })
       .then(function (data) {
         try {
@@ -240,13 +249,13 @@ app.controller('jobcostCtrl', [
           data.scope = $scope;
           jobcostService.insertSpreadSheetData(data, function(err, response){
             modalService.hideReportLoadingModal();
-            if (err) {
+            if(err){
+              $scope.debugMessage = $scope.dataErrorMsg;
               $scope.$apply(function () {
-                $scope.debugMessage = err;
-              })
-            } else {
-              //$scope.debugMessage = 'DONE';
+                $scope.debugMessage = $scope.dataErrorMsg;
+              });
             }
+
           });
           //modalService.hideDataLoadingModal();
         } catch (e) {
