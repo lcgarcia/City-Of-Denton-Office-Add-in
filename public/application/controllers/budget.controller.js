@@ -25,7 +25,7 @@ app.controller('budgetCtrl', [
     $scope.budgetList = [];
     $scope.parentList = [];
     $scope.filteredBooks = [
-      {id:"00", name:"--Please select---", user:"default",
+      {id:"00", name:"---Select Book---", user:"default",
         selectionList:[]
       }
     ];
@@ -713,43 +713,49 @@ app.controller('budgetCtrl', [
 
       modalService.showReportLoadingModal();
       $scope.showReportDetails = true;
-      $scope.debugMessage = "";
       
-      if ($scope.selectedValues.report.type == 'f') {
-        var keysAndSubledgers = $scope.getKeysAndSubledgers();
-        keys = keysAndSubledgers.keys;
-        subledgers = keysAndSubledgers.subledgers;
-      }
-      
-      budgetService.getSheetData($scope.selectedValues.report.type, keys, $scope.selectedValues.month, 'Comp', $scope.selectedValues.dates.jdeYear, accounts, { subledgers: subledgers })
-      .then(function (data) {
+      if(keys && keys.length > 0){
+        $scope.debugMessage = "";
+        if ($scope.selectedValues.report.type == 'f') {
+          var keysAndSubledgers = $scope.getKeysAndSubledgers();
+          keys = keysAndSubledgers.keys;
+          subledgers = keysAndSubledgers.subledgers;
+        }
+        
+        budgetService.getSheetData($scope.selectedValues.report.type, keys, $scope.selectedValues.month, 'Comp', $scope.selectedValues.dates.jdeYear, accounts, { subledgers: subledgers })
+        .then(function (data) {
 
-        $scope.budgetSheetData = data;
-        _.forEach(data, function (sheetData, key) {
-          _.forEach(sheetData.hiddenRows, function(child) {
-            child.selected = false;
-          });
-          sheetData.scope = $scope;
-          sheetData.accountType = accounts;
-          sheetData.month = $scope.selectedValues.month;
-          sheetData.year = $scope.selectedValues.dates.jdeYear;
-          sheetData.sheetKey = key;
+          $scope.budgetSheetData = data;
+          _.forEach(data, function (sheetData, key) {
+            _.forEach(sheetData.hiddenRows, function(child) {
+              child.selected = false;
+            });
+            sheetData.scope = $scope;
+            sheetData.accountType = accounts;
+            sheetData.month = $scope.selectedValues.month;
+            sheetData.year = $scope.selectedValues.dates.jdeYear;
+            sheetData.sheetKey = key;
 
-          $scope.sheetData = sheetData;
-          budgetService.insertSpreadSheetData(sheetData, function (err, data) {
-            modalService.hideReportLoadingModal();
-            if (err) {
-              $scope.debugMessage = $scope.dataErrorMsg;
-              $scope.$apply(function () {
+            $scope.sheetData = sheetData;
+            budgetService.insertSpreadSheetData(sheetData, function (err, data) {
+              modalService.hideReportLoadingModal();
+              if (err) {
                 $scope.debugMessage = $scope.dataErrorMsg;
-              });
-            }
+                $scope.$apply(function () {
+                  $scope.debugMessage = $scope.dataErrorMsg;
+                });
+              }
 
+            });
           });
+        }).catch(function (err) {
+          console.log(err);
         });
-      }).catch(function (err) {
-        console.log(err);
-      });
+      }
+      else{
+        $scope.debugMessage = $scope.dataErrorMsg;
+        modalService.hideReportLoadingModal();
+      }
     };
 
     buildPage();
