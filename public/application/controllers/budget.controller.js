@@ -658,7 +658,6 @@ app.controller('budgetCtrl', [
       else{
         $scope.reportDetails.msg = $scope.dataErrorMsg;
       }
-      
     }
 
 
@@ -761,6 +760,9 @@ app.controller('budgetCtrl', [
             $scope.sheetData = sheetData;
             budgetService.insertSpreadSheetData(sheetData, function (err, data) {
               modalService.hideReportLoadingModal();
+              $scope.$apply(function () {
+                $scope.getActiveSheet();
+              });
               /*
               if (err) {
                 $scope.reportDetails.msg = $scope.dataErrorMsg;
@@ -774,11 +776,13 @@ app.controller('budgetCtrl', [
         }).catch(function (err) {
           console.log(err);
         });
+
       }
       else{
         $scope.reportDetails.msg = $scope.dataErrorMsg;
         modalService.hideReportLoadingModal();
       }
+
     };
 
     buildPage();

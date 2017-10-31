@@ -292,17 +292,27 @@
 <!-- Panel 1 End--> 
 
 <!-- Panel Report Deatils Start--> 
-<div class="panel-group" style="margin-bottom:0; margin-left: 0.5px;" ng-show="showReportDetails" ng-mouseover=getActiveSheet()>
+<div class="panel-group" style="margin-bottom:0; margin-left: 0.5px;" ng-show="reportDetails.show">
    <div class="panel panel-default panel-report">
 
-      <div class="alert alert-warning" role="alert" style="margin-bottom: 0; padding: 10px;" ng-show="debugMessage">
-        <i class="fa fa-exclamation-triangle" aria-hidden="true" style="padding-right: 5px;"></i> 
-        {{debugMessage}}
+      <div class="alert alert-info" 
+         role="alert" 
+         style="margin-bottom: 0; padding: 5px; border-radius: 0;">
+         {{reportDetails.name}}
       </div>
+
       <div class="panel-heading" style="border-top: 0;">
          <h4 class="panel-title">        
             Select Excel Report Details
          </h4>
+      </div>
+
+      <div class="alert alert-warning" 
+         role="alert" 
+         style="margin-bottom: 0; padding: 10px; border-radius: 0;" 
+         ng-show="reportDetails.msg">
+         <i class="fa fa-exclamation-triangle" aria-hidden="true" style="padding-right: 5px;"></i> 
+         {{reportDetails.msg}}
       </div>
       
       <div class="modal-header" style="padding: 0;" ng-show="sheetData.hiddenRows && sheetData.hiddenRows.length > 0">
