@@ -14,10 +14,19 @@ const release = (connection) => {
   });
 };
 
+var userCheck = (req, res, next) => {
+  if(req.user) {
+    req.session.nowInMinutes = Date.now() / 60e3;
+    return true;
+  } else return false;
+}
 
 /* GET home page. */
 router.get('/', (req, res, next) => {
-  res.render('index', { title: 'Express' });
+  if (userCheck(req))
+    res.render('app');
+  else 
+    res.render('index', { title: 'Express' });
 });
 
 router.get('/datasource', (req, res, next) => {

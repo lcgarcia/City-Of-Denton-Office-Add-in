@@ -127,17 +127,23 @@ function(req, res) {
 });
 
 app.get('/logout', function(req, res){
-  req.session.destroy(function(err) {
-    req.logOut();
-    res.redirect(config.destroySessionUrl);
-  });
+  // req.session.destroy();
+  req.logout();
+  res.redirect('/');
 });
 
+app.use('/SessionInfo', userCheck, (req, res) => {
+  res.send(req.user);
+});
+
+app.get('/proto', userCheck, (req, res) => {
+  res.send({ message: 'success' });
+});
 app.use('/', routes);
-app.use('/ks2inc/budget', budget);
-app.use('/ks2inc/book', book);
-app.use('/ks2inc/datasource', datasource);
-app.use('/ks2inc/job', job);
+app.use('/ks2inc/budget', userCheck, budget);
+app.use('/ks2inc/book', userCheck, book);
+app.use('/ks2inc/datasource', userCheck, datasource);
+app.use('/ks2inc/job', userCheck, job);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

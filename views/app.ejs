@@ -37,14 +37,13 @@
     
 </head>
 
-<body class="ms-font-m ms-welcome">
+<body class="ms-font-m ms-welcome" ng-app="ks-2-harvest">
     <header class="ms-setup__header ms-bgColor-neutralLighter ms-u-fadeIn500">
         <h4 style="font-weight: bold;">CITY OF</h4>
         <h2 style="font-weight: bold;">DENTON</h2>
    <!-- <img src="assets/CODlogo.png" alt="test add-in" title="test add-in" width="160" height="90" />  -->
     </header>
-    <a class="btn btn-lg btn-block btn-primary" href="/login">Login with Microsoft</a>
-    <!-- <div ui-view style="height: 100%;"></div> -->
+    <div ui-view style="height: 100%;"></div>
 
     <script type="text/javascript" src="node_modules/core-js/client/core.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
@@ -82,6 +81,7 @@
     <script type="text/javascript" src="/application/services/budget.service.js"></script>
     <script type="text/javascript" src="/application/services/jobcost.service.js"></script>
     <script type="text/javascript" src="/application/services/book.service.js"></script>
+    <script type="text/javascript" src="/application/services/session.service.js"></script>
 </body>
 
 </html>

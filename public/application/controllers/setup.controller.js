@@ -9,7 +9,8 @@ app.controller('setupCtrl', [
   '$state',
   '$stateParams',
   'jobcostService',
-  function ($http, $scope, $rootScope, $state, $stateParams, jobcostService) {
+  'SessionService',
+  function ($http, $scope, $rootScope, $state, $stateParams, jobcostService, SessionService) {
     var debugCreated = false;
     var dataCreated = false;
     var debugRange = 3;
@@ -41,6 +42,11 @@ app.controller('setupCtrl', [
 
 
     function loadPage(){
+      SessionService.getUserData()
+      .then(function (data) {
+        console.log(data);
+      })
+      /*
       if($stateParams.data.user){
         //page load after login, set user info
         $scope.user = $stateParams.data.user;
@@ -50,6 +56,7 @@ app.controller('setupCtrl', [
         //page refreshed, grab user name from session
         $scope.user = JSON.parse(sessionStorage.getItem('user'));
       }
+      */
       //Set Report IDs
       var i;
       for(i=0; i<$scope.filteredReports.length; i++){

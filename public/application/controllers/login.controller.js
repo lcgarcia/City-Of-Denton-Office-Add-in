@@ -20,6 +20,8 @@ app.controller('loginCtrl', [
 
   	$scope.modalLoad = {};
 
+    nextClick();
+
 
   	$scope.login = function(event) {
   		if(event){
