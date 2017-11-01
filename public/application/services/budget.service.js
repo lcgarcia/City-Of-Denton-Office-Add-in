@@ -58,6 +58,7 @@ app.service("budgetService", [
           insertDataToWorkSheet,
           setSubTotalFormat,
           addGrandTotal,
+          addSubtotalUnderline,
           setMainHeaderFormat,
           setHeader,
         ], cb);
@@ -233,6 +234,30 @@ app.service("budgetService", [
       });
     };
 
+    var addSubtotalUnderline = function (data, next) {
+      if ('allSubTotalRows' in data) {
+        Excel.run(function (ctx) {
+          var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+
+          var allSubtotals = _.clone(data.allSubTotalRows);
+          var boldSubtotals = _.clone(data.subTotalRows);
+          _.pullAll(allSubtotals, boldSubtotals);
+
+          _.forEach(allSubtotals, function (val) {
+            var numberRange = worksheet.getRange('F'+val+':S'+val);
+            numberRange.format.font.underline = 'Single';
+          });
+
+          return ctx.sync()
+            .then(function (res) {
+              next(null, data);
+            }).catch(function (err) {
+              next({err: err, stage: 'addSubtotalUnderline'});
+            });
+        });
+      } else next(null, data);
+    };
+
     var setMainHeaderFormat = function (data, next) {
       if ('mainHeaders' in data) {
         Excel.run(function (ctx) {
@@ -250,7 +275,7 @@ app.service("budgetService", [
             .then(function (res) {
               next(null, data);
             }).catch(function (err) {
-              next({err: err, stage: 'setSubTotalColor'});
+              next({err: err, stage: 'setMainHeaderFormat'});
             });
         });
       } else {
