@@ -49,7 +49,7 @@ router.get('/:id', (req, res) => {
     .catch(err => res.send(err));
 });
 
-router.get('/user/:userid/:reportType', (req, res) => {
+router.get('/user/:userId/:reportType', (req, res) => {
   books.find({ selector: { userId: req.params.userId, reportType: req.params.reportType } })
     .then(response => res.send(_.map(response.docs, (val) => {
       val.rev = val._rev;

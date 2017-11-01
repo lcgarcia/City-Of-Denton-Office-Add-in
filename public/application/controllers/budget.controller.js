@@ -67,19 +67,23 @@ app.controller('budgetCtrl', [
       $scope.selectedValues.worksheet = "";
 
       if($scope.user && $scope.user.name){
-        $scope.userSelection.userId = $scope.user.id;
-        $scope.userSelection.user = $scope.user.name
+        $scope.userSelection.userId = $scope.user.oid;
+        $scope.userSelection.user = $scope.user.displayName;
       }
       $scope.selectedValues.book = $scope.filteredBooks[0];
       setReportData();
+    }
 
-      BookService.getUserBooks($scope.userSelection.userId, ($stateParams.type || 'default'))
+    $scope.$on('userData', function (event, user) {
+      $scope.userSelection.userId = user.oid;
+      $scope.userSelection.user = user.displayName;
+      BookService.getUserBooks(user.oid, ($stateParams.type || 'default'))
         .then(function (books) {
           $scope.filteredBooks = _.concat($scope.filteredBooks, books);
         }).catch(function (err) {
           console.log(err);
-        })
-    }
+        });
+    });
 
 
     /**

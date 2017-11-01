@@ -48,22 +48,12 @@ app.controller('setupCtrl', [
       $scope.reportDetails.searchInput = "";
       $scope.reportDetails.msg = "No Data Returned";
       $scope.reportDetails.hiddenRows = [];
-      
+
       SessionService.getUserData()
       .then(function (data) {
-        console.log(data);
-      })
-      /*
-      if($stateParams.data.user){
-        //page load after login, set user info
-        $scope.user = $stateParams.data.user;
-        sessionStorage.setItem('user', JSON.stringify({ name: $scope.user.name, id: 1 }));
-      }
-      else{
-        //page refreshed, grab user name from session
-        $scope.user = JSON.parse(sessionStorage.getItem('user'));
-      }
-      */
+        $scope.user = data;
+        $scope.$broadcast('userData', data);
+      });
       //Set Report IDs
       var i;
       for(i=0; i<$scope.filteredReports.length; i++){
