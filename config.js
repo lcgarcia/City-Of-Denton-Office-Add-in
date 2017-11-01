@@ -19,7 +19,7 @@ exports.creds = {
     responseMode: 'form_post', 
   
     // Required, the reply URL registered in AAD for your app
-    redirectUrl: 'https://localhost:3000/auth/openid/return', 
+    redirectUrl: azure.returnUrl, 
   
     // Required if we use http for redirectUrl
     allowHttpForRedirectUrl: true,

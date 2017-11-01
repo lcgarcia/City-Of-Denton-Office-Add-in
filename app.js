@@ -75,7 +75,6 @@ passport.use(new OIDCStrategy({
   loggingLevel: config.creds.loggingLevel,
 },
 function(req, iss, sub, profile, accessToken, refreshToken, done) {
-  console.log(JSON.stringify(profile, null, 2))
   if (!profile.oid) {
     return done(new Error("No oid found"), null);
   } else {
