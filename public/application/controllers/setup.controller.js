@@ -24,10 +24,10 @@ app.controller('setupCtrl', [
     $scope.fetched = false;
 
     $scope.filteredReports = [
+      {name:"budrpt-90", type:''},
       {name:"budrpt_a-90", type:'a'},
       {name:"budrpt_e-90", type:'e'},
       {name:"budrpt_f-90", type:'f'},
-      {name:"budrpt-90", type:''},
       {name:"bjobcost-90", type:''},
       {name:"jobcost90_ka", type:'ka'},
       {name:"jobcoste-90", type:'e'},
@@ -46,6 +46,35 @@ app.controller('setupCtrl', [
       else $scope.reportDetails.msg = "No Data Returned";
     });
 
+    $scope.filterReports = function (data) {
+      var groups = data._json.groups;
+      if (_.includes(groups, '13d4a1b3-a96e-43e0-a747-bbea092ae269')) { // Accounting
+        $scope.filterReports = $scope.filterReports;
+      } else if (_.includes(groups, 'dc448ad6-3a34-437d-ab81-63498fb36dc0')) { // Electric
+        $scope.filteredReports = [
+          {name:"budrpt-90", type:''},
+          {name:"budrpt_e-90", type:'e'},
+          {name:"budrpt_f-90", type:'f'},
+          {name:"bjobcost-90", type:''},
+          {name:"jobcoste-90", type:'e'},
+          {name:"newjobcost-90", type:'new'},
+        ];
+      } else if (_.includes(groups, '01300353-41d6-4320-bed4-618e2bfeb19d')) { // Budget / Jobcost (General)
+        $scope.filteredReports = [
+          {name:"budrpt-90", type:''},
+          {name:"bjobcost-90", type:''},
+        ];
+        $state.go('setup.budget', { type: '' });
+      } else {
+        window.location.href = '/logout';
+      }
+
+      var i;
+      for(i=0; i<$scope.filteredReports.length; i++){
+        $scope.filteredReports[i].id = i;
+      }
+    };
+
 
     function loadPage(){
       $scope.reportDetails = {};
@@ -58,6 +87,7 @@ app.controller('setupCtrl', [
       SessionService.getUserData()
       .then(function (data) {
         $scope.user = data;
+        $scope.filterReports(data);
         $scope.$broadcast('userData', data);
       });
       //Set Report IDs
@@ -78,7 +108,7 @@ app.controller('setupCtrl', [
 
 
     $scope.logout = function(){
-      $state.go("login");
+      window.location.href = '/logout';
     }
 
 

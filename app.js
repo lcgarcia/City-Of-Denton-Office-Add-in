@@ -75,6 +75,7 @@ passport.use(new OIDCStrategy({
   loggingLevel: config.creds.loggingLevel,
 },
 function(req, iss, sub, profile, accessToken, refreshToken, done) {
+  console.log(JSON.stringify(profile, null, 2))
   if (!profile.oid) {
     return done(new Error("No oid found"), null);
   } else {
@@ -87,8 +88,7 @@ var userCheck = (req, res, next) => {
   if(req.user) {
     req.session.nowInMinutes = Date.now() / 60e3;
     next();
-  } else
-    res.redirect('/');
+  } else res.redirect('/');
 }
 
 app.get('/login',

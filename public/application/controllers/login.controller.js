@@ -115,7 +115,7 @@ app.controller('loginCtrl', [
 		$scope.user.isLoggedIn = true;
     	$scope.user.id = 1;
 
-		var stateObject = {type:'a', data:{user:$scope.user}};
+		var stateObject = {type:'', data:{user:$scope.user}};
 		$state.go("setup.budget", stateObject);
     //$state.go('setup.jobcost', {type: '', data:{user:$scope.user}})
 	}
