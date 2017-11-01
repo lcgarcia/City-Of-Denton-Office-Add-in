@@ -2,7 +2,7 @@ const azure = JSON.parse(process.env.VCAP_SERVICES)['user-provided'][0].credenti
 
 exports.creds = {
     // Required
-    identityMetadata: 'https://login.microsoftonline.com/Danwakeemgmail.onmicrosoft.com/.well-known/openid-configuration', 
+    identityMetadata: 'https://login.microsoftonline.com/common/.well-known/openid-configuration', 
     // or equivalently: 'https://login.microsoftonline.com/<tenant_guid>/.well-known/openid-configuration'
     //
     // or you can use the common endpoint
@@ -19,7 +19,7 @@ exports.creds = {
     responseMode: 'form_post', 
   
     // Required, the reply URL registered in AAD for your app
-    redirectUrl: 'http://localhost:3000/auth/openid/return', 
+    redirectUrl: 'https://localhost:3000/auth/openid/return', 
   
     // Required if we use http for redirectUrl
     allowHttpForRedirectUrl: true,
@@ -29,7 +29,7 @@ exports.creds = {
     clientSecret: azure.clientSecret, 
   
     // Required to set to false if you don't want to validate issuer
-    validateIssuer: true,
+    validateIssuer: false,
   
     // Required if you want to provide the issuer(s) you want to validate instead of using the issuer from metadata
     issuer: null,

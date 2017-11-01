@@ -23,6 +23,13 @@ const book = require('./routes/book');
 const datasource = require('./routes/datasource');
 const job = require('./routes/job');
 
+passport.serializeUser(function(user,done){
+  done(null,user);
+});
+passport.deserializeUser(function(user,done){
+  done(null,user);
+});
+
 var app = express();
 
 // view engine setup
@@ -41,13 +48,6 @@ app.use('/node_modules/office-ui-fabric-js', express.static(__dirname + '/node_m
 app.use('/node_modules/client-js', express.static(__dirname + '/node_modules/client-js'));
 app.use('/node_modules/lodash', express.static(__dirname + '/node_modules/lodash')); 
 app.use('/node_modules/core-js', express.static(__dirname + '/node_modules/core-js'));
-
-passport.serializeUser(function(user,done){
-  done(null,user);
-});
-passport.deserializeUser(function(user,done){
-  done(null,user);
-});
 
 app.use(session({
   secret: 'lasjflju**(()U0990U87g90o211',
@@ -83,7 +83,7 @@ function(req, iss, sub, profile, accessToken, refreshToken, done) {
 }
 ));
 
-const userCheck = (req, res, next) => {
+var userCheck = (req, res, next) => {
   if(req.user) {
     req.session.nowInMinutes = Date.now() / 60e3;
     next();
