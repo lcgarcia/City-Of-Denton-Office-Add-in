@@ -39,6 +39,12 @@ app.controller('setupCtrl', [
     $scope.selectedValues = {};
 
     $rootScope.$on('$viewContentLoaded', dateInit);
+    $rootScope.$on('jobcostData', function(event, hiddenRows) {
+      $scope.reportDetails.worksheet = "Jobcost-90";
+      $scope.reportDetails.hiddenRows = hiddenRows;
+      if(hiddenRows && hiddenRows.length>0) $scope.reportDetails.msg = "";
+      else $scope.reportDetails.msg = "No Data Returned";
+    });
 
 
     function loadPage(){
@@ -147,8 +153,6 @@ app.controller('setupCtrl', [
       else{
         $scope.reportDetails.msg = "No Data Returned";
       }
-
-      
     }
 
 

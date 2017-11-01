@@ -334,10 +334,11 @@ app.service("jobcostService", [
     var setHeader = function (data, next) {
       Excel.run(function (ctx) {
         var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+        var jsonHiddenData = JSON.stringify(data.hiddenRows);
 
         var header = [
           ['', '', '', 'City of Denton - Job Cost Summary', '', '', 'Dept:', data.scope.selectedValues.department.name, 'Month:', data.scope.selectedValues.dates.monthStart, ''],
-          ['', '', '', 'Date Run', '', '', 'Company:', data.scope.selectedValues.company.name, 'JDE Fiscal Year:', data.scope.selectedValues.dates.jdeYear + ' - ' + (parseInt(data.scope.selectedValues.dates.jdeYear)+1), ''],
+          [jsonHiddenData, '', '', 'Date Run', '', '', 'Company:', data.scope.selectedValues.company.name, 'JDE Fiscal Year:', data.scope.selectedValues.dates.jdeYear + ' - ' + (parseInt(data.scope.selectedValues.dates.jdeYear)+1), ''],
           ['', '', '', 'Unaudited/Unofficial-Not intended for public distribution', '', '', 'Project:', data.scope.selectedValues.project.name, 'Layout:', 'Cost Code/Type Details', ''],
           ['', '', '', '', '', '', 'Job:', data.scope.selectedValues.job.name, '', '', ''],
           ["Dept", "Company", "Project", "Bus Unit", "Object", "Subsidary", "Budget", "Expendatures", "Remaining", "Encumbrances", "Unencumbered"]
@@ -346,6 +347,10 @@ app.service("jobcostService", [
         var range = worksheet.getRange('A1:K5');
         range.load('values');
         range.values = header;
+
+        var jsonDataRange = worksheet.getRange('A1:C4');
+        jsonDataRange.format.font.color = 'white';
+        jsonDataRange.merge(true);
 
         var titleSection = worksheet.getRange('D1:D2');
         titleSection.format.font.color = '#174888';

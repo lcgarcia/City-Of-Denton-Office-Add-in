@@ -169,27 +169,27 @@ app.controller('jobcostCtrl', [
       var layout = $scope.selectedValues.details;
       
       modalService.showReportLoadingModal();
-      $scope.reportDetails.show = true;
-      $scope.reportDetails.msg = "";
-      $scope.reportDetails.name = "Jobcost-90";
-      
       jobcostService.getSheetData(rType, month, year, dKey, cKey, pKey, jKey, layout, { projects: $scope.filteredProject })
       .then(function (data) {
         try {
-          _.forEach(data.hiddenRows, function(child) {
+          var hiddenRows = data.hiddenRows;
+          _.forEach(hiddenRows, function(child) {
             child.selected = false;
           });
 
           data.scope = $scope;
+          $rootScope.$broadcast('jobcostData', hiddenRows);
           jobcostService.insertSpreadSheetData(data, function(err, response){
             modalService.hideReportLoadingModal();
+            
+            /*
             if(err){
               $scope.reportDetails.msg = $scope.dataErrorMsg;
               $scope.$apply(function () {
                 $scope.reportDetails.msg = $scope.dataErrorMsg;
               });
             }
-
+            */
           });
           
         } catch (e) {
