@@ -25,7 +25,7 @@ app.controller('budgetCtrl', [
     $scope.budgetList = [];
     $scope.parentList = [];
     $scope.filteredBooks = [
-      {id:"00", name:"--Please select---", user:"default",
+      {id:"00", name:"---Select Book---", user:"default",
         selectionList:[]
       }
     ];
@@ -43,9 +43,8 @@ app.controller('budgetCtrl', [
     });
 
     $scope.budgetSheetData = [];
-    $scope.showReportDetails = false;
+    $scope.reportDetails = {};
 
-    $scope.debugMessage = "";
     $scope.dataErrorMsg = "No Data Returned";
 
     /**
@@ -67,6 +66,9 @@ app.controller('budgetCtrl', [
       $scope.selectedValues.searchInput = ""; 
       $scope.selectedValues.book = {};
       $scope.selectedValues.selectAll = false;
+
+      $scope.reportDetails.show = false;
+      $scope.reportDetails.msg = "";
 
       $scope.selectedValues.worksheet = "";
 
@@ -158,16 +160,22 @@ app.controller('budgetCtrl', [
         noSelections = true;
         //
         _.forEach($scope.parentList, function(parent) {
-          if(_.findIndex(parent.childList, ['selected', true]) != -1){
-            noSelections = false
+          if(parent.selected || (_.findIndex(parent.childList, ['selected', true]) != -1) ){
             element = {};
-            element.name = parent.name;
+            element.name = parent.ccname;
             element.childList = [];
+            noSelections = false;
+            //
+            if(parent.selected){
+              childElement = {};
+              childElement.name = parent.mcco + "-" + parent.ccname;
+              element.childList.push(childElement);
+            }
             //
             _.forEach(parent.childList, function(child) {
               if(child.selected){
                 childElement = {};
-                childElement.name = child.name;
+                childElement.name = child.id + "-" + child.name;
                 element.childList.push(childElement);
               }
             });
@@ -369,7 +377,7 @@ app.controller('budgetCtrl', [
             item = book.selectionList[i];
             parent = _.find($scope.parentList, ['id', item.id]);
             if(item.selected){
-              parent.selected = true;
+              setParentSelected(parent, true);
             }
             if(item.childList && item.childList.length > 0){
               //check for children selections
@@ -381,10 +389,10 @@ app.controller('budgetCtrl', [
                   child = _.find(parent.childList, ['id', item.childList[j].id]);
                   if(item.childList[j].selected == null){
                     //option with no select tag - means set selection to true
-                    child.selected = true;
+                    setChildSelected(child, true);
                   }
                   else{
-                    child.selected = item.childList[j].selected;
+                    setChildSelected(child, item.childList[j].selected);
                   }
                   
                 }
@@ -409,11 +417,11 @@ app.controller('budgetCtrl', [
      * [selectedParent parent value selected. Set selected value for all children of parent]
      * @param parentSelected [selected parent]
      */
-    $scope.selectedParent = function(parentSelected) {
-      var parent = _.find($scope.parentList, ['id', parentSelected.id]);
-
-      if (parent.selected) $scope.selectedKeys.push(parent);
+    $scope.selectedParent = function(parent) {
+      if(parent.selected) $scope.selectedKeys.push(parent);
       else _.remove($scope.selectedKeys, { id: parent.id });
+      setParentSelected(parent, parent.selected);
+        
     }
 
     /**
@@ -421,10 +429,9 @@ app.controller('budgetCtrl', [
      * @param parent [parent of selected child]
      */
     $scope.selectedChild = function(parent, child) {
-      var test = $scope.parentList;
-      
-      if (child.selected) $scope.selectedKeys.push(child);
+      if(child.selected) $scope.selectedKeys.push(child);
       else _.remove($scope.selectedKeys, { id: child.id });
+      setChildSelected(child, child.selected);
     }
 
     /**
@@ -496,6 +503,7 @@ app.controller('budgetCtrl', [
     $scope.clearAll = function() {  
       $scope.selectedValues.book = $scope.filteredBooks[0];
       $scope.selectedKeys = [];
+      $scope.selectedValues.selectAll = false;
       $scope.changeBook();
     }
 
@@ -504,11 +512,31 @@ app.controller('budgetCtrl', [
      */
     $scope.selectedOptionsAll = function(){
       _.forEach($scope.parentList, function(parent) {
-        parent.selected = $scope.selectedValues.selectAll;
+        setParentSelected(parent, $scope.selectedValues.selectAll);
         _.forEach(parent.childList, function(child) {
-          child.selected = $scope.selectedValues.selectAll;
+          setChildSelected(child, $scope.selectedValues.selectAll);
         });
       });
+    }
+
+    function setParentSelected(parent, selected){
+      parent.selected = selected;
+      if(selected){
+        $('#parentLabel-'+parent.id).css("font-weight", "bold");
+      }
+      else{
+        $('#parentLabel-'+parent.id).css("font-weight", "normal");
+      }
+    }
+
+    function setChildSelected(child, selected){
+      child.selected = selected;
+      if(selected){
+        $('#childLabel-'+child.id).css("font-weight", "bold");
+      }
+      else{
+        $('#childLabel-'+child.id).css("font-weight", "normal");
+      }
     }
 
     /**
@@ -520,9 +548,9 @@ app.controller('budgetCtrl', [
       _.forEach($scope.parentList, function(parent) {
         children = parent.childList;
         _.forEach(children, function(child) {
-          child.selected = false;
+          setChildSelected(child, false);
         });
-        parent.selected = false;
+        setParentSelected(parent, false);
         parent.childList = children;
       });
 
@@ -598,7 +626,7 @@ app.controller('budgetCtrl', [
           }).catch(function (err) {
             /*
             $scope.$apply(function () {
-              $scope.debugMessage = err;
+              $scope.reportDetails.msg = err;
             });
             */
           });
@@ -608,6 +636,8 @@ app.controller('budgetCtrl', [
 
     function changeReportDetails(sheetName){
       $scope.selectedValues.worksheet = sheetName;
+      $scope.reportDetails.name = sheetName;
+
       var index = sheetName.indexOf('_');
       if(index != -1){
         var name = sheetName.substring(0, index);
@@ -621,6 +651,23 @@ app.controller('budgetCtrl', [
       else{
         $scope.sheetData = [];
       }
+      
+      if($scope.sheetData && $scope.sheetData.hiddenRows && $scope.sheetData.hiddenRows.length > 0){
+        $scope.reportDetails.msg = "";
+      }
+      else{
+        $scope.reportDetails.msg = $scope.dataErrorMsg;
+      }
+    }
+
+
+    /**
+     * [selectedDataAll selectAll checkbox selected. Set Sheet Data values to selectAll value]
+     */
+    $scope.selectedDataAll = function(){
+      _.forEach($scope.sheetData.hiddenRows, function(parent) {
+        parent.selected = $scope.selectedValues.data.selectAll;
+      });
     }
 
     /**
@@ -656,7 +703,7 @@ app.controller('budgetCtrl', [
           .then(function () {}).catch(function (err) {
             /*
             $scope.$apply(function () {
-              $scope.debugMessage = err;
+              $scope.reportDetails.msg = err;
             });
             */
           });
@@ -673,7 +720,7 @@ app.controller('budgetCtrl', [
           .then(function () {}).catch(function (err) {
             /*
             $scope.$apply(function () {
-              $scope.debugMessage = err;
+              $scope.reportDetails.msg = err;
             });
             */
           });
@@ -686,44 +733,56 @@ app.controller('budgetCtrl', [
       var subledgers;
 
       modalService.showReportLoadingModal();
-      $scope.showReportDetails = true;
-      $scope.debugMessage = "";
+      $scope.reportDetails.show = true;
       
-      if ($scope.selectedValues.report.type == 'f') {
-        var keysAndSubledgers = $scope.getKeysAndSubledgers();
-        keys = keysAndSubledgers.keys;
-        subledgers = keysAndSubledgers.subledgers;
-      }
-      
-      budgetService.getSheetData($scope.selectedValues.report.type, keys, $scope.selectedValues.month, 'Comp', $scope.selectedValues.dates.jdeYear, accounts, { subledgers: subledgers })
-      .then(function (data) {
+      if(keys && keys.length > 0){
+        $scope.reportDetails.msg = "";
+        if ($scope.selectedValues.report.type == 'f') {
+          var keysAndSubledgers = $scope.getKeysAndSubledgers();
+          keys = keysAndSubledgers.keys;
+          subledgers = keysAndSubledgers.subledgers;
+        }
+        
+        budgetService.getSheetData($scope.selectedValues.report.type, keys, $scope.selectedValues.month, 'Comp', $scope.selectedValues.dates.jdeYear, accounts, { subledgers: subledgers })
+        .then(function (data) {
 
-        $scope.budgetSheetData = data;
-        _.forEach(data, function (sheetData, key) {
-          _.forEach(sheetData.hiddenRows, function(child) {
-            child.selected = false;
-          });
-          sheetData.scope = $scope;
-          sheetData.accountType = accounts;
-          sheetData.month = $scope.selectedValues.month;
-          sheetData.year = $scope.selectedValues.dates.jdeYear;
-          sheetData.sheetKey = key;
+          $scope.budgetSheetData = data;
+          _.forEach(data, function (sheetData, key) {
+            _.forEach(sheetData.hiddenRows, function(child) {
+              child.selected = false;
+            });
+            sheetData.scope = $scope;
+            sheetData.accountType = accounts;
+            sheetData.month = $scope.selectedValues.month;
+            sheetData.year = $scope.selectedValues.dates.jdeYear;
+            sheetData.sheetKey = key;
 
-          $scope.sheetData = sheetData;
-          budgetService.insertSpreadSheetData(sheetData, function (err, data) {
-            modalService.hideReportLoadingModal();
-            if (err) {
-              $scope.debugMessage = $scope.dataErrorMsg;
+            $scope.sheetData = sheetData;
+            budgetService.insertSpreadSheetData(sheetData, function (err, data) {
+              modalService.hideReportLoadingModal();
               $scope.$apply(function () {
-                $scope.debugMessage = $scope.dataErrorMsg;
+                $scope.getActiveSheet();
               });
-            }
-
+              /*
+              if (err) {
+                $scope.reportDetails.msg = $scope.dataErrorMsg;
+                $scope.$apply(function () {
+                  $scope.reportDetails.msg = $scope.dataErrorMsg;
+                });
+              }
+              */
+            });
           });
+        }).catch(function (err) {
+          console.log(err);
         });
-      }).catch(function (err) {
-        console.log(err);
-      });
+
+      }
+      else{
+        $scope.reportDetails.msg = $scope.dataErrorMsg;
+        modalService.hideReportLoadingModal();
+      }
+
     };
 
     buildPage();

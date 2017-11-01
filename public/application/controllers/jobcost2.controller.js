@@ -41,9 +41,8 @@ app.controller('jobcost2Ctrl', [
 
     $scope.allOptionValue = {key:"*All", name:"*All"};
     $scope.selectedValues.optional = {};
-    $scope.showReportDetails = false;
 
-    $scope.debugMessage = "";
+    $scope.reportDetails = {};
     $scope.dataErrorMsg = "No Data Returned";
 
     $rootScope.$on('$viewContentLoaded', jobcost2ReportDates);
@@ -61,6 +60,9 @@ app.controller('jobcost2Ctrl', [
       $scope.selectedValues.dates.yearEnd = "";
       $scope.selectedValues.dates.jdeYear ="";
       $scope.selectedValues.dates.jdeFiscalYear="";
+
+      $scope.reportDetails.show = false;
+      $scope.reportDetails.msg = "";
 
       //Set Deatil IDs
       for(i=0; i<$scope.filteredDetails.length; i++){
@@ -227,6 +229,15 @@ app.controller('jobcost2Ctrl', [
       $("#jdeCalendar").click();
     }
 
+    /**
+     * [selectedDataAll selectAll checkbox selected. Set Sheet Data values to selectAll value]
+     */
+    $scope.selectedDataAll = function(){
+      _.forEach($scope.sheetData.hiddenRows, function(parent) {
+        parent.selected = $scope.selectedValues.data.selectAll;
+      });
+    }
+
 
     /**
      * [searchData shows/hides options depending on the value that is entered in searchbox]
@@ -261,7 +272,7 @@ app.controller('jobcost2Ctrl', [
           .then(function () {}).catch(function (err) {
             /*
             $scope.$apply(function () {
-              $scope.debugMessage = err;
+              $scope.reportDetails.msg = err;
             });
             */
           });
@@ -278,7 +289,7 @@ app.controller('jobcost2Ctrl', [
           .then(function () {}).catch(function (err) {
             /*
             $scope.$apply(function () {
-              $scope.debugMessage = err;
+              $scope.reportDetails.msg = err;
             });
             */
           });
@@ -310,8 +321,9 @@ app.controller('jobcost2Ctrl', [
       }
 
       modalService.showReportLoadingModal();
-      $scope.showReportDetails = true;
-      $scope.debugMessage = "";
+      $scope.reportDetails.show = true;
+      $scope.reportDetails.msg = "";
+      $scope.reportDetails.name = "Jobcost-90";
 
       jobcostService.getSheetData(rType, month, year, dKey, cKey, pKey, jKey, layout, options)
       .then(function (data) {
@@ -324,9 +336,9 @@ app.controller('jobcost2Ctrl', [
           jobcostService.insertSpreadSheetData(data, function(err, response){
             modalService.hideReportLoadingModal();
             if (err) {
-              $scope.debugMessage = $scope.dataErrorMsg;
+              $scope.reportDetails.msg = $scope.dataErrorMsg;
               $scope.$apply(function () {
-                $scope.debugMessage = $scope.dataErrorMsg;
+                $scope.reportDetails.msg = $scope.dataErrorMsg;
               });
             }
 

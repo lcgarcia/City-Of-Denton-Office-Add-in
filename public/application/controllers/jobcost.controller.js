@@ -28,9 +28,8 @@ app.controller('jobcostCtrl', [
 
     $scope.allOptionValue = {key:"*All", name:"*All"};
     $scope.sheetData = {};
-    $scope.showReportDetails = false;
 
-    $scope.debugMessage = "";
+    $scope.reportDetails = {};
     $scope.dataErrorMsg = "No Data Returned";
 
     $rootScope.$on('$viewContentLoaded', jobcostReportDates);
@@ -50,6 +49,9 @@ app.controller('jobcostCtrl', [
       $scope.selectedValues.data = {};
       $scope.selectedValues.data.searchInput =""
       $scope.selectedValues.data.selectAll = false;
+
+      $scope.reportDetails.show = false;
+      $scope.reportDetails.msg = "";
 
       //Set Deatil IDs
       for(i=0; i<$scope.filteredDetails.length; i++){
@@ -201,7 +203,7 @@ app.controller('jobcostCtrl', [
           .then(function () {}).catch(function (err) {
             /*
             $scope.$apply(function () {
-              $scope.debugMessage = err;
+              $scope.reportDetails.msg = err;
             });
             */
           });
@@ -218,7 +220,7 @@ app.controller('jobcostCtrl', [
           .then(function () {}).catch(function (err) {
             /*
             $scope.$apply(function () {
-              $scope.debugMessage = err;
+              $scope.reportDetails.msg = err;
             });
             */
           });
@@ -236,8 +238,9 @@ app.controller('jobcostCtrl', [
       var layout = $scope.selectedValues.details;
       
       modalService.showReportLoadingModal();
-      $scope.showReportDetails = true;
-      $scope.debugMessage = "";
+      $scope.reportDetails.show = true;
+      $scope.reportDetails.msg = "";
+      $scope.reportDetails.name = "Jobcost-90";
       
       jobcostService.getSheetData(rType, month, year, dKey, cKey, pKey, jKey, layout, { projects: $scope.filteredProject })
       .then(function (data) {
@@ -250,14 +253,14 @@ app.controller('jobcostCtrl', [
           jobcostService.insertSpreadSheetData(data, function(err, response){
             modalService.hideReportLoadingModal();
             if(err){
-              $scope.debugMessage = $scope.dataErrorMsg;
+              $scope.reportDetails.msg = $scope.dataErrorMsg;
               $scope.$apply(function () {
-                $scope.debugMessage = $scope.dataErrorMsg;
+                $scope.reportDetails.msg = $scope.dataErrorMsg;
               });
             }
 
           });
-          //modalService.hideDataLoadingModal();
+          
         } catch (e) {
           console.log(data);
         }
