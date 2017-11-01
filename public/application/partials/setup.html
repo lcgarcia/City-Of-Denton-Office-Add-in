@@ -23,6 +23,75 @@
       <div ui-view>
       </div>
 
+      <!-- Panel Report Deatils Start--> 
+      <div class="panel-group" style="margin-bottom:0; margin-left: 0.5px;" ng-mouseover=getActiveSheet()>
+         <div class="panel panel-default panel-report">
+            
+            <div class="alert alert-info" 
+               role="alert" 
+               style="margin-bottom: 0; padding: 5px; border-radius: 0;" 
+               ng-show="reportDetails.worksheet">
+               {{reportDetails.worksheet}}
+            </div>
+
+            <div class="panel-heading" style="border-top: 0;">
+               <h4 class="panel-title">        
+                  Select Excel Report Details
+               </h4>
+            </div>
+
+            <div class="alert alert-warning" 
+               role="alert" 
+               style="margin-bottom: 0; padding: 10px; border-radius: 0;" 
+               ng-show="reportDetails.msg">
+               <i class="fa fa-exclamation-triangle" aria-hidden="true" style="padding-right: 5px;"></i> 
+               {{reportDetails.msg}}
+            </div>
+
+            <div class="modal-header" style="padding: 0;" ng-show="reportDetails.hiddenRows && reportDetails.hiddenRows.length > 0">
+               <table width="100%;">
+                  <tbody>
+                  <tr>
+                     <td>
+                        <div class="panel-addon">
+                           <input type="checkbox" 
+                           style="margin: 0; margin-left: 4px; width: 16px; cursor: pointer;" 
+                           ng-model="reportDetails.selectAll"
+                           ng-change="selectedDataAll()"
+                           ng-click="toggleAllRows(reportDetails.selectAll)"
+                           >
+                        </div>
+                     </td>
+                     <td>
+                        <input type="text" 
+                        class="searchBox" 
+                        ng-model="reportDetails.searchInput" 
+                        ng-keyup="searchData()"
+                        placeholder="Search.." 
+                        title="SearchField">
+                     </td>
+                  </tr>
+                  </tbody>
+               </table>
+            </div>
+            <div class="container scroll">
+               <ul id="containerList" style="list-style: none; width: 120%">
+                  <li class="containerData" style="margin-top: 6px;" ng-repeat="label in reportDetails.hiddenRows">
+                     <div class="parentOptions">
+                        <input type="checkbox" ng-model="label.selected" ng-click="toggleRow(label)" style="cursor: pointer;">
+                        <label style="display: inline; font-weight: normal;">
+                           {{label.key}}
+                        </label>
+                     </div>
+                  </li>
+               </ul>
+               <br>
+            </div>
+
+         </div>
+      </div>
+      <!-- Panel Report Deatils End--> 
+
 
    </div>
 </div>
