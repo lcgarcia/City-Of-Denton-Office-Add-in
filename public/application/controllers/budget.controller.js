@@ -42,18 +42,13 @@ app.controller('budgetCtrl', [
       });
     });
 
-    $scope.budgetSheetData = [];
     $scope.reportDetails = {};
-
     $scope.dataErrorMsg = "No Data Returned";
 
     /**
      * [buildPage sets selected values]
      */
     function buildPage(){
-      // Get books
-      //BookService.getBooks
-
       $scope.selectedValues.dates = {};
       $scope.selectedValues.reportType ="Balance Sheet";
       $scope.selectedValues.totalSheet = "No";
@@ -67,7 +62,6 @@ app.controller('budgetCtrl', [
       $scope.selectedValues.book = {};
       $scope.selectedValues.selectAll = false;
 
-      $scope.reportDetails.show = false;
       $scope.reportDetails.msg = "";
 
       $scope.selectedValues.worksheet = "";
@@ -614,118 +608,7 @@ app.controller('budgetCtrl', [
       var ledgerText = 'in ' + JSON.stringify(subledgers).replace(/"/gi,"'").replace(/\[/gi,"(").replace(/\]/gi,")");
       return { keys: keys, subledgers: ledgerText };
     };
-
-    $scope.getActiveSheet = function(){
-      Excel.run(function (ctx) {
-        var activeWorksheet = ctx.workbook.worksheets.getActiveWorksheet();
-        activeWorksheet.load('name');
-        
-        return ctx.sync()
-          .then(function(response) {
-            changeReportDetails(activeWorksheet.name);
-          }).catch(function (err) {
-            /*
-            $scope.$apply(function () {
-              $scope.reportDetails.msg = err;
-            });
-            */
-          });
-
-      });
-    }
-
-    function changeReportDetails(sheetName){
-      $scope.selectedValues.worksheet = sheetName;
-      $scope.reportDetails.name = sheetName;
-
-      var index = sheetName.indexOf('_');
-      if(index != -1){
-        var name = sheetName.substring(0, index);
-        if($scope.budgetSheetData[name]){
-          $scope.sheetData = $scope.budgetSheetData[name];
-        }
-        else{
-          $scope.sheetData = [];
-        }
-      }
-      else{
-        $scope.sheetData = [];
-      }
-      
-      if($scope.sheetData && $scope.sheetData.hiddenRows && $scope.sheetData.hiddenRows.length > 0){
-        $scope.reportDetails.msg = "";
-      }
-      else{
-        $scope.reportDetails.msg = $scope.dataErrorMsg;
-      }
-    }
-
-
-    /**
-     * [selectedDataAll selectAll checkbox selected. Set Sheet Data values to selectAll value]
-     */
-    $scope.selectedDataAll = function(){
-      _.forEach($scope.sheetData.hiddenRows, function(parent) {
-        parent.selected = $scope.selectedValues.data.selectAll;
-      });
-    }
-
-    /**
-     * [searchData shows/hides options depending on the value that is entered in searchbox]
-     */
-    $scope.searchData = function(){
-      var filter, ul, li, parentText, i;
-      filter = $scope.selectedValues.data.searchInput.toUpperCase();
-      ul = document.getElementById("containerList");
-      li = ul.getElementsByClassName("containerData");
-      for (i = 0; i < li.length; i++) {
-        parentText = li[i].getElementsByTagName("label")[0].innerText.toUpperCase().trim();
-        
-        if (parentText.indexOf(filter) > -1) {
-          li[i].style.display = "";
-        }
-        else{
-          li[i].style.display = "none";
-        }
-      }
-    };
-
-    $scope.toggleAllRows = function (show) {
-      Excel.run(function (ctx) {
-        var worksheet = ctx.workbook.worksheets.getItem($scope.selectedValues.worksheet);
-
-        _.forEach($scope.sheetData.hiddenRows, function (row) {
-          var range = worksheet.getRange(row.range);
-          range.rowHidden = !show;
-        });
-
-        return ctx.sync()
-          .then(function () {}).catch(function (err) {
-            /*
-            $scope.$apply(function () {
-              $scope.reportDetails.msg = err;
-            });
-            */
-          });
-      });
-    }
-
-    $scope.toggleRow = function (label) {
-      Excel.run(function (ctx) {
-        var worksheet = ctx.workbook.worksheets.getItem($scope.selectedValues.worksheet);
-        var range = worksheet.getRange(label.range);
-        range.rowHidden = !label.selected;
-
-        return ctx.sync()
-          .then(function () {}).catch(function (err) {
-            /*
-            $scope.$apply(function () {
-              $scope.reportDetails.msg = err;
-            });
-            */
-          });
-      });
-    };
+    
 
     $scope.getSheetData = function () {
       var keys = _.map($scope.selectedKeys, function (key) { return key.id });
@@ -733,7 +616,6 @@ app.controller('budgetCtrl', [
       var subledgers;
 
       modalService.showReportLoadingModal();
-      $scope.reportDetails.show = true;
       
       if(keys && keys.length > 0){
         $scope.reportDetails.msg = "";
@@ -745,8 +627,18 @@ app.controller('budgetCtrl', [
         
         budgetService.getSheetData($scope.selectedValues.report.type, keys, $scope.selectedValues.month, 'Comp', $scope.selectedValues.dates.jdeYear, accounts, { subledgers: subledgers })
         .then(function (data) {
-
-          $scope.budgetSheetData = data;
+          /**
+           * [data has object data ararys that contain sheet data by keys]
+           * Example:
+           *   data["00100"]
+           *   -> 00100:{sheetData: Array(232), hiddenRows: Array(19), subTotalRows: Array(19), mainHeaders: Array(3)}
+           *   
+           * hiddenRows contain the name and the range to show/hide in excel
+           * Example:
+           *   data["00100"].hiddenRows[0]
+           *   -> 0:{range: "A7:Z25", key: "CASH AND DEPOSITS"}
+           * 
+           */
           _.forEach(data, function (sheetData, key) {
             _.forEach(sheetData.hiddenRows, function(child) {
               child.selected = false;

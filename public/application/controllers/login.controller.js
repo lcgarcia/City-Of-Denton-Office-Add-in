@@ -113,7 +113,7 @@ app.controller('loginCtrl', [
 
 	function nextClick(){
 		$scope.user.isLoggedIn = true;
-    $scope.user.id = 1;
+    	$scope.user.id = 1;
 
 		var stateObject = {type:'a', data:{user:$scope.user}};
 		$state.go("setup.budget", stateObject);

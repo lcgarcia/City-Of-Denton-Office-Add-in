@@ -229,73 +229,6 @@ app.controller('jobcost2Ctrl', [
       $("#jdeCalendar").click();
     }
 
-    /**
-     * [selectedDataAll selectAll checkbox selected. Set Sheet Data values to selectAll value]
-     */
-    $scope.selectedDataAll = function(){
-      _.forEach($scope.sheetData.hiddenRows, function(parent) {
-        parent.selected = $scope.selectedValues.data.selectAll;
-      });
-    }
-
-
-    /**
-     * [searchData shows/hides options depending on the value that is entered in searchbox]
-     */
-    $scope.searchData = function(){
-      var filter, ul, li, parentText, i;
-      filter = $scope.selectedValues.data.searchInput.toUpperCase();
-      ul = document.getElementById("containerList");
-      li = ul.getElementsByClassName("containerData");
-      for (i = 0; i < li.length; i++) {
-        parentText = li[i].getElementsByTagName("label")[0].innerText.toUpperCase().trim();
-        
-        if (parentText.indexOf(filter) > -1) {
-          li[i].style.display = "";
-        }
-        else{
-          li[i].style.display = "none";
-        }
-      }
-    };
-
-    $scope.toggleAllRows = function (show) {
-      Excel.run(function (ctx) {
-        var worksheet = ctx.workbook.worksheets.getItem('Jobcost-90');
-
-        _.forEach($scope.sheetData.hiddenRows, function (row) {
-          var range = worksheet.getRange(row.range);
-          range.rowHidden = !show;
-        });
-
-        return ctx.sync()
-          .then(function () {}).catch(function (err) {
-            /*
-            $scope.$apply(function () {
-              $scope.reportDetails.msg = err;
-            });
-            */
-          });
-      });
-    }
-
-    $scope.toggleRow = function (label) {
-      Excel.run(function (ctx) {
-        var worksheet = ctx.workbook.worksheets.getItem('Jobcost-90');
-        var range = worksheet.getRange(label.range);
-        range.rowHidden = !label.selected;
-
-        return ctx.sync()
-          .then(function () {}).catch(function (err) {
-            /*
-            $scope.$apply(function () {
-              $scope.reportDetails.msg = err;
-            });
-            */
-          });
-      });
-    };
-
     $scope.getSheetData = function () {
       var rType = $scope.selectedValues.report.type;
       var dKey = $scope.selectedValues.department.key;
@@ -331,7 +264,7 @@ app.controller('jobcost2Ctrl', [
           _.forEach(data.hiddenRows, function(child) {
             child.selected = false;
           });
-          $scope.sheetData = data;
+          
           data.scope = $scope;
           jobcostService.insertSpreadSheetData(data, function(err, response){
             modalService.hideReportLoadingModal();

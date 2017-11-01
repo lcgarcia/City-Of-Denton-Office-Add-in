@@ -137,6 +137,9 @@ app.service("budgetService", [
         _.forEach(data.hiddenRows, function (rowData) {
           var range = worksheet.getRange(rowData.range);
           range.rowHidden = true;
+
+          delete rowData["$$hashKey"];
+          delete rowData.object;
         });
 
         return ctx.sync()
@@ -286,16 +289,26 @@ app.service("budgetService", [
     var setHeader = function (data, next) {
       Excel.run(function (ctx) {
         var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+        var jsonHiddenData = JSON.stringify(data.hiddenRows);
 
         var a = worksheet.getRange('A1:A3000');
         a.format.columnWidth = 2;
         var cd = worksheet.getRange('C1:D3000');
         cd.format.columnWidth = 3;
 
-        // Disclaimer
-        var disclaimerRange = worksheet.getRange('A1:E5');
-        var disclaimeValues = [['', '', '', '', ''],['', '', '', '', ''],['', '', '', '', ''],['', '', '', '', ''],['', '', '', '', '']];
-        disclaimeValues[3][0] = 'Unaudited - Not for public distribution';
+        //Hidden JSON Data
+        var jsonDataRange = worksheet.getRange('A1:E2');
+        var jsonDataValues = [['', '', '', '', ''],['', '', '', '', '']];
+        jsonDataValues[1][0] = jsonHiddenData;
+        jsonDataRange.load('values');
+        jsonDataRange.format.font.color = 'white';
+        jsonDataRange.values = jsonDataValues;
+        jsonDataRange.merge(true);
+
+        //Disclaimer
+        var disclaimerRange = worksheet.getRange('A3:E5');
+        var disclaimeValues = [['', '', '', '', ''],['', '', '', '', ''],['', '', '', '', '']];
+        disclaimeValues[1][0] = 'Unaudited - Not for public distribution';
         disclaimerRange.load('values')
         disclaimerRange.format.font.color = 'red';
         disclaimerRange.format.font.italic = true;
