@@ -104,6 +104,12 @@ app.controller('setupCtrl', [
       else{
         $scope.selectedValues.report = $scope.filteredReports[0];
       }
+      
+      try{
+        $scope.getActiveSheet();
+      }catch (e) {
+        console.log("ERROR: " + e.message);
+      }
     } 
 
 
