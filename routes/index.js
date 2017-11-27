@@ -1,6 +1,11 @@
 const oracle = require('oracledb');
 const _ = require('lodash');
 const express = require('express');
+const request = require('request-promise');
+const config = require('./../config');
+const JWTKeyManager = require('./../lib/JWTKeyManager');
+const keyManager = new JWTKeyManager();
+keyManager.initKeys();
 
 const connection = {
   user: 'jdeview',
@@ -23,33 +28,29 @@ var userCheck = (req, res, next) => {
 
 /* GET home page. */
 router.get('/', (req, res, next) => {
-  if (userCheck(req))
-    res.render('app');
-  else 
-    res.render('index', { title: 'Express' });
+  res.render('app');
+});
+
+router.get('/user/data', (req, res, next) => {
+  const authorization = req.get('Authorization');
+  const [schema, jwt] = authorization.split(' ');
+  keyManager.verifyJWT(jwt, (err, decoded) => {
+
+    keyManager.getMicrosoftGraphToken({ jwtData: decoded, jwt })
+    .then(keyManager.getGroups)
+    .then(data => {
+      decoded.groups = data.groups;
+      res.send(decoded);
+    });
+  });
+});
+
+router.get('/jwt/config', (req, res, next) => {
+  res.send(keyManager.getKeys());
 });
 
 router.get('/datasource', (req, res, next) => {
   res.render('datasource', { title: 'Express' });
-});
-
-router.get('/test', (req, res) => {
-  oracle.getConnection(connection, (err, connection) => {
-    if(err) res.send(err);
-    else {
-      connection.execute('SELECT * FROM proddta.F0902', [], (err, result) => {
-        if(err) res.send(err);
-        else {
-          //console.log(Object.keys(result));
-          const parsedResults = _.map(result.rows, val => {
-            return _.zipObject(_.map(result.metaData, val => val.name), val);
-          });
-          res.send(parsedResults);
-        } 
-        release(connection);
-      });
-    }
-  });
 });
 
 module.exports = router;
