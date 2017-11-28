@@ -20,7 +20,14 @@ app.controller('loginCtrl', [
 
   	$scope.modalLoad = {};
 
-    nextClick();
+    try {
+      Office.context.auth.getAccessTokenAsync({forceConsent: false},
+      function (result) {
+        nextClick();
+      });
+    } catch (e) {
+      console.log('You are not in Excel');
+    }
 
 
   	$scope.login = function(event) {
