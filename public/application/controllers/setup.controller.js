@@ -281,6 +281,19 @@ app.controller('setupCtrl', [
       return dateTime;
     }
 
+   Office.context.auth.getAccessTokenAsync({forceConsent: false},
+    function (result) {
+       if (result.status === "succeeded") {
+        accessToken = result.value;
+        SessionService.getJWTUserData(accessToken).then(function(data) {
+          $scope.user = data;
+          sessionStorage.setItem('user', JSON.stringify(data));
+          loadPage();
+        });
+       }
+    });
+
+    /*
     var userData = sessionStorage.getItem('user');
     if (userData) {
       $scope.user = JSON.parse(userData);
@@ -298,5 +311,6 @@ app.controller('setupCtrl', [
          }
       });
     }
+    */
 
   }]);
