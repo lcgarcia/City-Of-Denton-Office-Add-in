@@ -47,7 +47,7 @@ app.controller('setupCtrl', [
     });
 
     $scope.filterReports = function (data) {
-      var groups = data._json.groups;
+      var groups = data.groups;
       if (_.includes(groups, '13d4a1b3-a96e-43e0-a747-bbea092ae269')) { // Accounting
         $scope.filterReports = $scope.filterReports;
       } else if (_.includes(groups, 'dc448ad6-3a34-437d-ab81-63498fb36dc0')) { // Electric
@@ -73,6 +73,14 @@ app.controller('setupCtrl', [
       for(i=0; i<$scope.filteredReports.length; i++){
         $scope.filteredReports[i].id = i;
       }
+      var reportIndex = sessionStorage.getItem('reportIndex');
+      if(reportIndex){
+        $scope.selectedValues.report = $scope.filteredReports[reportIndex];
+
+      }
+      else{
+        $scope.selectedValues.report = $scope.filteredReports[0];
+      }
     };
 
 
@@ -83,13 +91,18 @@ app.controller('setupCtrl', [
       $scope.reportDetails.searchInput = "";
       $scope.reportDetails.msg = "No Data Returned";
       $scope.reportDetails.hiddenRows = [];
+      var i;
+      for(i=0; i<$scope.filteredReports.length; i++){
+        $scope.filteredReports[i].id = i;
+      }
+      $scope.selectedValues.report = $scope.filteredReports[0];
 
-      SessionService.getUserData()
-      .then(function (data) {
-        $scope.user = data;
-        $scope.filterReports(data);
-        $scope.$broadcast('userData', data);
-      });
+      $scope.filterReports($scope.user);
+      $rootScope.$broadcast('userData', $scope.user);
+      afterAuthSetUp();
+    }
+
+    var afterAuthSetUp = function () {
       //Set Report IDs
       var i;
       for(i=0; i<$scope.filteredReports.length; i++){
@@ -104,14 +117,15 @@ app.controller('setupCtrl', [
       else{
         $scope.selectedValues.report = $scope.filteredReports[0];
       }
-      
+
+      $scope.selectedReport();
+
       try{
         $scope.getActiveSheet();
       }catch (e) {
         console.log("ERROR: " + e.message);
       }
-    } 
-
+    }
 
     $scope.logout = function(){
       window.location.href = '/logout';
@@ -267,6 +281,22 @@ app.controller('setupCtrl', [
       return dateTime;
     }
 
-    loadPage();
+    var userData = sessionStorage.getItem('user');
+    if (userData) {
+      $scope.user = JSON.parse(userData);
+      loadPage();
+    } else {
+      Office.context.auth.getAccessTokenAsync({forceConsent: false},
+      function (result) {
+         if (result.status === "succeeded") {
+          accessToken = result.value;
+          SessionService.getJWTUserData(accessToken).then(function(data) {
+            $scope.user = data;
+            sessionStorage.setItem('user', JSON.stringify(data));
+            loadPage();
+          });
+         }
+      });
+    }
 
   }]);

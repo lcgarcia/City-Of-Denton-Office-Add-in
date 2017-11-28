@@ -32,8 +32,11 @@ exports.creds = {
     validateIssuer: false,
   
     // Required if you want to provide the issuer(s) you want to validate instead of using the issuer from metadata
-    issuer: null,
-  
+    // issuer: null,
+    //issuer: 'https://login.microsoftonline.com/452fcedc-6f05-40f9-932a-03658458d1a3/v2.0',
+    issuer: `https://login.microsoftonline.com/${azure.tenate}/v2.0`,
+    tenate: azure.tenate,
+
     // Required to set to true if the `verify` function has 'req' as the first parameter
     passReqToCallback: true,
   

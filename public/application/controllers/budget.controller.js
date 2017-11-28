@@ -20,6 +20,7 @@ app.controller('budgetCtrl', [
       detailList:[],
       error:""
     };
+    //$scope.debugMsg = 'YELLER';
     $scope.selectedKeys = [];
     $scope.modalLoad = {};
     $scope.budgetList = [];
@@ -48,7 +49,7 @@ app.controller('budgetCtrl', [
     /**
      * [buildPage sets selected values]
      */
-    function buildPage(){
+    var buildPage = function () {
       $scope.selectedValues.dates = {};
       $scope.selectedValues.reportType ="Balance Sheet";
       $scope.selectedValues.totalSheet = "No";
@@ -74,9 +75,14 @@ app.controller('budgetCtrl', [
       setReportData();
     }
 
+
+
     $scope.$on('userData', function (event, user) {
       $scope.userSelection.userId = user.oid;
-      $scope.userSelection.user = user.displayName;
+      $scope.$apply(function () {
+        $scope.debugMsg = 'Shit happens';
+        $scope.userSelection.user = user.name;
+      });
       BookService.getUserBooks(user.oid, ($stateParams.type || 'default'))
         .then(function (books) {
           $scope.filteredBooks = _.concat($scope.filteredBooks, books);
@@ -681,6 +687,7 @@ app.controller('budgetCtrl', [
 
     };
 
-    buildPage();
+    $rootScope.$on('userData', buildPage);
+    //buildPage();
 
   }]);
