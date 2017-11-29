@@ -3,10 +3,12 @@ app.service("modalService", [
   	function ($http){
 
 		this.showDataLoadingModal = function(){
-		   $('#quickLoad').modal({
-		     backdrop: 'static',
-		     show: true
-		   });
+			if (!($("#quickLoad").data('bs.modal') || {}).isShown) {
+			  $('#quickLoad').modal({
+			    backdrop: 'static',
+			    show: true
+			  });
+			}
 		}
 
 	   this.hideDataLoadingModal = function(){
@@ -15,17 +17,22 @@ app.service("modalService", [
 	   }
 
 	   this.showReportLoadingModal = function() {
-	      $('#loadModal').modal({
-	        backdrop: 'static',
-	        show: true
-	      });
+	   		if (!($("#loadModal").data('bs.modal') || {}).isShown) {
+	   			$('#loadModal').modal({
+		        backdrop: 'static',
+		        show: true
+		      });
+	   		}
 	   }
 
 	   this.hideReportLoadingModal = function() {
 	      $('#loadModal').modal('hide');
-	      $('body').removeClass('modal-open');
-	      $('.modal-backdrop').remove();
 
+	      while ($('body').hasClass('modal-open')) {
+	      	$('body').removeClass('modal-open');
+	      	$('.modal-backdrop').remove();
+	      }
+	      
 	      $("#collapse1").collapse('hide');
 	    }
 
