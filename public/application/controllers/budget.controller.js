@@ -113,6 +113,7 @@ app.controller('budgetCtrl', [
           parent.childList = children;
         });
         modalService.hideDataLoadingModal();
+        modalService.removeModalBackdrop();
       });
     }
 
@@ -662,6 +663,7 @@ app.controller('budgetCtrl', [
             $scope.sheetData = sheetData;
             budgetService.insertSpreadSheetData(sheetData, function (err, data) {
               modalService.hideReportLoadingModal();
+              modalService.removeModalBackdrop();
               $scope.$apply(function () {
                 $scope.getActiveSheet();
               });
@@ -683,6 +685,7 @@ app.controller('budgetCtrl', [
       else{
         $scope.reportDetails.msg = $scope.dataErrorMsg;
         modalService.hideReportLoadingModal();
+        modalService.removeModalBackdrop();
       }
 
     };
