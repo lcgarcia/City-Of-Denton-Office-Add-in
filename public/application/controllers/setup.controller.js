@@ -283,6 +283,7 @@ app.controller('setupCtrl', [
 
     Office.context.auth.getAccessTokenAsync({forceConsent: false},
     function (result) {
+       $scope.debugMsg = result;
        if (result.status === "succeeded") {
         accessToken = result.value;
         SessionService.getJWTUserData(accessToken).then(function(data) {
