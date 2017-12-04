@@ -101,7 +101,7 @@ function(req, res, next) {
     }, (err, user, info) => {
       req.logIn(user, function(err) {
         if (err) { return next(err); }
-        return res.redirect('/');
+        return res.redirect('/dialog', { user });
       });
     }
   )(req, res, next);
@@ -122,7 +122,7 @@ function(req, res, next) {
 },
 function(req, res) {
   console.info('We received a return from AzureAD.');
-  res.redirect('/');
+  res.redirect('/dialog');
 });
 
 app.get('/logout', function(req, res){

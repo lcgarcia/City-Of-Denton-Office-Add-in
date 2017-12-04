@@ -7,8 +7,9 @@ app.controller('loginCtrl', [
   '$scope', 
   '$rootScope',
   '$state',
+  'SessionService',
   '$stateParams',
-  function ($http, $scope, $rootScope, $state, $stateParams) {
+  function ($http, $scope, $rootScope, $state, SessionService, $stateParams) {
 
   	$scope.user = {name:"", username:"", password:"", isLoggedIn:false};
 
@@ -20,7 +21,32 @@ app.controller('loginCtrl', [
 
   	$scope.modalLoad = {};
 
-    nextClick();
+    //nextClick();
+    var dialog;
+
+    $scope.openDialog = function () {
+      try {
+        Office.initialize = function (reason) {
+          $(document).ready(function () {
+            Office.context.ui.displayDialogAsync('/dialog', {height: 30, width: 60}, function (result) {
+              //$scope.debugMsg = result;
+              dialog = result.value;
+              dialog.addEventHandler(Office.EventType.DialogMessageReceived, $scope.loginHandler);
+            });
+          });
+        }
+      } catch (e) {
+        $scope.debugMsg = e;
+      }
+    }
+
+    SessionService.getUserData().then(function (data) {
+      $scope.debugMsg = data;
+      if (data != '') {
+        $scope.user = data;
+        nextClick();
+      }
+    });
 
 
   	$scope.login = function(event) {
@@ -37,6 +63,13 @@ app.controller('loginCtrl', [
 	      	validateCredentials();
 	      }
   		}
+   }
+
+   $scope.loginHandler = function (arg) {
+    $scope.user = JSON.parse(arg.message);
+    dialog.close();
+    $scope.$apply(function () {});
+    nextClick();
    }
 
   	function buildPage() {

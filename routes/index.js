@@ -31,6 +31,14 @@ router.get('/', (req, res, next) => {
   res.render('app');
 });
 
+router.get('/dialog', (req, res, next) => {
+  if(req.user) {
+    res.render('dialog', { user: true });
+  } else {
+    res.render('dialog', { user: false });
+  }
+});
+
 router.get('/user/data', (req, res, next) => {
   const authorization = req.get('Authorization');
   const [schema, jwt] = authorization.split(' ');

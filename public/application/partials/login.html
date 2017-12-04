@@ -5,15 +5,15 @@
    <div id="login" class="login">
       <div class="panel-heading loginHeading">
          <h4 class="panel-title loginTitle">
-            Well this is awkward
+            Welcome!
          </h4>
       </div>
       <div class="panel-group" style="margin-bottom:0">
          <div class="panel panel-default">
             <div class="panel-body">
                
-               <p>I am not sure you are authorized to be here</p>
-               
+               <p style="margin-bottom: 10px;">Login here to get started.</p>
+               <button type="button" id="login" class="btn btn-primary btn-lg btn-block" ng-click="openDialog()">Begin Login</button>
             </div>
          </div>
       </div>
@@ -32,6 +32,10 @@
       </div>
    </div>
 </div>
+
+<p>
+   {{ debugMsg }}
+</p>
 <!-- Modal 1 End-->
 <!-- *************** MODALS END *************** -->
 

@@ -20,7 +20,6 @@ app.controller('budgetCtrl', [
       detailList:[],
       error:""
     };
-    //$scope.debugMsg = 'YELLER';
     $scope.selectedKeys = [];
     $scope.modalLoad = {};
     $scope.budgetList = [];
@@ -49,7 +48,7 @@ app.controller('budgetCtrl', [
     /**
      * [buildPage sets selected values]
      */
-    var buildPage = function () {
+    function buildPage(){
       $scope.selectedValues.dates = {};
       $scope.selectedValues.reportType ="Balance Sheet";
       $scope.selectedValues.totalSheet = "No";
@@ -75,14 +74,9 @@ app.controller('budgetCtrl', [
       setReportData();
     }
 
-
-
     $scope.$on('userData', function (event, user) {
       $scope.userSelection.userId = user.oid;
-      $scope.$apply(function () {
-        $scope.debugMsg = 'Shit happens';
-        $scope.userSelection.user = user.name;
-      });
+      $scope.userSelection.user = user.displayName;
       BookService.getUserBooks(user.oid, ($stateParams.type || 'default'))
         .then(function (books) {
           $scope.filteredBooks = _.concat($scope.filteredBooks, books);
@@ -113,7 +107,6 @@ app.controller('budgetCtrl', [
           parent.childList = children;
         });
         modalService.hideDataLoadingModal();
-        modalService.removeModalBackdrop();
       });
     }
 
@@ -663,7 +656,6 @@ app.controller('budgetCtrl', [
             $scope.sheetData = sheetData;
             budgetService.insertSpreadSheetData(sheetData, function (err, data) {
               modalService.hideReportLoadingModal();
-              modalService.removeModalBackdrop();
               $scope.$apply(function () {
                 $scope.getActiveSheet();
               });
@@ -685,12 +677,10 @@ app.controller('budgetCtrl', [
       else{
         $scope.reportDetails.msg = $scope.dataErrorMsg;
         modalService.hideReportLoadingModal();
-        modalService.removeModalBackdrop();
       }
 
     };
 
-    $rootScope.$on('userData', buildPage);
-    //buildPage();
+    buildPage();
 
   }]);
