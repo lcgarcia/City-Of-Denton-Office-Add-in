@@ -21,7 +21,7 @@ app.controller('loginCtrl', [
 
   	$scope.modalLoad = {};
 
-    //nextClick();
+    //nextClick(); 
     var dialog;
 
     $scope.openDialog = function () {
