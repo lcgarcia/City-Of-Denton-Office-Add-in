@@ -9,8 +9,9 @@ app.controller('setupCtrl', [
   '$state',
   '$stateParams',
   'jobcostService',
+  'modalService',
   'SessionService',
-  function ($http, $scope, $rootScope, $state, $stateParams, jobcostService, SessionService) {
+  function ($http, $scope, $rootScope, $state, $stateParams, jobcostService, modalService, SessionService) {
     var debugCreated = false;
     var dataCreated = false;
     var debugRange = 3;
@@ -91,6 +92,8 @@ app.controller('setupCtrl', [
           $scope.filterReports(data);
           $scope.$broadcast('userData', data);
         } else {
+          modalService.hideReportLoadingModal();
+          modalService.hideDataLoadingModal();
           $state.go('login');
         }
       });
