@@ -28,9 +28,15 @@
 
   <!-- Domains that will be allowed when navigating. For example, if you use ShowTaskpane and then have an href link, navigation will only be allowed if the domain is on this list. -->
   <AppDomains>
-    <AppDomain>AppDomain1</AppDomain>
-    <AppDomain>AppDomain2</AppDomain>
-    <AppDomain>AppDomain3</AppDomain>
+    <AppDomain>https://Addin-dev.mybluemix.net/#!/login</AppDomain>
+    <AppDomain>https://cityofdenton.mybluemix.net/#!/setup/budget/</AppDomain>
+    <AppDomain>https://cityofdenton.mybluemix.net/#!/setup/budget/f</AppDomain>
+    <AppDomain>https://cityofdenton.mybluemix.net/#!/setup/budget/e</AppDomain>
+    <AppDomain>https://cityofdenton.mybluemix.net/#!/setup/budget/a</AppDomain>
+    <AppDomain>https://cityofdenton.mybluemix.net/#!/setup/jobcost/</AppDomain>
+    <AppDomain>https://cityofdenton.mybluemix.net/#!/setup/jobcost/e</AppDomain>
+    <AppDomain>https://cityofdenton.mybluemix.net/#!/setup/jobcost/ka</AppDomain>
+    <AppDomain>https://cityofdenton.mybluemix.net/#!/setup/jobcost2/</AppDomain>
   </AppDomains>
   <!--End Basic Settings. -->
 
@@ -39,7 +45,7 @@
     <Host Name="Workbook" />
   </Hosts>
   <DefaultSettings>
-    <SourceLocation DefaultValue="https://Addin-dev.mybluemix.net/#!/login" />
+    <SourceLocation DefaultValue="https://Addin-dev.mybluemix.net/" />
   </DefaultSettings>
   <!-- End TaskPane Mode integration.  -->
 
@@ -125,6 +131,14 @@
       </bt:Images>
       <bt:Urls>
         <bt:Url id="Contoso.Taskpane.Url" DefaultValue="https://Addin-dev.mybluemix.net/#!/login" />
+        <bt:Url id="Contoso.Taskpane.Url" DefaultValue="https://cityofdenton.mybluemix.net/#!/setup/budget/" />
+        <bt:Url id="Contoso.Taskpane.Url" DefaultValue="https://cityofdenton.mybluemix.net/#!/setup/budget/a" />
+        <bt:Url id="Contoso.Taskpane.Url" DefaultValue="https://cityofdenton.mybluemix.net/#!/setup/budget/e" />
+        <bt:Url id="Contoso.Taskpane.Url" DefaultValue="https://cityofdenton.mybluemix.net/#!/setup/budget/f" />
+        <bt:Url id="Contoso.Taskpane.Url" DefaultValue="https://cityofdenton.mybluemix.net/#!/setup/jobcost/" />
+        <bt:Url id="Contoso.Taskpane.Url" DefaultValue="https://cityofdenton.mybluemix.net/#!/setup/jobcost/ka" />
+        <bt:Url id="Contoso.Taskpane.Url" DefaultValue="https://cityofdenton.mybluemix.net/#!/setup/jobcost/e" />
+        <bt:Url id="Contoso.Taskpane.Url" DefaultValue="https://cityofdenton.mybluemix.net/#!/setup/jobcost2/" />
         <bt:Url id="Contoso.GetStarted.LearnMoreUrl" DefaultValue="https://go.microsoft.com/fwlink/?LinkId=276812" />
         <bt:Url id="Contoso.DesktopFunctionFile.Url" DefaultValue="https://Addin-dev.mybluemix.net/function-file/function-file.html" />
       </bt:Urls>

@@ -21,14 +21,14 @@ app.controller('loginCtrl', [
 
   	$scope.modalLoad = {};
 
-    //nextClick(); 
+    //nextClick();
     var dialog;
 
     $scope.openDialog = function () {
       try {
         Office.initialize = function (reason) {
           $(document).ready(function () {
-            Office.context.ui.displayDialogAsync('/dialog', {height: 30, width: 60}, function (result) {
+            Office.context.ui.displayDialogAsync(getHost() + '/dialog', {height: 30, width: 60}, function (result) {
               //$scope.debugMsg = result;
               dialog = result.value;
               dialog.addEventHandler(Office.EventType.DialogMessageReceived, $scope.loginHandler);
@@ -38,6 +38,13 @@ app.controller('loginCtrl', [
       } catch (e) {
         $scope.debugMsg = e;
       }
+    }
+
+    var getHost = function () {
+      if (/addin-dev/gi.test(window.location.host) || /cityofdenton/gi.test(window.location.host))
+        return 'https://cityofdenton.mybluemix.net';
+      else
+        return 'https://localhost:3000';
     }
 
     SessionService.getUserData().then(function (data) {
