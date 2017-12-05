@@ -97,22 +97,12 @@ app.controller('setupCtrl', [
           modalService.hideDataLoadingModal();
           $state.go('login');
         }
+      } else {
+        modalService.hideReportLoadingModal();
+        modalService.hideDataLoadingModal();
+        $state.go('login');
       }
 
-      /*
-      SessionService.getUserData()
-      .then(function (data) {
-        $scope.user = data;
-        if (data != '' && data != undefined && data != null) {
-          $scope.filterReports(data);
-          $scope.$broadcast('userData', data);
-        } else {
-          modalService.hideReportLoadingModal();
-          modalService.hideDataLoadingModal();
-          $state.go('login');
-        }
-      });
-      */
       //Set Report IDs
       var i;
       for(i=0; i<$scope.filteredReports.length; i++){

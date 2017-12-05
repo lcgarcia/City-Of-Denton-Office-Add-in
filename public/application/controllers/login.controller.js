@@ -10,6 +10,8 @@ app.controller('loginCtrl', [
   'SessionService',
   '$stateParams',
   function ($http, $scope, $rootScope, $state, SessionService, $stateParams) {
+    $('body').removeClass('modal-open');
+    $('.modal-backdrop').remove();
 
   	$scope.user = {name:"", username:"", password:"", isLoggedIn:false};
 
