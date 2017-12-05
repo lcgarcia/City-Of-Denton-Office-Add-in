@@ -48,8 +48,7 @@ app.controller('loginCtrl', [
     }
 
     SessionService.getUserData().then(function (data) {
-      $scope.debugMsg = data;
-      if (data != '') {
+      if (data != '' && data != undefined && data != null) {
         $scope.user = data;
         nextClick();
       }

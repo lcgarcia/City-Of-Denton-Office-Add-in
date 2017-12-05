@@ -87,8 +87,12 @@ app.controller('setupCtrl', [
       SessionService.getUserData()
       .then(function (data) {
         $scope.user = data;
-        $scope.filterReports(data);
-        $scope.$broadcast('userData', data);
+        if (data != '' && data != undefined && data != null) {
+          $scope.filterReports(data);
+          $scope.$broadcast('userData', data);
+        } else {
+          $state.go('login');
+        }
       });
       //Set Report IDs
       var i;
