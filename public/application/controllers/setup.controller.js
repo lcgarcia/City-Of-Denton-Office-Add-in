@@ -85,8 +85,9 @@ app.controller('setupCtrl', [
       $scope.reportDetails.msg = "No Data Returned";
       $scope.reportDetails.hiddenRows = [];
 
-      var data = localStorage.getItem('user')
-      if (data != '' && data != undefined && data != null) {
+      var userd = $stateParams.data.user;
+      var data = localStorage.getItem('user');
+      if (userd != '' && userd != undefined && userd != null) {
         data = JSON.parse(data);
         $scope.user = data;
         if (data != '' && data != undefined && data != null) {

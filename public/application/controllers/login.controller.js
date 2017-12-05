@@ -50,7 +50,7 @@ app.controller('loginCtrl', [
     }
 
     //$scope.debugMsg = JSON.stringify(data);
-    var data = localStorage.getItem('user')
+    var data = localStorage.getItem('user');
     if (data != '' && data != undefined && data != null) {
       data = JSON.parse(data);
       $scope.user = data;
