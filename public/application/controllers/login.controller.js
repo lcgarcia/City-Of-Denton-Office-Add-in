@@ -47,13 +47,22 @@ app.controller('loginCtrl', [
         return 'https://localhost:3000';
     }
 
+    //$scope.debugMsg = JSON.stringify(data);
+    var data = localStorage.getItem('user')
+    if (data != '' && data != undefined && data != null) {
+      data = JSON.parse(data);
+      $scope.user = data;
+      nextClick();
+    }
+
+    /*
     SessionService.getUserData().then(function (data) {
       if (data != '' && data != undefined && data != null) {
         $scope.user = data;
         nextClick();
       }
     });
-
+    */
 
   	$scope.login = function(event) {
   		if(event){
@@ -74,7 +83,8 @@ app.controller('loginCtrl', [
    $scope.loginHandler = function (arg) {
     $scope.user = JSON.parse(arg.message);
     dialog.close();
-    $scope.$apply(function () {});
+    localStorage.setItem('user', JSON.stringify($scope.user));
+    $scope.$apply(function () { });
     nextClick();
    }
 

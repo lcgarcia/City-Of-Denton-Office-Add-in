@@ -85,6 +85,21 @@ app.controller('setupCtrl', [
       $scope.reportDetails.msg = "No Data Returned";
       $scope.reportDetails.hiddenRows = [];
 
+      var data = localStorage.getItem('user')
+      if (data != '' && data != undefined && data != null) {
+        data = JSON.parse(data);
+        $scope.user = data;
+        if (data != '' && data != undefined && data != null) {
+          $scope.filterReports(data);
+          $scope.$broadcast('userData', data);
+        } else {
+          modalService.hideReportLoadingModal();
+          modalService.hideDataLoadingModal();
+          $state.go('login');
+        }
+      }
+
+      /*
       SessionService.getUserData()
       .then(function (data) {
         $scope.user = data;
@@ -97,6 +112,7 @@ app.controller('setupCtrl', [
           $state.go('login');
         }
       });
+      */
       //Set Report IDs
       var i;
       for(i=0; i<$scope.filteredReports.length; i++){
@@ -121,6 +137,7 @@ app.controller('setupCtrl', [
 
 
     $scope.logout = function(){
+      localStorage.removeItem('user');
       window.location.href = '/logout';
     }
 
