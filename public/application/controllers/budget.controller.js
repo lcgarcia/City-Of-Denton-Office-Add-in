@@ -249,6 +249,7 @@ app.controller('budgetCtrl', [
         if($scope.modalBook.error == ""){
           book.name = name;
           book.reportType = $stateParams.type || 'default';
+          book.userId = $scope.user.oid || 'xxx';
           // Save book to cloudant 
           BookService.updateBook(book)
             .then(function (data) {
@@ -270,6 +271,7 @@ app.controller('budgetCtrl', [
           delete bookCopy.id;
           bookCopy.name = name;
           bookCopy.reportType = $stateParams.type || 'default';
+          bookCopy.userId = $scope.user.oid || 'xxx';
 
           // Save book to cloudant 
           BookService.createBook(bookCopy)
@@ -288,6 +290,7 @@ app.controller('budgetCtrl', [
         $scope.selectedValues.book = $scope.filteredBooks[0];
         $scope.changeBook();
         book.reportType = $stateParams.type || 'default';
+        book.userId = $scope.user.oid || 'xxx';
         BookService.deleteBook(book)
           .then(function (data) {
             if ($scope.filteredBooks.length === 1) {
@@ -301,6 +304,7 @@ app.controller('budgetCtrl', [
         var selectionCopy = _.cloneDeep($scope.parentList);
         book.selectionList = selectionCopy;
         book.reportType = $stateParams.type || 'default';
+        book.userId = $scope.user.oid || 'xxx';
         BookService.updateBook(book)
           .then(function (data) {
             var bookIndex = _.findIndex($scope.filteredBooks, ['id', $scope.selectedValues.book.id]);
@@ -322,6 +326,7 @@ app.controller('budgetCtrl', [
           bookCopy.selectionList = selectionCopy;
 
           bookCopy.reportType = $stateParams.type || 'default';
+          bookCopy.userId = $scope.user.oid || 'xxx';
 
           // Save book to cloudant 
           BookService.createBook(bookCopy)
