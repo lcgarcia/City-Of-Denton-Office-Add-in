@@ -66,9 +66,17 @@ app.controller('budgetCtrl', [
 
       $scope.selectedValues.worksheet = "";
 
-      if($scope.user && $scope.user.name){
+      var userd = $stateParams.data.user;
+      if (userd != '' && userd != undefined && userd != null) {
+        $scope.user = userd;
         $scope.userSelection.userId = $scope.user.oid;
         $scope.userSelection.user = $scope.user.displayName;
+        BookService.getUserBooks($scope.user.oid, ($stateParams.type || 'default'))
+        .then(function (books) {
+          $scope.filteredBooks = _.concat($scope.filteredBooks, books);
+        }).catch(function (err) {
+          console.log(err);
+        });
       }
       $scope.selectedValues.book = $scope.filteredBooks[0];
       setReportData();
@@ -79,7 +87,9 @@ app.controller('budgetCtrl', [
       $scope.userSelection.user = user.displayName;
       BookService.getUserBooks(user.oid, ($stateParams.type || 'default'))
         .then(function (books) {
-          $scope.filteredBooks = _.concat($scope.filteredBooks, books);
+          $scope.$apply(function () {
+            $scope.filteredBooks = _.concat($scope.filteredBooks, books);
+          });
         }).catch(function (err) {
           console.log(err);
         });
