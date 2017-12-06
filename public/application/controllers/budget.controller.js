@@ -621,7 +621,11 @@ app.controller('budgetCtrl', [
         } else if ('subledger' in val) {
           subledgers.push(val.id);
         } else {
-          keys.push(val.id);
+          keys.push({
+            id: val.id,
+            buLevel: _.isArray(val.childList) ? 'comp' : 'busu'
+          });
+          //keys.push(val.id);
         }
       });
       var ledgerText = 'in ' + JSON.stringify(subledgers).replace(/"/gi,"'").replace(/\[/gi,"(").replace(/\]/gi,")");
@@ -630,7 +634,12 @@ app.controller('budgetCtrl', [
     
 
     $scope.getSheetData = function () {
-      var keys = _.map($scope.selectedKeys, function (key) { return key.id });
+      var keys = _.map($scope.selectedKeys, function (key) { 
+        return {
+          id: key.id,
+          buLevel: _.isArray(key.childList) ? 'comp' : 'busu'
+        }
+      });
       var accounts = $scope.selectedValues.reportType;
       var subledgers;
 

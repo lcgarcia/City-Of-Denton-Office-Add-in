@@ -76,13 +76,13 @@ router.post('/sheet/data', (req, res) => {
     let querySets = _.map(keys, key => {
       if (type === 'f') {
         return { 
-          sql: generator.createSelectStatement(false, type, year, month, accounts, { buLevel, key, subledgers: subledgers }),
-          id: key
+          sql: generator.createSelectStatement(false, type, year, month, accounts, { buLevel: key.buLevel, key: key.id, subledgers: subledgers }),
+          id: key.id
         }
       } else {
         return {
-          sql: generator.createSelectStatement(false, type, year, month, accounts, { buLevel, key }),
-          id: key
+          sql: generator.createSelectStatement(false, type, year, month, accounts, { buLevel: key.buLevel, key: key.id }),
+          id: key.id
         }
       }
     });
