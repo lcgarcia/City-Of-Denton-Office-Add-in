@@ -7,9 +7,8 @@ app.controller('loginCtrl', [
   '$scope', 
   '$rootScope',
   '$state',
-  'SessionService',
   '$stateParams',
-  function ($http, $scope, $rootScope, $state, SessionService, $stateParams) {
+  function ($http, $scope, $rootScope, $state, $stateParams) {
     $('body').removeClass('modal-open');
     $('.modal-backdrop').remove();
 
@@ -56,15 +55,6 @@ app.controller('loginCtrl', [
       $scope.user = data;
       nextClick();
     }
-
-    /*
-    SessionService.getUserData().then(function (data) {
-      if (data != '' && data != undefined && data != null) {
-        $scope.user = data;
-        nextClick();
-      }
-    });
-    */
 
   	$scope.login = function(event) {
   		if(event){

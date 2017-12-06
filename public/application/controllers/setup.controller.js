@@ -10,8 +10,7 @@ app.controller('setupCtrl', [
   '$stateParams',
   'jobcostService',
   'modalService',
-  'SessionService',
-  function ($http, $scope, $rootScope, $state, $stateParams, jobcostService, modalService, SessionService) {
+  function ($http, $scope, $rootScope, $state, $stateParams, jobcostService, modalService) {
     var debugCreated = false;
     var dataCreated = false;
     var debugRange = 3;
@@ -96,12 +95,12 @@ app.controller('setupCtrl', [
         } else {
           modalService.hideReportLoadingModal();
           modalService.hideDataLoadingModal();
-          $state.go('login');
+          //$state.go('login');
         }
       } else {
         modalService.hideReportLoadingModal();
         modalService.hideDataLoadingModal();
-        $state.go('login');
+        //$state.go('login');
       }
 
       //Set Report IDs
