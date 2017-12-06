@@ -95,12 +95,12 @@ app.controller('setupCtrl', [
         } else {
           modalService.hideReportLoadingModal();
           modalService.hideDataLoadingModal();
-          //$state.go('login');
+          $state.go('login');
         }
       } else {
         modalService.hideReportLoadingModal();
         modalService.hideDataLoadingModal();
-        //$state.go('login');
+        $state.go('login');
       }
 
       //Set Report IDs
