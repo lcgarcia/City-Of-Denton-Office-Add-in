@@ -152,6 +152,7 @@ app.service("jobcostService", [
           function (next) {
             next(null, data);
           },
+          deleteWorkSheets,
           loadWorkSheets,
           findWorkSheet,
           initalizeWorkSheet,
@@ -165,6 +166,33 @@ app.service("jobcostService", [
         cb(e);
       }
     };
+
+    var deleteWorkSheets = function (data, next) {
+      Excel.run(function (ctx) {
+        var sheets = ctx.workbook.worksheets;
+        sheets.load("items");
+        var count = ctx.workbook.worksheets.getCount();
+        return ctx.sync()
+          .then(function(response) {
+            var sheets = ctx.workbook.worksheets;
+            sheets.load("items");
+            var ids = _.map(sheets.items, function(sheet) { return sheet.id });
+            _.forEach(ids, function (id) {
+              ws = ctx.workbook.worksheets.getItem(id);
+              ws.delete();
+            });
+           
+            return ctx.sync()
+            .then(function (response) {
+              next(null, data);  
+            }).catch(function (err) {
+              next(null, data);
+            });
+          }).catch(function (err) {
+            next(err);
+          });
+      });
+    }
 
     var loadWorkSheets = function (data, next) {
       Excel.run(function (ctx) {

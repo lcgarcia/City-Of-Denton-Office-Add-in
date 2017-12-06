@@ -51,7 +51,6 @@ app.service("budgetService", [
           function (next) {
             next(null, data);
           },
-          // Remove all other worksheets
           deleteWorkSheets,
           loadWorkSheets,
           findWorkSheet,
@@ -74,7 +73,6 @@ app.service("budgetService", [
         var sheets = ctx.workbook.worksheets;
         sheets.load("items");
         var count = ctx.workbook.worksheets.getCount();
-        //var worksheets = ctx.workbook.worksheets.items;
         return ctx.sync()
           .then(function(response) {
             var sheets = ctx.workbook.worksheets;
