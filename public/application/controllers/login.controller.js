@@ -29,7 +29,7 @@ app.controller('loginCtrl', [
       try {
         Office.initialize = function (reason) {
           $(document).ready(function () {
-            Office.context.ui.displayDialogAsync(getHost() + '/dialog', {height: 30, width: 60}, function (result) {
+            Office.context.ui.displayDialogAsync(getHost() + '/dialog', {height: 50, width: 60}, function (result) {
               //$scope.debugMsg = result;
               dialog = result.value;
               dialog.addEventHandler(Office.EventType.DialogMessageReceived, $scope.loginHandler);
@@ -75,8 +75,9 @@ app.controller('loginCtrl', [
 
    $scope.eventHandler = function (arg) {
     dialog.close();
-    $scope.debugMsg = {user: localStorage.getItem('user'), arg: arg};
-
+    $scope.$apply(function () {
+      window.location.reload(true);
+    });
    }
 
    $scope.loginHandler = function (arg) {

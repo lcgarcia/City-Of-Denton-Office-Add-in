@@ -44,6 +44,21 @@
         <div class="container">
 
             <p id="param" style="display:none;"><%= user %></p>
+            <div id="success" class="login" style="display: none;">
+                <div class="panel-heading loginHeading">
+                     <h4 class="panel-title loginTitle">
+                        Success!
+                     </h4>
+                </div>
+                <div class="panel-group" style="margin-bottom:0">
+                     <div class="panel panel-default">
+                        <div class="panel-body">
+                           
+                           <p style="margin-bottom: 10px;">You have successfully logged in please close this window to begin running reports.</p>
+                        </div>
+                     </div>
+                </div>
+            </div>
             <a type="button" id="login" href="/login" class="btn btn-primary btn-lg btn-block">Login</a>
         </div>
 
