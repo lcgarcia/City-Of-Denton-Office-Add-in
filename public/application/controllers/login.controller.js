@@ -33,6 +33,7 @@ app.controller('loginCtrl', [
               //$scope.debugMsg = result;
               dialog = result.value;
               dialog.addEventHandler(Office.EventType.DialogMessageReceived, $scope.loginHandler);
+              dialog.addEventHandler(Office.EventType.DialogEventReceived, $scope.eventHandler);
             });
           });
         }
@@ -70,6 +71,12 @@ app.controller('loginCtrl', [
 	      	validateCredentials();
 	      }
   		}
+   }
+
+   $scope.eventHandler = function (arg) {
+    dialog.close();
+    $scope.debugMsg = {user: localStorage.getItem('user'), arg: arg};
+
    }
 
    $scope.loginHandler = function (arg) {

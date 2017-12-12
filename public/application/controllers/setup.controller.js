@@ -24,14 +24,14 @@ app.controller('setupCtrl', [
     $scope.fetched = false;
 
     $scope.filteredReports = [
-      {name:"budrpt-90", type:''},
-      {name:"budrpt_a-90", type:'a'},
-      {name:"budrpt_e-90", type:'e'},
-      {name:"budrpt_f-90", type:'f'},
-      {name:"bjobcost-90", type:''},
-      {name:"jobcost90_ka", type:'ka'},
-      {name:"jobcoste-90", type:'e'},
-      {name:"newjobcost-90", type:'new'},
+      {name:"Budget Report", type:''},
+      {name:"Budget Report A", type:'a'},
+      {name:"Budget Report E", type:'e'},
+      {name:"Budget Report F", type:'f'},
+      {name:"Jobcost", type:''},
+      {name:"Jobcost KA", type:'ka'},
+      {name:"Jobcost E", type:'e'},
+      {name:"New Jobcost", type:'new'},
     ];
     $scope.modalLoad = {};
     $scope.user = {};
@@ -52,17 +52,17 @@ app.controller('setupCtrl', [
         $scope.filterReports = $scope.filterReports;
       } else if (_.includes(groups, 'dc448ad6-3a34-437d-ab81-63498fb36dc0')) { // Electric
         $scope.filteredReports = [
-          {name:"budrpt-90", type:''},
-          {name:"budrpt_e-90", type:'e'},
-          {name:"budrpt_f-90", type:'f'},
-          {name:"bjobcost-90", type:''},
-          {name:"jobcoste-90", type:'e'},
-          {name:"newjobcost-90", type:'new'},
+          {name:"Budget Report", type:''},
+          {name:"Budget Report E", type:'e'},
+          {name:"Budget Report F", type:'f'},
+          {name:"Jobcost", type:''},
+          {name:"Jobcost E", type:'e'},
+          {name:"New Jobcost", type:'new'},
         ];
       } else if (_.includes(groups, '01300353-41d6-4320-bed4-618e2bfeb19d')) { // Budget / Jobcost (General)
         $scope.filteredReports = [
-          {name:"budrpt-90", type:''},
-          {name:"bjobcost-90", type:''},
+          {name:"Budget Report", type:''},
+          {name:"Jobcost", type:''},
         ];
         $state.go('setup.budget', { type: '' });
       } else {
@@ -144,7 +144,7 @@ app.controller('setupCtrl', [
       if(report.name.includes("budrpt")){
         $state.go("setup.budget", stateObject);
       }
-      else if(report.name == "bjobcost-90" || report.name == "jobcoste-90"){
+      else if(report.name == "Jobcost" || report.name == "Jobcost E"){
         $state.go("setup.jobcost", stateObject);
       }
       else{
