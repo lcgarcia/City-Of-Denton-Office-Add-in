@@ -178,19 +178,23 @@ app.controller('jobcostCtrl', [
           });
 
           data.scope = $scope;
-          $rootScope.$broadcast('jobcostData', hiddenRows);
-          jobcostService.insertSpreadSheetData(data, function(err, response){
+          jobcostService.insertTable(data, function(err, response) {
             modalService.hideReportLoadingModal();
-            
-            /*
-            if(err){
+            if (err) {
               $scope.reportDetails.msg = $scope.dataErrorMsg;
               $scope.$apply(function () {
                 $scope.reportDetails.msg = $scope.dataErrorMsg;
               });
             }
-            */
           });
+          
+          /*
+          data.scope = $scope;
+          $rootScope.$broadcast('jobcostData', hiddenRows);
+          jobcostService.insertSpreadSheetData(data, function(err, response){
+            modalService.hideReportLoadingModal();
+          });
+          */
           
         } catch (e) {
           console.log(data);

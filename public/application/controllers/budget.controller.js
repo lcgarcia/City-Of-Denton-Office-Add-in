@@ -683,14 +683,6 @@ app.controller('budgetCtrl', [
               $scope.$apply(function () {
                 $scope.getActiveSheet();
               });
-              /*
-              if (err) {
-                $scope.reportDetails.msg = $scope.dataErrorMsg;
-                $scope.$apply(function () {
-                  $scope.reportDetails.msg = $scope.dataErrorMsg;
-                });
-              }
-              */
             });
           });
         }).catch(function (err) {

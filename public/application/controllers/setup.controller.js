@@ -257,6 +257,10 @@ app.controller('setupCtrl', [
 
     $scope.toggleRow = function (label) {
       Excel.run(function (ctx) {
+        if (/A6/gi.test(label.range)) {
+          var split = label.range.split(':')
+          label.range = 'A7:' + split[1];
+        }
         var worksheet = ctx.workbook.worksheets.getItem($scope.reportDetails.worksheet);
         var range = worksheet.getRange(label.range);
         range.rowHidden = !label.selected;

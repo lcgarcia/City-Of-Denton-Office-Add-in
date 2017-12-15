@@ -139,28 +139,28 @@ app.service("jobcostService", [
       return '';
     }
 
-    /**
-     * Insert data into spreadsheet
-     * @param  {object}   data Data object from the getSheetData call
-     * @param  {Function} cb   Callback function
-     * @return {(err, data)}   Data and error object form async call
-     */
-    this.insertSpreadSheetData = function (data, cb) {
-      // Callback with (err, result)
+    this.insertTable = function (data, cb) {
       try {
         async.waterfall([
           function (next) {
+            var alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+            if (data.sheetData.length > 0)
+              data.alphabetRangeValue = alphabet[data.sheetData[0].length-1];
+            data.headerOffset = 6;
             next(null, data);
           },
           deleteWorkSheets,
           loadWorkSheets,
           findWorkSheet,
           initalizeWorkSheet,
-          hideRows,
-          insertDataToWorkSheet,
-          setSubTotalFormat,
-          addGrandTotal,
           setHeader,
+          createTable,
+          addTableHeader,
+          addTableRows,
+          addGrandTotal,
+          addFilter,
+          addFormatting,
+          //insertData
         ], cb);
       } catch (e) {
         cb(e);
@@ -170,6 +170,11 @@ app.service("jobcostService", [
     var deleteWorkSheets = function (data, next) {
       Excel.run(function (ctx) {
         var sheets = ctx.workbook.worksheets;
+        var worksheet = sheets.add();
+        var date = new Date();
+        worksheet.name = 'test-' + date.getTime();
+        worksheet.load("name, position");
+        worksheet.activate();
         sheets.load("items");
         var count = ctx.workbook.worksheets.getCount();
         return ctx.sync()
@@ -253,6 +258,253 @@ app.service("jobcostService", [
         });
       } else next(null, data);
     }
+
+    var setHeader = function (data, next) {
+      Excel.run(function (ctx) {
+        var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+        var jsonHiddenData = JSON.stringify(data.hiddenRows);
+
+        data.scope.$apply(function () {
+          data.scope.debugMsg = data.hiddenRows.length
+        });
+
+        var header = [
+          ['', '', '', 'City of Denton - Job Cost Summary', '', '', 'Dept:', data.scope.selectedValues.department.name, 'Month:', data.scope.selectedValues.dates.monthStart, ''],
+          [data.hiddenRows.length > 1000 ? '' : jsonHiddenData, '', '', 'Date Run', '', '', 'Company:', data.scope.selectedValues.company.name, 'JDE Fiscal Year:', data.scope.selectedValues.dates.jdeYear + ' - ' + (parseInt(data.scope.selectedValues.dates.jdeYear)+1), ''],
+          ['', '', '', 'Unaudited/Unofficial-Not intended for public distribution', '', '', 'Project:', data.scope.selectedValues.project.name, 'Layout:', 'Cost Code/Type Details', ''],
+          ['', '', '', '', '', '', 'Job:', data.scope.selectedValues.job.name, '', '', ''],
+          ["Dept", "Company", "Project", "Bus Unit", "Object", "Subsidary", "Budget", "Expendatures", "Remaining", "Encumbrances", "Unencumbered"]
+        ];
+
+        var range = worksheet.getRange('A1:K5');
+        range.load('values');
+        range.values = header;
+
+        var jsonDataRange = worksheet.getRange('A1:C4');
+        jsonDataRange.format.font.color = 'white';
+        jsonDataRange.merge(true);
+
+        var titleSection = worksheet.getRange('D1:D2');
+        titleSection.format.font.color = '#174888';
+
+        var titleCell = worksheet.getRange('D1');
+        titleCell.format.font.bold = true;
+
+
+        var infoCell = worksheet.getRange('D3');
+        infoCell.format.font.color = 'red';
+        infoCell.format.font.italic = true;
+
+        var reportheaders = worksheet.getRange('G1:G4');
+        reportheaders.format.font.color = '#174888';
+        reportheaders.format.font.bold = true;
+
+        var reportRangeHeader = worksheet.getRange('I1:I4');
+        reportRangeHeader.format.font.color = '#174888';
+        reportRangeHeader.format.font.bold = true;
+
+        var tableHeader = worksheet.getRange('A5:K5');
+        tableHeader.format.fill.color = '#174888';
+        tableHeader.format.font.color = 'white';
+        tableHeader.rowHidden = true;
+
+        var leftColumns = worksheet.getRange('A:C');
+        leftColumns.format.horizontalAlignment = 'Center';
+
+        var headerOffset = 6;
+        var sheetLength = data.sheetData.length + headerOffset - 1;
+        var fullSheetRange = worksheet.getRange('A1:K' + sheetLength);
+        fullSheetRange.load('values');
+        fullSheetRange.format.autofitColumns();
+
+        var gCol = worksheet.getRange('G1:G' + sheetLength);
+        gCol.format.columnWidth = 110;
+
+        return ctx.sync()
+          .then(function (res) {
+            data.header = header;
+            next(null, data);
+          }).catch(function (err) {
+            next({err: err, stage: 'setHeader', range: 'A1:K' + sheetLength, header: header});
+          });
+      });
+    };
+
+    var createTable = function (data, next) {
+      Excel.run(function (ctx) {
+
+        var table = ctx.workbook.tables.add('\''+data.dataSheetName+'\'!A' + data.headerOffset + ':'+data.alphabetRangeValue+ data.headerOffset, true);
+        table.load('name');
+
+        return ctx.sync()
+          .then(function (response) {
+            data.tableName = table.name;
+            next(null, data);  
+          }).catch(function (err) {
+            next(null, data);
+          });
+      });
+    }
+
+    var addTableHeader = function (data, next) {
+      Excel.run(function (ctx) {
+        var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+        var tables = ctx.workbook.tables;
+        tables.getItem(data.tableName).getHeaderRowRange().values = [["Dept", "Company", "Project", "Bus Unit", "Object", "Subsidary", "Budget", "Expendatures", "Remaining", "Encumbrances", "Unencumbered"]];
+
+        return ctx.sync()
+          .then(function (response) {
+            next(null, data);  
+          }).catch(function (err) {
+            next(null, data);
+          });
+      });
+    }
+
+    var addTableRows = function (data, next) {
+      Excel.run(function (ctx) {
+        if (data.sheetData.length > 5000) {
+          var split = _.chunk(data.sheetData, data.sheetData.length/20);
+          var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+          var tables = ctx.workbook.tables;
+          tables.getItem(data.tableName).rows.add(0, split[0]);
+          tables.getItem(data.tableName).rows.add(split[0].length, split[1]);
+          tables.getItem(data.tableName).rows.add(split[1].length, split[2]);
+          tables.getItem(data.tableName).rows.add(split[2].length, split[3]);
+          tables.getItem(data.tableName).rows.add(split[3].length, split[4]);
+          tables.getItem(data.tableName).rows.add(split[4].length, split[5]);
+          tables.getItem(data.tableName).rows.add(split[5].length, split[6]);
+          tables.getItem(data.tableName).rows.add(split[6].length, split[7]);
+          tables.getItem(data.tableName).rows.add(split[7].length, split[8]);
+          tables.getItem(data.tableName).rows.add(split[8].length, split[9]);
+          tables.getItem(data.tableName).rows.add(split[9].length, split[10]);
+          tables.getItem(data.tableName).rows.add(split[10].length, split[11]);
+          tables.getItem(data.tableName).rows.add(split[11].length, split[12]);
+          tables.getItem(data.tableName).rows.add(split[12].length, split[13]);
+          tables.getItem(data.tableName).rows.add(split[13].length, split[14]);
+          tables.getItem(data.tableName).rows.add(split[14].length, split[15]);
+          tables.getItem(data.tableName).rows.add(split[15].length, split[16]);
+          tables.getItem(data.tableName).rows.add(split[16].length, split[17]);
+          tables.getItem(data.tableName).rows.add(split[17].length, split[18]);
+          tables.getItem(data.tableName).rows.add(split[16].length, split[19]);
+        } else {
+          var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+          var tables = ctx.workbook.tables;
+          tables.getItem(data.tableName).rows.add(0, data.sheetData);
+        }
+        return ctx.sync()
+          .then(function (response) {
+            //data.tableName = table.name;
+            next(null, data);  
+          }).catch(function (err) {
+            next(null, data);
+          });
+      });
+    }
+
+    var addGrandTotal = function (data, next) {
+      Excel.run(function (ctx) {
+        var sheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+        var rows = sheet.tables.getItem(data.tableName).rows;
+        var length = rows.getCount();
+
+        var grandTotalData = [['Grand Total', '', '', '=SUM(G6:G' + (length-1) + ')', '=SUM(H6:H' + (length-1) + ')', '=SUM(I6:I' + (length-1) + ')', '=SUM(J6:J' + (length-1) + ')', '=SUM(K6:K' + (length-1) + ')']];
+
+        var newRow = rows.add(length, grandTotalData);
+        var range = newRow.getRange();
+        var format = '_($* #,##0.00_);_($* (#,##0.00);_($* "-"??_);_(@_)';
+        range.numberFormat = [_.fill(Array(8), format)];
+        range.format.font.bold = true;
+        range.format.font.color = 'black';
+
+        return ctx.sync()
+          .then(function (response) {
+            //data.tableName = table.name;
+            next(null, data);  
+          }).catch(function (err) {
+            next(null, data);
+          });
+      });
+    }
+
+    var addFilter = function (data, next) {
+      Excel.run(function (ctx) {
+        var sheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+        var table = sheet.tables.getItem(data.tableName);
+
+        filter = table.columns.getItem("Project").filter;
+        filter.apply({
+            filterOn: Excel.FilterOn.values,
+            values: ["-"]
+        });
+
+        var len = data.sheetData.length + data.headerOffset;
+        sheet.getUsedRange().format.autofitColumns();
+        var sheetLength = data.sheetData.length + data.headerOffset - 1;
+        var range = sheet.getRange('E' + data.headerOffset + ':K' + len)
+        range.format.columnWidth = 110;
+        return ctx.sync()
+          .then(function (response) {
+            //data.tableName = table.name;
+            next(null, data);  
+          }).catch(function (err) {
+            next(null, data);
+          });
+      });
+    }
+
+    var addFormatting = function (data, next) {
+      Excel.run(function (ctx) {
+        var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+        var len = data.sheetData.length + data.headerOffset;
+        var numberRange = worksheet.getRange('G1:' + data.alphabetRangeValue + len)
+        var format = '_($* #,##0.00_);[Red]_($* (#,##0.00);_($* "-"??_);_(@_)';
+        numberRange.numberFormat = _.fill(Array(len),_.fill(Array(5), format));
+
+        var len = data.sheetData.length + data.headerOffset;
+        worksheet.getUsedRange().format.autofitColumns();
+        var sheetLength = data.sheetData.length + data.headerOffset - 1;
+        var range = worksheet.getRange('E' + data.headerOffset + ':K' + len)
+        range.format.columnWidth = 110;
+        return ctx.sync()
+          .then(function (response) {
+            //data.tableName = table.name;
+            next(null, data);  
+          }).catch(function (err) {
+            next(null, data);
+          });
+      });
+    }
+
+    /**
+     * Insert data into spreadsheet
+     * @depricated             This function is depricated
+     * 
+     * @param  {object}   data Data object from the getSheetData call
+     * @param  {Function} cb   Callback function
+     * @return {(err, data)}   Data and error object form async call
+     */
+    this.insertSpreadSheetData = function (data, cb) {
+      // Callback with (err, result)
+      try {
+        async.waterfall([
+          function (next) {
+            next(null, data);
+          },
+          deleteWorkSheets,
+          loadWorkSheets,
+          findWorkSheet,
+          initalizeWorkSheet,
+          hideRows,
+          insertDataToWorkSheet,
+          setSubTotalFormat,
+          addGrandTotal,
+          setHeader,
+        ], cb);
+      } catch (e) {
+        cb(e);
+      }
+    };
 
     var hideRows = function (data, next) {
       Excel.run(function (ctx) {
@@ -339,7 +591,7 @@ app.service("jobcostService", [
         var headerOffset = 6;
         var length = headerOffset + data.sheetData.length;
         var range = 'D' + length + ':K' + length;
-        var grandTotalData = [['Grand Total', '', '', '=SUBTOTAL(9,G6:G' + (length-1) + ')', '=SUBTOTAL(9,H6:H' + (length-1) + ')', '=SUBTOTAL(9,I6:I' + (length-1) + ')', '=SUBTOTAL(9,J6:J' + (length-1) + ')', '=SUBTOTAL(9,K6:K' + (length-1) + ')']];
+        var grandTotalData = [['Grand Total', '', '', '=SUM(G6:G' + (length-1) + ')', '=SUM(H6:H' + (length-1) + ')', '=SUM(I6:I' + (length-1) + ')', '=SUM(J6:J' + (length-1) + ')', '=SUM(K6:K' + (length-1) + ')']];
 
         var range = worksheet.getRange(range);
         range.load('values');
@@ -355,71 +607,6 @@ app.service("jobcostService", [
             next(null, data);
           }).catch(function (err) {
             next({err: err, stage: 'addGrandTotal', len: sheetLength });
-          });
-      });
-    };
-
-    var setHeader = function (data, next) {
-      Excel.run(function (ctx) {
-        var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
-        var jsonHiddenData = JSON.stringify(data.hiddenRows);
-
-        var header = [
-          ['', '', '', 'City of Denton - Job Cost Summary', '', '', 'Dept:', data.scope.selectedValues.department.name, 'Month:', data.scope.selectedValues.dates.monthStart, ''],
-          [jsonHiddenData, '', '', 'Date Run', '', '', 'Company:', data.scope.selectedValues.company.name, 'JDE Fiscal Year:', data.scope.selectedValues.dates.jdeYear + ' - ' + (parseInt(data.scope.selectedValues.dates.jdeYear)+1), ''],
-          ['', '', '', 'Unaudited/Unofficial-Not intended for public distribution', '', '', 'Project:', data.scope.selectedValues.project.name, 'Layout:', 'Cost Code/Type Details', ''],
-          ['', '', '', '', '', '', 'Job:', data.scope.selectedValues.job.name, '', '', ''],
-          ["Dept", "Company", "Project", "Bus Unit", "Object", "Subsidary", "Budget", "Expendatures", "Remaining", "Encumbrances", "Unencumbered"]
-        ];
-
-        var range = worksheet.getRange('A1:K5');
-        range.load('values');
-        range.values = header;
-
-        var jsonDataRange = worksheet.getRange('A1:C4');
-        jsonDataRange.format.font.color = 'white';
-        jsonDataRange.merge(true);
-
-        var titleSection = worksheet.getRange('D1:D2');
-        titleSection.format.font.color = '#174888';
-
-        var titleCell = worksheet.getRange('D1');
-        titleCell.format.font.bold = true;
-
-
-        var infoCell = worksheet.getRange('D3');
-        infoCell.format.font.color = 'red';
-        infoCell.format.font.italic = true;
-
-        var reportheaders = worksheet.getRange('G1:G4');
-        reportheaders.format.font.color = '#174888';
-        reportheaders.format.font.bold = true;
-
-        var reportRangeHeader = worksheet.getRange('I1:I4');
-        reportRangeHeader.format.font.color = '#174888';
-        reportRangeHeader.format.font.bold = true;
-
-        var tableHeader = worksheet.getRange('A5:K5');
-        tableHeader.format.fill.color = '#174888';
-        tableHeader.format.font.color = 'white';
-
-        var leftColumns = worksheet.getRange('A:C');
-        leftColumns.format.horizontalAlignment = 'Center';
-
-        var headerOffset = 6;
-        var sheetLength = data.sheetData.length + headerOffset - 1;
-        var fullSheetRange = worksheet.getRange('A1:K' + sheetLength);
-        fullSheetRange.load('values');
-        fullSheetRange.format.autofitColumns();
-
-        var gCol = worksheet.getRange('G1:G' + sheetLength);
-        gCol.format.columnWidth = 110;
-
-        return ctx.sync()
-          .then(function (res) {
-            next(null, {header: header});
-          }).catch(function (err) {
-            next({err: err, stage: 'setHeader', range: 'A1:K' + sheetLength, header: header});
           });
       });
     };
