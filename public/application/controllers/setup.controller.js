@@ -141,7 +141,7 @@ app.controller('setupCtrl', [
       sessionStorage.setItem('reportIndex', report.id);
 
       var stateObject = {type:$scope.selectedValues.report.type, data:{user:$scope.user}};
-      if(report.name.includes("budrpt")){
+      if(/Budget Report/gi.test(report.name)){
         $state.go("setup.budget", stateObject);
       }
       else if(report.name == "Jobcost" || report.name == "Jobcost E"){
