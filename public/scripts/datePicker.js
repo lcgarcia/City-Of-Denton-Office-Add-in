@@ -1,3 +1,5 @@
+var currentDate = new Date();
+var currentYear = currentDate.getFullYear();
 
 var budgetReportDates = function (event) {
     $("#monthStart").datepicker({
@@ -7,8 +9,6 @@ var budgetReportDates = function (event) {
         maxViewMode: 1,
         format: "MM"
     });
-
-    
 
     //JDE Year
     $("#jdeYear").datepicker({
@@ -50,10 +50,10 @@ var budgetReportDates = function (event) {
         }
     });
 
-    $("#monthSelection").val("December"); 
+    $("#monthSelection").val("September"); 
     $("#monthSelection").datepicker("update"); 
 
-    $("#jdeYearSelection").val("2011"); 
+    $("#jdeYearSelection").val(currentYear.toString()); 
     $("#jdeYearSelection").datepicker("update");
 }
 
@@ -112,7 +112,7 @@ var jobcostReportDates = function (event) {
     $("#monthStartSelection").val("September"); 
     $("#monthStartSelection").datepicker("update"); 
 
-    $("#jdeYearSelection").val("2011"); 
+    $("#jdeYearSelection").val(currentYear.toString()); 
     $("#jdeYearSelection").datepicker("update");
 
 
@@ -139,7 +139,7 @@ var jobcostReportDates = function (event) {
 
 
     function getMonthFromString(month){
-       var d = Date.parse(month + "1, 2012");
+       var d = Date.parse(month + "1, "+currentYear);
        if(!isNaN(d)){
           return new Date(d).getMonth() + 1;
        }
@@ -179,7 +179,7 @@ var jobcost2ReportDates = function (event) {
         minViewMode: 2,
         maxViewMode: 2,
         format: "yyyy",
-        endDate: '+1d'
+        endDate: '+1y'
     });
     
     //JDE Year
@@ -275,19 +275,19 @@ var jobcost2ReportDates = function (event) {
     });
 
 
-    $("#monthStartSelection").val("September"); 
+    $("#monthStartSelection").val("October"); 
     $("#monthStartSelection").datepicker("update"); 
-    $("#yearStartSelection").val("2003"); 
+    $("#yearStartSelection").val(currentYear.toString()); 
     $("#yearStartSelection").datepicker("update"); 
 
 
     $("#monthEndSelection").val("September"); 
     $("#monthEndSelection").datepicker("update"); 
-    $("#yearEndSelection").val("2005"); 
+    $("#yearEndSelection").val((currentYear+1).toString()); 
     $("#yearEndSelection").datepicker("update"); 
 
 
-    $("#jdeYearSelection").val("2011"); 
+    $("#jdeYearSelection").val(currentYear.toString()); 
     $("#jdeYearSelection").datepicker("update");
 
 
@@ -314,7 +314,7 @@ var jobcost2ReportDates = function (event) {
 
 
     function getMonthFromString(month){
-       var d = Date.parse(month + "1, 2012");
+       var d = Date.parse(month + "1, "+currentYear);
        if(!isNaN(d)){
           return new Date(d).getMonth() + 1;
        }

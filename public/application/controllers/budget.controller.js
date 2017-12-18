@@ -50,7 +50,7 @@ app.controller('budgetCtrl', [
      */
     function buildPage(){
       $scope.selectedValues.dates = {};
-      $scope.selectedValues.reportType ="Balance Sheet";
+      $scope.selectedValues.reportType ="Income Statement";
       $scope.selectedValues.totalSheet = "No";
       $scope.selectedValues.month = "";
       $scope.selectedValues.year = "";
