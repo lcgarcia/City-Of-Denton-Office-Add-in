@@ -51,7 +51,7 @@ app.service("budgetService", [
           function (next) {
             next(null, data);
           },
-          deleteWorkSheets,
+          //deleteWorkSheets,
           loadWorkSheets,
           findWorkSheet,
           initalizeWorkSheet,
@@ -62,11 +62,60 @@ app.service("budgetService", [
           addSubtotalUnderline,
           setMainHeaderFormat,
           setHeader,
+          removeOldSheet,
         ], cb);
       } catch (e) {
         cb(e);
       }
     };
+
+    var removeOldSheet = function (data, next) {
+      Excel.run(function (ctx) {
+        var worksheet = ctx.workbook.worksheets.getItem('test-' + data.dummySheetName);
+        worksheet.delete();
+        
+        return ctx.sync()
+          .then(function(response) {
+            next(null, data);  
+          }).catch(function (err) {
+            next(err);
+          });
+      });
+    }
+
+    this.deleteWorkSheets = function (data, next) {
+      Excel.run(function (ctx) {
+        var sheets = ctx.workbook.worksheets;
+        var worksheet = sheets.add();
+        var date = new Date();
+        data.dummySheetName = date.getTime();
+        worksheet.name = 'test-' + data.dummySheetName;
+        worksheet.load("name, position");
+        worksheet.activate();
+        sheets.load("items");
+        var count = ctx.workbook.worksheets.getCount();
+        return ctx.sync()
+          .then(function(response) {
+            var sheets = ctx.workbook.worksheets;
+            sheets.load("items");
+            var ids = _.map(sheets.items, function(sheet) { return sheet.id });
+            _.forEach(ids, function (id) {
+              ws = ctx.workbook.worksheets.getItem(id);
+              ws.delete();
+            });
+           
+            return ctx.sync()
+            .then(function (response) {
+              next(null, data);  
+            }).catch(function (err) {
+              next(null, data);
+            });
+          }).catch(function (err) {
+            next(err);
+          });
+      });
+    }
+
 
     var deleteWorkSheets = function (data, next) {
       Excel.run(function (ctx) {

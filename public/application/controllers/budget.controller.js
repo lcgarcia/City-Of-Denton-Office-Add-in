@@ -671,21 +671,27 @@ app.controller('budgetCtrl', [
            *   -> 0:{range: "A7:Z25", key: "CASH AND DEPOSITS"}
            * 
            */
-          _.forEach(data, function (sheetData, key) {
-            _.forEach(sheetData.hiddenRows, function(child) {
-              child.selected = false;
-            });
-            sheetData.scope = $scope;
-            sheetData.accountType = accounts;
-            sheetData.month = $scope.selectedValues.month;
-            sheetData.year = $scope.selectedValues.dates.jdeYear;
-            sheetData.sheetKey = key;
+          budgetService.deleteWorkSheets({}, function (err, newSheetData) {
+            var dummySheetName = newSheetData.dummySheetName;
 
-            $scope.sheetData = sheetData;
-            budgetService.insertSpreadSheetData(sheetData, function (err, data) {
-              modalService.hideReportLoadingModal();
-              $scope.$apply(function () {
-                $scope.getActiveSheet();
+            _.forEach(data, function (sheetData, key) {
+              _.forEach(sheetData.hiddenRows, function(child) {
+                child.selected = false;
+              });
+              sheetData.scope = $scope;
+              sheetData.accountType = accounts;
+              sheetData.month = $scope.selectedValues.month;
+              sheetData.year = $scope.selectedValues.dates.jdeYear;
+              sheetData.sheetKey = key;
+              sheetData.dummySheetName = dummySheetName;
+
+              $scope.sheetData = sheetData;
+
+              budgetService.insertSpreadSheetData(sheetData, function (err, data) {
+                modalService.hideReportLoadingModal();
+                $scope.$apply(function () {
+                  $scope.getActiveSheet();
+                });
               });
             });
           });

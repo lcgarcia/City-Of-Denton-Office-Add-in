@@ -160,6 +160,7 @@ app.service("jobcostService", [
           addFilter,
           addGrandTotal,
           addFormatting,
+          removeOldSheet,
           //insertData
         ], cb);
       } catch (e) {
@@ -167,12 +168,27 @@ app.service("jobcostService", [
       }
     };
 
+    var removeOldSheet = function (data, next) {
+      Excel.run(function (ctx) {
+        var worksheet = ctx.workbook.worksheets.getItem('test-' + data.dummySheetName);
+        worksheet.delete();
+        
+        return ctx.sync()
+          .then(function(response) {
+            next(null, data);  
+          }).catch(function (err) {
+            next(err);
+          });
+      });
+    }
+
     var deleteWorkSheets = function (data, next) {
       Excel.run(function (ctx) {
         var sheets = ctx.workbook.worksheets;
         var worksheet = sheets.add();
         var date = new Date();
-        worksheet.name = 'test-' + date.getTime();
+        data.dummySheetName = date.getTime();
+        worksheet.name = 'test-' + data.dummySheetName;
         worksheet.load("name, position");
         worksheet.activate();
         sheets.load("items");
