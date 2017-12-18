@@ -71,7 +71,8 @@ app.service("budgetService", [
 
     var removeOldSheet = function (data, next) {
       Excel.run(function (ctx) {
-        var worksheet = ctx.workbook.worksheets.getItem('test-' + data.dummySheetName);
+        var worksheets = ctx.workbook.worksheets.load('name');
+        var worksheet = worksheets.getItem('test-' + data.dummySheetName);
         worksheet.delete();
         
         return ctx.sync()
