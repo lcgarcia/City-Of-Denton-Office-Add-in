@@ -16,8 +16,6 @@ app.controller('loginCtrl', [
 
   	var userList = [
       {name:"Sample User", username:"user", password:"user"},
-      {name:"Sample User2", username:"user2", password:"user2"},
-      {name:"Luis Garcia", username:"lgarcia", password:"mustang100"}
     ];
 
   	$scope.modalLoad = {};

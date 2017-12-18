@@ -58,8 +58,8 @@ app.controller('jobcost2Ctrl', [
       $scope.selectedValues.dates.monthEnd = "";
       $scope.selectedValues.dates.yearStart = "";
       $scope.selectedValues.dates.yearEnd = "";
-      $scope.selectedValues.dates.jdeYear ="";
-      $scope.selectedValues.dates.jdeFiscalYear="";
+      $scope.selectedValues.dates.jdeYear = "";
+      $scope.selectedValues.dates.jdeFiscalYear = "";
 
       $scope.reportDetails.show = false;
       $scope.reportDetails.msg = "";
@@ -79,11 +79,11 @@ app.controller('jobcost2Ctrl', [
 
       modalService.showDataLoadingModal();
       jobcostService.getReportData(rType).then(function(data){
-        $scope.filteredDepartment = data.departments;
-        $scope.filteredCompany = data.company;
-        $scope.filteredProject = data.projects;
-        $scope.filteredJob  = data.jobs;
-        $scope.filteredCatCode1 = data.catCodeHead;
+        $scope.filteredDepartment = (data.departments) ? data.departments : [];
+        $scope.filteredCompany = (data.company) ? data.company : [];
+        $scope.filteredProject = (data.projects) ? data.projects : [];
+        $scope.filteredJob  = (data.jobs) ? data.jobs : [];
+        $scope.filteredCatCode1 = (data.catCodeHead) ? data.catCodeHead : [];
         $scope.filteredCC1Descriptions = [];
         $scope.filteredCC2Descriptions = [];
         
