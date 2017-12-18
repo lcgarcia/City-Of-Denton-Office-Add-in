@@ -199,9 +199,10 @@ app.service("jobcostService", [
             var sheets = ctx.workbook.worksheets;
             sheets.load("items");
             var ids = _.map(sheets.items, function(sheet) { return sheet.id });
-            _.forEach(ids, function (id) {
-              ws = ctx.workbook.worksheets.getItem(id);
-              ws.delete();
+            _.forEach(ids, function (id, key) {
+              var ws = ctx.workbook.worksheets.getItem(id);
+              if (key < ids.length - 1) 
+                ws.delete();
             });
            
             return ctx.sync()
