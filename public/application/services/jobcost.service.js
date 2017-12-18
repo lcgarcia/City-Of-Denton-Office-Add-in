@@ -562,7 +562,7 @@ app.service("jobcostService", [
         var headerOffset = 6;
         var length = headerOffset + data.sheetData.length;
         var range = 'D' + (length+1) + ':K' + (length+1);
-        var grandTotalData = [['Grand Total', '', '', '=SUM(G' + (data.subTotalRows.join(',G')) + ')', '=SUM(H' + (data.subTotalRows.join(',H')) + ')', '=SUM(I' + (data.subTotalRows.join(',I')) + ')', '=SUM(J' + (data.subTotalRows.join(',J')) + ')', '=SUM(K' + (data.subTotalRows.join(',K')) + ')']];
+        var grandTotalData = [['Grand Total', '', '', '=SUM(G5:G' + (length-1) + ')/2', '=SUM(H6:H' + (length-1) + ')/2', '=SUM(I6:I' + (length-1) + ')/2', '=SUM(J6:J' + (length-1) + ')/2', '=SUM(K6:K' + (length-1) + ')/2']];
 
         var range = worksheet.getRange(range);
         range.load('values');
