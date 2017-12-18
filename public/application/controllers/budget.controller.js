@@ -390,6 +390,8 @@ app.controller('budgetCtrl', [
             item = book.selectionList[i];
             parent = _.find($scope.parentList, ['id', item.id]);
             if(item.selected){
+              parent.selected = true;
+              $scope.selectedKeys.push(parent);
               setParentSelected(parent, true);
             }
             if(item.childList && item.childList.length > 0){
@@ -403,9 +405,11 @@ app.controller('budgetCtrl', [
                   if(item.childList[j].selected == null){
                     //option with no select tag - means set selection to true
                     setChildSelected(child, true);
+                    $scope.selectedKeys.push(child);
                   }
                   else{
-                    setChildSelected(child, item.childList[j].selected);
+                    setChildSelected(child, true);
+                    $scope.selectedKeys.push(child);
                   }
                   
                 }
