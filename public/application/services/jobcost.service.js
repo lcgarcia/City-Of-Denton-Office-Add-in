@@ -157,8 +157,8 @@ app.service("jobcostService", [
           createTable,
           addTableHeader,
           addTableRows,
-          addGrandTotal,
           addFilter,
+          addGrandTotal,
           addFormatting,
           //insertData
         ], cb);
@@ -263,10 +263,6 @@ app.service("jobcostService", [
       Excel.run(function (ctx) {
         var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
         var jsonHiddenData = JSON.stringify(data.hiddenRows);
-
-        data.scope.$apply(function () {
-          data.scope.debugMsg = data.hiddenRows.length
-        });
 
         var header = [
           ['', '', '', 'City of Denton - Job Cost Summary', '', '', 'Dept:', data.scope.selectedValues.department.name, 'Month:', data.scope.selectedValues.dates.monthStart, ''],
@@ -408,7 +404,7 @@ app.service("jobcostService", [
         var rows = sheet.tables.getItem(data.tableName).rows;
         var length = rows.getCount();
 
-        var grandTotalData = [['Grand Total', '', '', '=SUM(G6:G' + (length-1) + ')', '=SUM(H6:H' + (length-1) + ')', '=SUM(I6:I' + (length-1) + ')', '=SUM(J6:J' + (length-1) + ')', '=SUM(K6:K' + (length-1) + ')']];
+        var grandTotalData = [['Grand Total', '', '', '=SUBTOTAL(9, G5:G' + (length-1) + ')', '=SUBTOTAL(9, H6:H' + (length-1) + ')', '=SUBTOTAL(9, I6:I' + (length-1) + ')', '=SUBTOTAL(9, J6:J' + (length-1) + ')', '=SUBTOTAL(9, K6:K' + (length-1) + ')']];
 
         var newRow = rows.add(length, grandTotalData);
         var range = newRow.getRange();
@@ -591,7 +587,7 @@ app.service("jobcostService", [
         var headerOffset = 6;
         var length = headerOffset + data.sheetData.length;
         var range = 'D' + length + ':K' + length;
-        var grandTotalData = [['Grand Total', '', '', '=SUM(G6:G' + (length-1) + ')', '=SUM(H6:H' + (length-1) + ')', '=SUM(I6:I' + (length-1) + ')', '=SUM(J6:J' + (length-1) + ')', '=SUM(K6:K' + (length-1) + ')']];
+        var grandTotalData = [['Grand Total', '', '', '=SUBTOTAL(9, G5:G' + (length-1) + ')', '=SUBTOTAL(9, H6:H' + (length-1) + ')', '=SUBTOTAL(9, I6:I' + (length-1) + ')', '=SUBTOTAL(9, J6:J' + (length-1) + ')', '=SUBTOTAL(9, K6:K' + (length-1) + ')']];
 
         var range = worksheet.getRange(range);
         range.load('values');
