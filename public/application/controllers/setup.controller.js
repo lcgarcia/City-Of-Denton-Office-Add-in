@@ -11,14 +11,7 @@ app.controller('setupCtrl', [
   'jobcostService',
   'modalService',
   function ($http, $scope, $rootScope, $state, $stateParams, jobcostService, modalService) {
-    var debugCreated = false;
-    var dataCreated = false;
-    var debugRange = 3;
-
-    var dataSheetName = "Data";
-    var debugSheetName = "Debug";
-    var debugMsgSize = 2000;
-
+    var jobcostIndex = 4;
     $scope.showSpinner = false
     $scope.showingDetail = false;
     $scope.fetched = false;
@@ -57,12 +50,13 @@ app.controller('setupCtrl', [
           {name:"Jobcost E", type:'e'},
           {name:"New Jobcost", type:'new'},
         ];
+        jobcostIndex = 3;
       } else if (_.includes(groups, '01300353-41d6-4320-bed4-618e2bfeb19d')) { // Budget / Jobcost (General)
         $scope.filteredReports = [
           {name:"Budget Report", type:''},
           {name:"Jobcost", type:''},
         ];
-        $state.go('setup.budget', { type: '' });
+        jobcostIndex = 1;
       } else {
         window.location.href = '/logout';
       }
@@ -71,6 +65,8 @@ app.controller('setupCtrl', [
       for(i=0; i<$scope.filteredReports.length; i++){
         $scope.filteredReports[i].id = i;
       }
+
+      $state.go('setup.jobcost', { type: '' });
     };
 
 
@@ -113,7 +109,7 @@ app.controller('setupCtrl', [
         $scope.selectedValues.report = $scope.filteredReports[reportIndex];
       }
       else{
-        $scope.selectedValues.report = $scope.filteredReports[0];
+        $scope.selectedValues.report = $scope.filteredReports[jobcostIndex];
       }
       
       try{
