@@ -149,7 +149,7 @@ app.service("jobcostService", [
             data.headerOffset = 6;
             next(null, data);
           },
-          deleteWorkSheets,
+          //deleteWorkSheets,
           loadWorkSheets,
           findWorkSheet,
           initalizeWorkSheet,
@@ -161,7 +161,7 @@ app.service("jobcostService", [
           addFilter,
           addGrandTotal,
           addFormatting,
-          removeOldSheet,
+          //removeOldSheet,
           //insertData
         ], cb);
       } catch (e) {
@@ -273,12 +273,24 @@ app.service("jobcostService", [
           worksheet.load("name, position");
 
           worksheet.activate();
-
-        return ctx.sync()
+          worksheets.load("items, name");
+          return ctx.sync()
           .then(function () {
-            next(null, data);
+            var sheetMap = _.map(ctx.workbook.worksheets.items, function(sheet) { return sheet.id });
+            _.forEach(sheetMap, function (id, key) {
+              var ws = worksheets.getItem(id);
+              if ( key != sheetMap.length - 1 )
+                ws.delete();
+            });
+           
+            return ctx.sync()
+            .then(function (response) {
+              next(null, data);  
+            }).catch(function (err) {
+              next(null, data);
+            });
           }).catch(function (err) {
-            next(err);
+            next(null, data);
           });
         });
       } else next(null, data);
@@ -291,7 +303,7 @@ app.service("jobcostService", [
 
         var header = [
           ['', '', '', 'City of Denton - Job Cost Summary', '', '', 'Dept:', data.scope.selectedValues.department.name, 'Month:', data.scope.selectedValues.dates.monthStart, ''],
-          [data.hiddenRows.length > 1000 ? '' : jsonHiddenData, '', '', 'Date Run', '', '', 'Company:', data.scope.selectedValues.company.name, 'JDE Fiscal Year:', data.scope.selectedValues.dates.jdeYear + ' - ' + (parseInt(data.scope.selectedValues.dates.jdeYear)+1), ''],
+          [data.hiddenRows.length > 1000 ? '' : jsonHiddenData, '', '', moment().format('MM/DD/YYYY, h:mm:ss a'), '', '', 'Company:', data.scope.selectedValues.company.name, 'JDE Fiscal Year:', data.scope.selectedValues.dates.jdeYear + ' - ' + (parseInt(data.scope.selectedValues.dates.jdeYear)+1), ''],
           ['', '', '', 'Unaudited/Unofficial-Not intended for public distribution', '', '', 'Project:', data.scope.selectedValues.project.name, 'Layout:', 'Cost Code/Type Details', ''],
           ['', '', '', '', '', '', 'Job:', data.scope.selectedValues.job.name, '', '', ''],
           ["Dept", "Company", "Project", "Bus Unit", "Object", "Subsidary", "Budget", "Expendatures", "Remaining", "Encumbrances", "Unencumbered"]
