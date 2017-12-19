@@ -84,6 +84,7 @@ app.service("budgetService", [
     }
 
     this.deleteWorkSheets = function (data, cb) {
+      data.dummySheetName = date.getTime();
       try {
         async.waterfall([
           function (next) {
@@ -93,7 +94,7 @@ app.service("budgetService", [
           deleteAllSheets, 
         ], cb);
       } catch (e) {
-        cb(e);
+        cb(e, data);
       }
     }
 
@@ -102,7 +103,6 @@ app.service("budgetService", [
         var sheets = ctx.workbook.worksheets;
         var worksheet = sheets.add();
         var date = new Date();
-        data.dummySheetName = date.getTime();
         worksheet.name = 'report-' + data.dummySheetName;
         worksheet.load("name, position");
         worksheet.activate();
