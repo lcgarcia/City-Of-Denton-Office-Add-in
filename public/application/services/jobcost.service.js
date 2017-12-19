@@ -153,6 +153,7 @@ app.service("jobcostService", [
           loadWorkSheets,
           findWorkSheet,
           initalizeWorkSheet,
+          clearSheet,
           setHeader,
           createTable,
           addTableHeader,
@@ -190,42 +191,36 @@ app.service("jobcostService", [
     }
 
     var deleteWorkSheets = function (data, next) {
-      var deleteAllSheets = function (cb) {
-        Excel.run(function (ctx) {
-          var sheets = ctx.workbook.worksheets;
-          var worksheet = sheets.add();
-          var date = new Date();
-          data.dummySheetName = date.getTime();
-          worksheet.name = 'report-' + data.dummySheetName;
-          worksheet.load("name, position");
-          worksheet.activate();
-          sheets.load("items");
-          var count = ctx.workbook.worksheets.getCount();
-          return ctx.sync()
-            .then(function(response) {
-              var sheets = ctx.workbook.worksheets;
-              sheets.load("items");
-              var ids = _.map(sheets.items, function(sheet) { return sheet.id });
-              _.forEach(ids, function (id, key) {
-                var ws = ctx.workbook.worksheets.getItem(id);
-                if (key < ids.length - 1) 
-                  ws.delete();
-              });
-             
-              return ctx.sync()
-              .then(function (response) {
-                cb(null, data);  
-              }).catch(function (err) {
-                cb(err);
-              });
-            }).catch(function (err) {
-              cb(err);
+      Excel.run(function (ctx) {
+        var sheets = ctx.workbook.worksheets;
+        var worksheet = sheets.add();
+        var date = new Date();
+        data.dummySheetName = date.getTime();
+        worksheet.name = 'report-' + data.dummySheetName;
+        worksheet.load("name, position");
+        worksheet.activate();
+        sheets.load("items");
+        var count = ctx.workbook.worksheets.getCount();
+        return ctx.sync()
+          .then(function(response) {
+            var sheets = ctx.workbook.worksheets;
+            sheets.load("items");
+            var ids = _.map(sheets.items, function(sheet) { return sheet.id });
+            _.forEach(ids, function (id, key) {
+              var ws = ctx.workbook.worksheets.getItem(id);
+              if (key < ids.length - 1) 
+                ws.delete();
             });
-        });
-      };
-
-      async.retry({times: 2, interval: 300}, deleteAllSheets, function (err, data) {
-        next(null, data);
+           
+            return ctx.sync()
+            .then(function (response) {
+              next(null, data);  
+            }).catch(function (err) {
+              next(null, data);
+            });
+          }).catch(function (err) {
+            next(err);
+          });
       });
     }
 
@@ -356,9 +351,23 @@ app.service("jobcostService", [
       });
     };
 
+    var clearSheet = function (data, next) {
+      Excel.run(function (ctx) {
+        var ws = ctx.workbook.worksheets.getItem(data.dataSheetName);
+        var range = ws.getUsedRange();
+        range.clear();
+
+        return ctx.sync()
+        .then(function (res) {
+          next(null, data);
+        }).catch(function (err) {
+          next(null, data);
+        })
+      })
+    }
+
     var createTable = function (data, next) {
       Excel.run(function (ctx) {
-
         var table = ctx.workbook.tables.add('\''+data.dataSheetName+'\'!A' + data.headerOffset + ':'+data.alphabetRangeValue+ data.headerOffset, true);
         table.load('name');
 
@@ -423,6 +432,9 @@ app.service("jobcostService", [
             //data.tableName = table.name;
             next(null, data);  
           }).catch(function (err) {
+            data.scope.$apply(function () {
+              data.scope.debugMsg = err;
+            });
             next(null, data);
           });
       });

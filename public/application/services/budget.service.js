@@ -70,22 +70,16 @@ app.service("budgetService", [
     };
 
     var removeOldSheet = function (data, next) {
-      var deletePlaceholder = function (cb) {
-        Excel.run(function (ctx) {
-          var worksheet = ctx.workbook.worksheets.getItem('report-' + data.dummySheetName);
-          worksheet.delete();
-          
-          return ctx.sync()
-            .then(function(response) {
-              cb(null, data);  
-            }).catch(function (err) {
-              cb(err);
-            });
-        });
-      }
-
-      async.retry({times: 5, interval: 300}, deletePlaceholder, function(err, data) {
-        next(null, data);
+      Excel.run(function (ctx) {
+        var worksheet = ctx.workbook.worksheets.getItem('report-' + data.dummySheetName);
+        worksheet.delete();
+        
+        return ctx.sync()
+          .then(function(response) {
+            next(null, data);  
+          }).catch(function (err) {
+            next(null, data);
+          });
       });
     }
 
@@ -119,7 +113,7 @@ app.service("budgetService", [
             data.items = sheets.items;
             next(null, data);
           }).catch(function (err) {
-            next(err);
+            next(err, data);
           });
       });
     }
@@ -207,7 +201,7 @@ app.service("budgetService", [
       Excel.run(function (ctx) {
         var dataCreated = false;
         var dataSheetName = data.sheetKey + '_BudgetReport-90';
-        
+
         _.forEach(data.sheets.items, function (sheet) {
           if(sheet.name == dataSheetName)
             dataCreated = true;
@@ -219,7 +213,7 @@ app.service("budgetService", [
             data.dataCreated = dataCreated;
             next(null, data);
           }).catch(function (err) {
-            next(err);
+            next(null, data);
           });
       });
     }

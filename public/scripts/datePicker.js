@@ -1,4 +1,5 @@
 var currentDate = new Date();
+currentDate.setFullYear( currentDate.getFullYear() - 1 );
 var currentYear = currentDate.getFullYear();
 
 var budgetReportDates = function (event) {
@@ -275,7 +276,7 @@ var jobcost2ReportDates = function (event) {
     });
 
 
-    $("#monthStartSelection").val("October"); 
+    $("#monthStartSelection").val("September"); 
     $("#monthStartSelection").datepicker("update"); 
     $("#yearStartSelection").val(currentYear.toString()); 
     $("#yearStartSelection").datepicker("update"); 
