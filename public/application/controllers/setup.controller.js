@@ -39,11 +39,9 @@ app.controller('setupCtrl', [
     $scope.selectedValues = {};
 
     $rootScope.$on('$viewContentLoaded', dateInit);
-    $rootScope.$on('jobcostData', function(event, hiddenRows) {
-      $scope.reportDetails.worksheet = "Jobcost-90";
-      $scope.reportDetails.hiddenRows = hiddenRows;
-      if(hiddenRows && hiddenRows.length>0) $scope.reportDetails.msg = "";
-      else $scope.reportDetails.msg = "No Data Returned";
+    $rootScope.$on('reloadHiddenRows', function(event, opts) {
+      $scope.reportDetails.worksheet = '';
+      $scope.getActiveSheet();
     });
 
     $scope.filterReports = function (data) {
@@ -153,7 +151,7 @@ app.controller('setupCtrl', [
     }
 
 
-    $scope.getActiveSheet = function(){
+    $scope.getActiveSheet = function(data){
       Excel.run(function (ctx) {
         var activeWorksheet = ctx.workbook.worksheets.getActiveWorksheet();
         var jsonDataRange = activeWorksheet.getRange("A2:A2");
@@ -166,43 +164,40 @@ app.controller('setupCtrl', [
               changeReportDetails(activeWorksheet.name, jsonDataRange.values);
             }
           }).catch(function (err) {
-            
-            $scope.$apply(function () {
-              $scope.reportDetails.msg = err;
-            });
-            
           });
 
       });
     }
 
     function changeReportDetails(sheetName, jsonSheetData){
-      $scope.reportDetails.worksheet = sheetName;
-      $scope.reportDetails.hiddenRows = [];
+      $scope.$apply(function () {
+        $scope.reportDetails.worksheet = sheetName;
+        $scope.reportDetails.hiddenRows = [];
 
-      if(jsonSheetData != null && jsonSheetData != ""){
-        var jsonString = JSON.stringify(jsonSheetData);
-        var indexStart = jsonString.indexOf("{");
-        var indexEnd = jsonString.indexOf("}", (jsonString.length-6));
-        jsonString = jsonString.substring(indexStart, indexEnd+1);
-        jsonString = jsonString.replace(/\\"/g, '"');
-        jsonData = jsonString.split(",{");
+        if(jsonSheetData != null && jsonSheetData != ""){
+          var jsonString = JSON.stringify(jsonSheetData);
+          var indexStart = jsonString.indexOf("{");
+          var indexEnd = jsonString.indexOf("}", (jsonString.length-6));
+          jsonString = jsonString.substring(indexStart, indexEnd+1);
+          jsonString = jsonString.replace(/\\"/g, '"');
+          jsonData = jsonString.split(",{");
 
-        $scope.reportDetails.hiddenRows.push(JSON.parse(jsonData.shift()));
-        _.forEach(jsonData, function(data) {
-          $scope.reportDetails.hiddenRows.push(JSON.parse("{"+data));
-        });
+          $scope.reportDetails.hiddenRows.push(JSON.parse(jsonData.shift()));
+          _.forEach(jsonData, function(data) {
+            $scope.reportDetails.hiddenRows.push(JSON.parse("{"+data));
+          });
 
-        if($scope.reportDetails.hiddenRows && $scope.reportDetails.hiddenRows.length > 0){
-          $scope.reportDetails.msg = "";
+          if($scope.reportDetails.hiddenRows && $scope.reportDetails.hiddenRows.length > 0){
+            $scope.reportDetails.msg = "";
+          }
+          else{
+            $scope.reportDetails.msg = "No Data Returned";
+          }
         }
         else{
           $scope.reportDetails.msg = "No Data Returned";
         }
-      }
-      else{
-        $scope.reportDetails.msg = "No Data Returned";
-      }
+      });
     }
 
 

@@ -131,7 +131,7 @@ app.service("budgetService", [
           .then(function(response) {
             next(null, data);
           }).catch(function (err) {
-            next(err);
+            next(err, data);
           });        
       });
     }

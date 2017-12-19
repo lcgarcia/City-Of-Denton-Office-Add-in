@@ -463,7 +463,10 @@ app.service("jobcostService", [
         } else {
           var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
           var tables = ctx.workbook.tables;
-          tables.getItem(data.tableName).rows.add(0, data.sheetData);
+          if (data.sheetData.length > 0) 
+            tables.getItem(data.tableName).rows.add(0, data.sheetData);
+          //else 
+            //tables.getItem(data.tableName).rows.add(0, [_.repeat(11, '')]);
         }
         return ctx.sync()
           .then(function (response) {

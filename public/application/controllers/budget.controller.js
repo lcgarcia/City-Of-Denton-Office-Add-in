@@ -674,6 +674,7 @@ app.controller('budgetCtrl', [
           budgetService.deleteWorkSheets({ scope: $scope }, function (err, newSheetData) {
             var dummySheetName = newSheetData.dummySheetName;
 
+            var count = 0;
             _.forEach(data, function (sheetData, key) {
               _.forEach(sheetData.hiddenRows, function(child) {
                 child.selected = false;
@@ -688,10 +689,9 @@ app.controller('budgetCtrl', [
               $scope.sheetData = sheetData;
 
               budgetService.insertSpreadSheetData(sheetData, function (err, data) {
+                if (++count == keys.length)
+                  $rootScope.$broadcast('reloadHiddenRows', { rows: data.hiddenRows });
                 modalService.hideReportLoadingModal();
-                $scope.$apply(function () {
-                  $scope.getActiveSheet();
-                });
               });
             });
           });
@@ -702,7 +702,6 @@ app.controller('budgetCtrl', [
 
       }
       else{
-        $scope.reportDetails.msg = $scope.dataErrorMsg;
         modalService.hideReportLoadingModal();
       }
 

@@ -179,13 +179,8 @@ app.controller('jobcostCtrl', [
 
           data.scope = $scope;
           jobcostService.insertTable(data, function(err, response) {
+            $rootScope.$broadcast('reloadHiddenRows', { rows: data.hiddenRows });
             modalService.hideReportLoadingModal();
-            if (err) {
-              $scope.reportDetails.msg = $scope.dataErrorMsg;
-              $scope.$apply(function () {
-                $scope.reportDetails.msg = $scope.dataErrorMsg;
-              });
-            }
           });
           
           /*
