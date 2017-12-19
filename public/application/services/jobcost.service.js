@@ -293,7 +293,33 @@ app.service("jobcostService", [
             next(null, data);
           });
         });
-      } else next(null, data);
+      } else {
+        Excel.run(function (ctx) {
+          var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+          var worksheets = ctx.workbook.worksheets;
+          worksheets.load("items");
+          return ctx.sync()
+          .then(function () {
+            var sheetMap = _.map(ctx.workbook.worksheets.items, function(sheet) { return sheet.id });
+
+            _.forEach(sheetMap, function (id, key) {
+              if (id != worksheet.id) {
+                var ws = worksheets.getItem(id);
+                ws.delete();
+              };
+            });
+           
+            return ctx.sync()
+            .then(function (response) {
+              next(null, data);  
+            }).catch(function (err) {
+              next(null, data);
+            });
+          }).catch(function (err) {
+            next(null, data);
+          });
+        });
+      }
     }
 
     var setHeader = function (data, next) {
