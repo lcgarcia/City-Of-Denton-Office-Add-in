@@ -696,9 +696,6 @@ app.controller('budgetCtrl', [
             });
           });
         }).catch(function (err) {
-          $scope.$apply(function () {
-            $scope.debugMsg = 'hello';
-          });
           modalService.hideReportLoadingModal();
           //console.log(err);
         });
