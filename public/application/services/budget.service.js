@@ -70,33 +70,34 @@ app.service("budgetService", [
     };
 
     var removeOldSheet = function (data, next) {
-      Excel.run(function (ctx) {
-        var worksheets = ctx.workbook.worksheets.load('name');
-        var worksheet = worksheets.getItem('test-' + data.dummySheetName);
-        worksheet.delete();
-        
-        return ctx.sync()
-          .then(function(response) {
-            next(null, data);  
-          }).catch(function (err) {
-            next(err);
-          });
-      });
+      var deletePlaceholder = function (cb) {
+        Excel.run(function (ctx) {
+          var worksheets = ctx.workbook.worksheets.load('name');
+          var worksheet = worksheets.getItem('report-' + data.dummySheetName);
+          worksheet.delete();
+          
+          return ctx.sync()
+            .then(function(response) {
+              cb(null, data);  
+            }).catch(function (err) {
+              cb(err);
+            });
+        });
+      }
 
       async.retry({times: 2, interval: 300}, deletePlaceholder, function(err, data) {
-        next()
+        next(null, data);
       });
     }
 
     this.deleteWorkSheets = function (data, next) {
-
       var deleteAllSheets = function (cb) {
         Excel.run(function (ctx) {
           var sheets = ctx.workbook.worksheets;
           var worksheet = sheets.add();
           var date = new Date();
           data.dummySheetName = date.getTime();
-          worksheet.name = 'test-' + data.dummySheetName;
+          worksheet.name = 'report-' + data.dummySheetName;
           worksheet.load("name, position");
           worksheet.activate();
           sheets.load("items");
@@ -114,12 +115,12 @@ app.service("budgetService", [
              
               return ctx.sync()
               .then(function (response) {
-                next(null, data);  
+                cb(null, data);  
               }).catch(function (err) {
-                next(err);
+                cb(err);
               });
             }).catch(function (err) {
-              next(err);
+              cb(err);
             });
         });
       };
