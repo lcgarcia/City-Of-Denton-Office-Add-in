@@ -72,8 +72,7 @@ app.service("budgetService", [
     var removeOldSheet = function (data, next) {
       var deletePlaceholder = function (cb) {
         Excel.run(function (ctx) {
-          var worksheets = ctx.workbook.worksheets.load('name');
-          var worksheet = worksheets.getItem('report-' + data.dummySheetName);
+          var worksheet = ctx.workbook.worksheets.getItem('report-' + data.dummySheetName);
           worksheet.delete();
           
           return ctx.sync()
@@ -85,11 +84,65 @@ app.service("budgetService", [
         });
       }
 
-      async.retry({times: 2, interval: 300}, deletePlaceholder, function(err, data) {
+      async.retry({times: 5, interval: 300}, deletePlaceholder, function(err, data) {
         next(null, data);
       });
     }
 
+    this.deleteWorkSheets = function (data, cb) {
+      try {
+        async.waterfall([
+          function (next) {
+            next(null, data);
+          },
+          createDummySheet,
+          deleteAllSheets, 
+        ], cb);
+      } catch (e) {
+        cb(e);
+      }
+    }
+
+    var createDummySheet = function (data, next) {
+      Excel.run(function (ctx) {
+        var sheets = ctx.workbook.worksheets;
+        var worksheet = sheets.add();
+        var date = new Date();
+        data.dummySheetName = date.getTime();
+        worksheet.name = 'report-' + data.dummySheetName;
+        worksheet.load("name, position");
+        worksheet.activate();
+        sheets.load("items");
+        var count = ctx.workbook.worksheets.getCount();
+        return ctx.sync()
+          .then(function(response) {
+            data.items = sheets.items;
+            next(null, data);
+          }).catch(function (err) {
+            next(err);
+          });
+      });
+    }
+
+    var deleteAllSheets = function (data, next) {
+      Excel.run(function (ctx) {
+        var ids = _.map(data.items, function(sheet) { return sheet.id });
+        _.forEach(ids, function (id, key) {
+          var ws = ctx.workbook.worksheets.getItem(id);
+          if (key < ids.length - 1) 
+            ws.delete();
+        });
+
+        return ctx.sync()
+          .then(function(response) {
+            next(null, data);
+          }).catch(function (err) {
+            next(err);
+          });        
+      });
+    }
+
+    /*
     this.deleteWorkSheets = function (data, next) {
       var deleteAllSheets = function (cb) {
         Excel.run(function (ctx) {
@@ -125,10 +178,11 @@ app.service("budgetService", [
         });
       };
 
-      async.retry({times: 2, interval: 300}, deleteAllSheets, function (err, data) {
+      async.retry({times: 5, interval: 300}, deleteAllSheets, function (err, data) {
         next(null, data);
       });
     }
+    */
 
     var loadWorkSheets = function (data, next) {
       Excel.run(function (ctx) {

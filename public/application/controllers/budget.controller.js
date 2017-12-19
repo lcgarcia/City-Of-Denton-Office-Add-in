@@ -671,7 +671,7 @@ app.controller('budgetCtrl', [
            *   -> 0:{range: "A7:Z25", key: "CASH AND DEPOSITS"}
            * 
            */
-          budgetService.deleteWorkSheets({}, function (err, newSheetData) {
+          budgetService.deleteWorkSheets({ scope: $scope }, function (err, newSheetData) {
             var dummySheetName = newSheetData.dummySheetName;
 
             _.forEach(data, function (sheetData, key) {
