@@ -82,39 +82,50 @@ app.service("budgetService", [
             next(err);
           });
       });
+
+      async.retry({times: 2, interval: 300}, deletePlaceholder, function(err, data) {
+        next()
+      });
     }
 
     this.deleteWorkSheets = function (data, next) {
-      Excel.run(function (ctx) {
-        var sheets = ctx.workbook.worksheets;
-        var worksheet = sheets.add();
-        var date = new Date();
-        data.dummySheetName = date.getTime();
-        worksheet.name = 'test-' + data.dummySheetName;
-        worksheet.load("name, position");
-        worksheet.activate();
-        sheets.load("items");
-        var count = ctx.workbook.worksheets.getCount();
-        return ctx.sync()
-          .then(function(response) {
-            var sheets = ctx.workbook.worksheets;
-            sheets.load("items");
-            var ids = _.map(sheets.items, function(sheet) { return sheet.id });
-            _.forEach(ids, function (id, key) {
-              var ws = ctx.workbook.worksheets.getItem(id);
-              if (key < ids.length - 1) 
-                ws.delete();
-            });
-           
-            return ctx.sync()
-            .then(function (response) {
-              next(null, data);  
+
+      var deleteAllSheets = function (cb) {
+        Excel.run(function (ctx) {
+          var sheets = ctx.workbook.worksheets;
+          var worksheet = sheets.add();
+          var date = new Date();
+          data.dummySheetName = date.getTime();
+          worksheet.name = 'test-' + data.dummySheetName;
+          worksheet.load("name, position");
+          worksheet.activate();
+          sheets.load("items");
+          var count = ctx.workbook.worksheets.getCount();
+          return ctx.sync()
+            .then(function(response) {
+              var sheets = ctx.workbook.worksheets;
+              sheets.load("items");
+              var ids = _.map(sheets.items, function(sheet) { return sheet.id });
+              _.forEach(ids, function (id, key) {
+                var ws = ctx.workbook.worksheets.getItem(id);
+                if (key < ids.length - 1) 
+                  ws.delete();
+              });
+             
+              return ctx.sync()
+              .then(function (response) {
+                next(null, data);  
+              }).catch(function (err) {
+                next(err);
+              });
             }).catch(function (err) {
-              next(null, data);
+              next(err);
             });
-          }).catch(function (err) {
-            next(err);
-          });
+        });
+      };
+
+      async.retry({times: 2, interval: 300}, deleteAllSheets, function (err, data) {
+        next(null, data);
       });
     }
 
