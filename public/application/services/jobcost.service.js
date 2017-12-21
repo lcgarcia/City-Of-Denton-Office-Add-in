@@ -157,6 +157,7 @@ app.service("jobcostService", [
           setHeader,
           createTable,
           addTableHeader,
+          //insertDataToWorkSheet,
           addTableRows,
           addFilter,
           addGrandTotal,
@@ -406,12 +407,14 @@ app.service("jobcostService", [
 
     var createTable = function (data, next) {
       Excel.run(function (ctx) {
-        var table = ctx.workbook.tables.add('\''+data.dataSheetName+'\'!A' + data.headerOffset + ':'+data.alphabetRangeValue+ data.headerOffset, true);
+        var range = '\''+data.dataSheetName+'\'!A' + data.headerOffset + ':'+data.alphabetRangeValue+ (data.headerOffset + data.sheetData.length);
+        var table = ctx.workbook.tables.add(range, true);
         table.load('name');
 
         return ctx.sync()
           .then(function (response) {
             data.tableName = table.name;
+            data.tableId = table.id;
             next(null, data);  
           }).catch(function (err) {
             next(null, data);
@@ -436,46 +439,22 @@ app.service("jobcostService", [
 
     var addTableRows = function (data, next) {
       Excel.run(function (ctx) {
+        var splitLen = 40;
+        var split = [data.sheetData];
+
         if (data.sheetData.length > 5000) {
-          var split = _.chunk(data.sheetData, data.sheetData.length/20);
-          var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
-          var tables = ctx.workbook.tables;
-          tables.getItem(data.tableName).rows.add(0, split[0]);
-          tables.getItem(data.tableName).rows.add(split[0].length, split[1]);
-          tables.getItem(data.tableName).rows.add(split[1].length, split[2]);
-          tables.getItem(data.tableName).rows.add(split[2].length, split[3]);
-          tables.getItem(data.tableName).rows.add(split[3].length, split[4]);
-          tables.getItem(data.tableName).rows.add(split[4].length, split[5]);
-          tables.getItem(data.tableName).rows.add(split[5].length, split[6]);
-          tables.getItem(data.tableName).rows.add(split[6].length, split[7]);
-          tables.getItem(data.tableName).rows.add(split[7].length, split[8]);
-          tables.getItem(data.tableName).rows.add(split[8].length, split[9]);
-          tables.getItem(data.tableName).rows.add(split[9].length, split[10]);
-          tables.getItem(data.tableName).rows.add(split[10].length, split[11]);
-          tables.getItem(data.tableName).rows.add(split[11].length, split[12]);
-          tables.getItem(data.tableName).rows.add(split[12].length, split[13]);
-          tables.getItem(data.tableName).rows.add(split[13].length, split[14]);
-          tables.getItem(data.tableName).rows.add(split[14].length, split[15]);
-          tables.getItem(data.tableName).rows.add(split[15].length, split[16]);
-          tables.getItem(data.tableName).rows.add(split[16].length, split[17]);
-          tables.getItem(data.tableName).rows.add(split[17].length, split[18]);
-          tables.getItem(data.tableName).rows.add(split[16].length, split[19]);
-        } else {
-          var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
-          var tables = ctx.workbook.tables;
-          if (data.sheetData.length > 0) 
-            tables.getItem(data.tableName).rows.add(0, data.sheetData);
-          //else 
-            //tables.getItem(data.tableName).rows.add(0, [_.repeat(11, '')]);
+          var chunk = 200;
+          split = _.chunk(data.sheetData, 200);
         }
+
+        var table = ctx.workbook.tables.getItem(data.tableName);
+
+        table.getDataBodyRange().values = data.sheetData;
+
         return ctx.sync()
           .then(function (response) {
-            //data.tableName = table.name;
             next(null, data);  
           }).catch(function (err) {
-            data.scope.$apply(function () {
-              data.scope.debugMsg = err;
-            });
             next(null, data);
           });
       });
@@ -589,11 +568,11 @@ app.service("jobcostService", [
         if (data.sheetData.length > 0)
           var alphabetRangeValue = alphabet[data.sheetData[0].length-1];
 
-        var fullrange = worksheet.getRange();
-        fullrange.load('values');
-        fullrange.clear();
+        //var fullrange = worksheet.getRange();
+        //fullrange.load('values');
+        //fullrange.clear();
 
-        var headerOffset = 6;
+        var headerOffset = 7;
         var sheetLength = data.sheetData.length + headerOffset - 1;
         var range = worksheet.getRange('A' + headerOffset + ':' + alphabetRangeValue + sheetLength)
         range.load('values')

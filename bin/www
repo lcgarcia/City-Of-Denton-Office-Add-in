@@ -34,7 +34,8 @@ const listening = () => {
   browserSync({
     proxy: 'localhost:' + port,
     "https": true,
-    files: ['public/**/*.{js,css,html}', 'views/*.*', 'views/**/*.{html,jade,pug,ejs}']
+    files: ['public/**/*.{js,css,html}', 'views/*.*', 'views/**/*.{html,jade,pug,ejs}'],
+    open: false,
   });
 }
 

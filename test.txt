@@ -1,0 +1,16 @@
+
+> City-Of-Denton@0.0.1 start /Users/danjarvis/projects/cityOfDenton
+> echo $LD_LIBRARY_PATH & NOLOGIN=false node ./bin/www
+
+
+[Browsersync] Proxying: http://localhost:3001
+[Browsersync] Access URLs:
+ ----------------------------------------
+       Local: https://localhost:3000
+    External: https://192.168.15.105:3000
+ ----------------------------------------
+          UI: http://localhost:3002
+ UI External: http://192.168.15.105:3002
+ ----------------------------------------
+[Browsersync] Watching files...
+Closed out remaining connections.
