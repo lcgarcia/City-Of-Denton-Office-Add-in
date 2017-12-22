@@ -481,6 +481,7 @@ app.service("jobcostService", [
         next(null, data);
       })
 
+      // I'm keeping this here for reference. This method below is much faster and the only reason we do it the way we do above is because the online Excel sucks.
       /*
       Excel.run(function (ctx) {
         var splitLen = 40;
@@ -552,26 +553,66 @@ app.service("jobcostService", [
     }
 
     var addFormatting = function (data, next) {
-      Excel.run(function (ctx) {
-        var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+      if (data.sheetData.length > 5000) {
         var len = data.sheetData.length + data.headerOffset;
-        var numberRange = worksheet.getRange('G1:' + data.alphabetRangeValue + len)
         var format = '_($* #,##0.00_);[Red]_($* (#,##0.00);_($* "-"??_);_(@_)';
-        numberRange.numberFormat = _.fill(Array(len),_.fill(Array(5), format));
+        var formatArray = _.fill(Array(len),_.fill(Array(5), format));
+        var chunk = 200;
+        var split = _.chunk(formatArray, chunk);
+        var water = [];
+        var j = 0;
 
-        var len = data.sheetData.length + data.headerOffset;
-        worksheet.getUsedRange().format.autofitColumns();
-        var sheetLength = data.sheetData.length + data.headerOffset - 1;
-        var range = worksheet.getRange('E' + data.headerOffset + ':K' + len)
-        range.format.columnWidth = 110;
-        return ctx.sync()
-          .then(function (response) {
-            //data.tableName = table.name;
-            next(null, data);  
-          }).catch(function (err) {
-            next(null, data);
+        for(var i = 0; i < split.length; i++) {
+          water.push(function (cb) {
+            Excel.run(function(ctx) {
+              var sheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+
+              if (split.length > 1 && j === (split.length - 1)) {
+                var range = 'G' + (chunk * (j - 1) + split[j-1].length + data.headerOffset + 1) + ':' + data.alphabetRangeValue + (chunk*j + split[j].length + data.headerOffset);
+                sheet.getRange(range).numberFormat = split[j];
+              } else {
+                var rangeAddress = 'G' + (chunk*j + data.headerOffset + 1) + ':' + data.alphabetRangeValue + (chunk*j + split[j].length + data.headerOffset);
+                var range = sheet.getRange(rangeAddress);
+                range.numberFormat = split[j];
+              }
+
+              j++;
+
+              return ctx.sync()
+              .then(function (response) {
+                cb(null);
+              }).catch(function (err) {
+                cb(null);
+              });
+            });
           });
-      });
+        }
+        async.waterfall(water, function (err, res) {
+          next(null, data);
+        });
+
+      } else {
+        Excel.run(function (ctx) {
+          var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+          var len = data.sheetData.length + data.headerOffset;
+          var numberRange = worksheet.getRange('G1:' + data.alphabetRangeValue + len)
+          var format = '_($* #,##0.00_);[Red]_($* (#,##0.00);_($* "-"??_);_(@_)';
+          numberRange.numberFormat = _.fill(Array(len),_.fill(Array(5), format));
+
+          var len = data.sheetData.length + data.headerOffset;
+          worksheet.getUsedRange().format.autofitColumns();
+          var sheetLength = data.sheetData.length + data.headerOffset - 1;
+          var range = worksheet.getRange('E' + data.headerOffset + ':K' + len)
+          range.format.columnWidth = 110;
+          return ctx.sync()
+            .then(function (response) {
+              //data.tableName = table.name;
+              next(null, data);  
+            }).catch(function (err) {
+              next(null, data);
+            });
+        });
+      }
     }
 
     /**
