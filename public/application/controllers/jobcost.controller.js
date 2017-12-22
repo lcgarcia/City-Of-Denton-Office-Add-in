@@ -159,6 +159,7 @@ app.controller('jobcostCtrl', [
     }
 
     $scope.getSheetData = function () {
+      $scope.modalData.message = 'Loading...';
       var rType = $scope.selectedValues.report.type;
       var dKey = $scope.selectedValues.department.key;
       var cKey = $scope.selectedValues.company.key;

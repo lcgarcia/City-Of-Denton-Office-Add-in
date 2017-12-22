@@ -9,8 +9,9 @@
 ### 12-21-17
 - Fixed loading issues with *All reports
 - Fixed loading issues with formatting
+- Fixed login button unresponsive issues
 
-### 12-16-17
+### 12-18-17
 - Fixed manifest connection issues
 - Changed default report to Jobcost
 

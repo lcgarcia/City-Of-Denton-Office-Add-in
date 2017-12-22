@@ -638,6 +638,7 @@ app.controller('budgetCtrl', [
     
 
     $scope.getSheetData = function () {
+      $scope.modalData.message = 'Loading...';
       var keys = _.map($scope.selectedKeys, function (key) { 
         return {
           id: key.id,
