@@ -595,9 +595,10 @@ app.service("jobcostService", [
         Excel.run(function (ctx) {
           var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
           var len = data.sheetData.length + data.headerOffset;
-          var numberRange = worksheet.getRange('G1:' + data.alphabetRangeValue + len)
+          var numberRange = worksheet.getRange('G7:' + data.alphabetRangeValue + len)
+
           var format = '_($* #,##0.00_);[Red]_($* (#,##0.00);_($* "-"??_);_(@_)';
-          numberRange.numberFormat = _.fill(Array(len),_.fill(Array(5), format));
+          numberRange.numberFormat = _.fill(Array(data.sheetData.length),_.fill(Array(5), format));
 
           var len = data.sheetData.length + data.headerOffset;
           worksheet.getUsedRange().format.autofitColumns();
