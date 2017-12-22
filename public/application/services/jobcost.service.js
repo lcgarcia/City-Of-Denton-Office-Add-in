@@ -439,6 +439,49 @@ app.service("jobcostService", [
     }
 
     var addTableRows = function (data, next) {
+      var splitLen = 40;
+      var chunk = data.sheetData.length;
+      var split = [data.sheetData];
+      var water = [];
+
+      if (data.sheetData.length > 5000) {
+        chunk = 200;
+        split = _.chunk(data.sheetData, chunk);
+      }
+
+      var j = 0;
+
+      for(var i = 0; i < split.length; i++) {
+        water.push(function (cb) {
+          Excel.run(function(ctx) {
+            var sheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+
+            if (split.length > 1 && j === (split.length - 1)) {
+              var range = 'A' + (chunk * (j - 1) + split[j-1].length + data.headerOffset + 1) + ':K' + (chunk*j + split[j].length + data.headerOffset);
+              sheet.getRange(range).values = split[j];
+            } else {
+              var rangeAddress = 'A' + (chunk*j + data.headerOffset + 1) + ':K' + (chunk*j + split[j].length + data.headerOffset);
+              var range = sheet.getRange(rangeAddress);
+              range.values = split[j];
+            }
+
+            j++;
+
+            return ctx.sync()
+            .then(function (response) {
+              cb(null);
+            }).catch(function (err) {
+              cb(null);
+            });
+          });
+        });
+      }
+
+      async.waterfall(water, function (err, res) {
+        next(null, data);
+      })
+
+      /*
       Excel.run(function (ctx) {
         var splitLen = 40;
         var chunk = data.sheetData.length;
@@ -461,6 +504,9 @@ app.service("jobcostService", [
           } else if (split[i].length && split[i].length > 0) {
             var rangeAddress = 'A' + (chunk*i + data.headerOffset + 1) + ':K' + (chunk*i + split[i].length + data.headerOffset);
             var range = sheet.getRange(rangeAddress);
+            data.scope.$apply(function () {
+              data.scope.debugMsg += rangeAddress + '';
+            });
             range.values = split[i];
             //sheet.getRange(range).values = split[i];
             //table.rows.add((chunk * i), split[i]);
@@ -476,6 +522,7 @@ app.service("jobcostService", [
             next(null, data);
           });
       });
+      */
     }
 
     var addFilter = function (data, next) {
