@@ -25,16 +25,12 @@ app.controller('loginCtrl', [
 
     $scope.openDialog = function () {
       try {
-        Office.initialize = function (reason) {
-          $(document).ready(function () {
-            Office.context.ui.displayDialogAsync(getHost() + '/dialog', {height: 50, width: 60}, function (result) {
-              //$scope.debugMsg = result;
-              dialog = result.value;
-              dialog.addEventHandler(Office.EventType.DialogMessageReceived, $scope.loginHandler);
-              dialog.addEventHandler(Office.EventType.DialogEventReceived, $scope.eventHandler);
-            });
-          });
-        }
+        Office.context.ui.displayDialogAsync(getHost() + '/dialog', {height: 50, width: 60}, function (result) {
+          //$scope.debugMsg = result;
+          dialog = result.value;
+          dialog.addEventHandler(Office.EventType.DialogMessageReceived, $scope.loginHandler);
+          dialog.addEventHandler(Office.EventType.DialogEventReceived, $scope.eventHandler);
+        });
       } catch (e) {
         $scope.debugMsg = e;
       }
@@ -87,6 +83,7 @@ app.controller('loginCtrl', [
    }
 
   	function buildPage() {
+    Office.initialize = function (reason) {}
 		$("#login").velocity("transition.slideUpIn", 1250);
 		$(".row").delay(500).velocity("transition.slideLeftIn", {stagger: 500}) ;
 		$("#error").hide();
@@ -167,7 +164,8 @@ app.controller('loginCtrl', [
     //$state.go('setup.jobcost', {type: '', data:{user:$scope.user}})
 	}
 
-	buildPage();
+  
+  buildPage();
 
   }]);
 

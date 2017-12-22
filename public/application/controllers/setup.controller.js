@@ -86,15 +86,17 @@ app.controller('setupCtrl', [
       if (userd != '' && userd != undefined && userd != null) {
         data = JSON.parse(data);
         $scope.user = data;
-        if (data != '' && data != undefined && data != null) {
+        if (data != '' && data != undefined && data != null && 'oid' in data) {
           $scope.filterReports(data);
           $scope.$broadcast('userData', data);
         } else {
+          localStorage.removeItem('user');
           modalService.hideReportLoadingModal();
           modalService.hideDataLoadingModal();
           $state.go('login');
         }
       } else {
+        localStorage.removeItem('user');
         modalService.hideReportLoadingModal();
         modalService.hideDataLoadingModal();
         $state.go('login');
