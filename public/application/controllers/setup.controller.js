@@ -29,6 +29,8 @@ app.controller('setupCtrl', [
     $scope.modalLoad = {};
     $scope.user = {};
 
+    $scope.modalData = {message: 'Loading...'};
+
     $scope.selectedValues = {};
 
     $rootScope.$on('$viewContentLoaded', dateInit);

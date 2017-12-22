@@ -148,6 +148,9 @@ app.service("jobcostService", [
               data.alphabetRangeValue = alphabet[data.sheetData[0].length-1];
             data.headerOffset = 6;
             data.alphabet = alphabet;
+            if (data.sheetData.length > 5000) {
+              data.scope.modalData.message = 'This is going to take a while...';
+            }
             next(null, data);
           },
           //deleteWorkSheets,
@@ -465,6 +468,13 @@ app.service("jobcostService", [
               range.values = split[j];
             }
 
+            data.scope.$apply(function () {
+              if ((j+1) * chunk > data.sheetData.length) {
+                data.scope.modalData.message = 'Loading ' + data.sheetData.length + ' rows of ' + data.sheetData.length;
+              } else {
+                data.scope.modalData.message = 'Loading ' + (j+1)*chunk + ' rows of ' + data.sheetData.length;
+              }
+            });
             j++;
 
             return ctx.sync()
@@ -575,6 +585,14 @@ app.service("jobcostService", [
                 var range = sheet.getRange(rangeAddress);
                 range.numberFormat = split[j];
               }
+
+              data.scope.$apply(function () {
+                if ((j+1) * chunk > data.sheetData.length) {
+                  data.scope.modalData.message = 'Formatting ' + data.sheetData.length + ' rows of ' + data.sheetData.length;
+                } else {
+                  data.scope.modalData.message = 'Formatting ' + (j+1)*chunk + ' rows of ' + data.sheetData.length;
+                }
+              });
 
               j++;
 
