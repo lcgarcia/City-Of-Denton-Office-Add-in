@@ -71,6 +71,7 @@ app.controller('setupCtrl', [
 
 
     function loadPage(){
+      Office.initialize = function (reason) {}
       $scope.reportDetails = {};
       $scope.reportDetails.worksheet = "Sheet1";
       $scope.reportDetails.selectAll = false;

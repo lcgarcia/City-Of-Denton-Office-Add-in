@@ -147,6 +147,7 @@ app.service("jobcostService", [
             if (data.sheetData.length > 0)
               data.alphabetRangeValue = alphabet[data.sheetData[0].length-1];
             data.headerOffset = 6;
+            data.alphabet = alphabet;
             next(null, data);
           },
           //deleteWorkSheets,
@@ -440,16 +441,33 @@ app.service("jobcostService", [
     var addTableRows = function (data, next) {
       Excel.run(function (ctx) {
         var splitLen = 40;
+        var chunk = data.sheetData.length;
         var split = [data.sheetData];
 
         if (data.sheetData.length > 5000) {
-          var chunk = 200;
-          split = _.chunk(data.sheetData, 200);
+          chunk = 200;
+          split = _.chunk(data.sheetData, chunk);
         }
 
+        var sheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
         var table = ctx.workbook.tables.getItem(data.tableName);
 
-        table.getDataBodyRange().values = data.sheetData;
+        data.scope.debugMsg = '';
+        for(var i = 0; i < split.length; i++) {
+          if (split.length > 1 && i === (split.length - 1)) {
+            var range = 'A' + (chunk * (i - 1) + split[i-1].length + data.headerOffset + 1) + ':K' + (chunk*i + split[i].length + data.headerOffset);
+            sheet.getRange(range).values = split[i];
+            //table.rows.add((chunk * (i - 1) + split[i-1].length), split[i]);
+          } else if (split[i].length && split[i].length > 0) {
+            var rangeAddress = 'A' + (chunk*i + data.headerOffset + 1) + ':K' + (chunk*i + split[i].length + data.headerOffset);
+            var range = sheet.getRange(rangeAddress);
+            range.values = split[i];
+            //sheet.getRange(range).values = split[i];
+            //table.rows.add((chunk * i), split[i]);
+          }
+        }
+
+        //table.getDataBodyRange().values = data.sheetData;
 
         return ctx.sync()
           .then(function (response) {
