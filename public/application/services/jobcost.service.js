@@ -1,7 +1,7 @@
 app.service("jobcostService", [
   '$http',
   function($http){
-    var timeoutMs = 2000;
+    var timeoutMs = 6000;
     var requestRetry = function (method) {
       return new Promise(function (resolve, reject) {
         async.retry({ times: 3, interval: 500 }, method, function (err, result) {
