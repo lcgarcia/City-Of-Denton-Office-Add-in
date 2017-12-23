@@ -1,47 +1,63 @@
 app.service("budgetService", [
   '$http',
   function($http){
+    var timeoutMs = 2000;
+    var requestRetry = function (method) {
+      return new Promise(function (resolve, reject) {
+        async.retry({ times: 3, interval: 500 }, method, function (err, result) {
+          if (err) reject(err);
+          else resolve(result);
+        });
+      });
+    };
 
   	this.getReportData = function(type) {
-  		var query = '';
-      console.log("Fetching Budget Data, Type: '" + type + "'");
-  		if(type === 'a') query = '?type=a'
-  		if(type === 'e') query = '?type=e'
-  		if(type === 'f') query = '?type=f'
-  		return $http.get("/ks2inc/budget/business/unit" + query)
-        .then(
-    		function(response) {
-    			return response.data;
-    		},
-        function (httpError) {
-          // translate the error
-          throw httpError.status + " : " + httpError.data;
-        }
-      );
+      var makeRequest = function (cb) {
+        var query = '';
+        console.log("Fetching Budget Data, Type: '" + type + "'");
+        if(type === 'a') query = '?type=a'
+        if(type === 'e') query = '?type=e'
+        if(type === 'f') query = '?type=f'
+        return $http.get("/ks2inc/budget/business/unit" + query, { timeout: timeoutMs })
+          .then(
+          function(response) {
+            cb(null, response.data);
+          },
+          function (httpError) {
+            cb(httpError.status + " : " + httpError.data, response.data);
+          }
+        );
+      }
+
+      return requestRetry(makeRequest);
   	};
 
     this.getSheetData = function (type, keys, month, buLevel, year, accounts, options) {
-      var data = {
-        type: type,
-        keys: keys,
-        month: month,
-        buLevel: buLevel,
-        year: year,
-        accounts: "Between '0' and '3999'"
-      };
-      data.accounts = accounts == 'Income Statement' ? "Between '4000' and '9999'" : data.accounts;
+      var makeRequest = function (cb) {
+        var data = {
+          type: type,
+          keys: keys,
+          month: month,
+          buLevel: buLevel,
+          year: year,
+          accounts: "Between '0' and '3999'"
+        };
+        data.accounts = accounts == 'Income Statement' ? "Between '4000' and '9999'" : data.accounts;
 
-      if ('subledgers' in options) {
-        data.subledgers = options.subledgers;
+        if ('subledgers' in options) {
+          data.subledgers = options.subledgers;
+        }
+
+        return $http.post('/ks2inc/budget/sheet/data', JSON.stringify(data), { headers: {'Content-Type': 'application/json'} })
+        .then(function (response) {
+          cb(null, response.data);
+        },
+        function (httpError) {
+          cb(httpError.status + " : " + httpError.data, response.data);
+        });
       }
 
-      return $http.post('/ks2inc/budget/sheet/data', JSON.stringify(data), {headers: {'Content-Type': 'application/json'} })
-      .then(function (response) {
-        return response.data;
-      },
-      function (httpError) {
-        throw httpError.status + " : " + httpError.data;
-      });
+      return requestRetry(makeRequest);
     };
 
     this.insertSpreadSheetData = function (data, cb) {

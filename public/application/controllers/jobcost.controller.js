@@ -68,24 +68,26 @@ app.controller('jobcostCtrl', [
 
       modalService.showDataLoadingModal();
       jobcostService.getReportData(rType).then(function(data){
-        $scope.filteredDepartment = data.departments;
-        $scope.filteredCompany = data.company;
-        $scope.filteredProject = data.projects;
-        $scope.filteredJob  = data.jobs;
+        $scope.$apply(function () {
+          $scope.filteredDepartment = data.departments;
+          $scope.filteredCompany = data.company;
+          $scope.filteredProject = data.projects;
+          $scope.filteredJob  = data.jobs;
 
-        $scope.filteredDepartment.unshift($scope.allOptionValue);
-        $scope.filteredCompany.unshift($scope.allOptionValue);
-        $scope.filteredProject.unshift($scope.allOptionValue);
-        $scope.filteredJob.unshift($scope.allOptionValue);
-        $scope.filteredDetails.unshift($scope.allOptionValue);
+          $scope.filteredDepartment.unshift($scope.allOptionValue);
+          $scope.filteredCompany.unshift($scope.allOptionValue);
+          $scope.filteredProject.unshift($scope.allOptionValue);
+          $scope.filteredJob.unshift($scope.allOptionValue);
+          $scope.filteredDetails.unshift($scope.allOptionValue);
 
 
-        $scope.selectedValues.department = $scope.allOptionValue;
-        $scope.selectedValues.company = $scope.allOptionValue;
-        $scope.selectedValues.project = $scope.allOptionValue;
-        $scope.selectedValues.job = $scope.allOptionValue;
-        $scope.selectedValues.details = $scope.allOptionValue;
-        modalService.hideDataLoadingModal();
+          $scope.selectedValues.department = $scope.allOptionValue;
+          $scope.selectedValues.company = $scope.allOptionValue;
+          $scope.selectedValues.project = $scope.allOptionValue;
+          $scope.selectedValues.job = $scope.allOptionValue;
+          $scope.selectedValues.details = $scope.allOptionValue;
+          modalService.hideDataLoadingModal();
+        });
       });
     }
 
@@ -100,12 +102,14 @@ app.controller('jobcostCtrl', [
       else{
         modalService.showDataLoadingModal();
         jobcostService.getCompanies(rType, dKey).then(function(data){
-          $scope.filteredCompany = data;
+          $scope.$apply(function () {
+            $scope.filteredCompany = data;
 
-          $scope.filteredCompany.unshift($scope.allOptionValue);
-          $scope.selectedValues.company = $scope.allOptionValue;
+            $scope.filteredCompany.unshift($scope.allOptionValue);
+            $scope.selectedValues.company = $scope.allOptionValue;
 
-          modalService.hideDataLoadingModal();
+            modalService.hideDataLoadingModal();
+          });
         });
       }
     }
@@ -118,12 +122,14 @@ app.controller('jobcostCtrl', [
 
       modalService.showDataLoadingModal();
       jobcostService.getProjects(rType, dKey, cKey).then(function(data){
-        $scope.filteredProject = data;
+        $scope.$apply(function () {
+          $scope.filteredProject = data;
 
-        $scope.filteredProject.unshift($scope.allOptionValue);
-        $scope.selectedValues.project = $scope.allOptionValue;
-        
-        modalService.hideDataLoadingModal();
+          $scope.filteredProject.unshift($scope.allOptionValue);
+          $scope.selectedValues.project = $scope.allOptionValue;
+          
+          modalService.hideDataLoadingModal();
+        });
       });
     }
 
@@ -135,12 +141,14 @@ app.controller('jobcostCtrl', [
 
       modalService.showDataLoadingModal();
       jobcostService.getJobs(rType, dKey, cKey, pKey).then(function(data){
-        $scope.filteredJob = data;
+        $scope.$apply(function () {
+          $scope.filteredJob = data;
 
-        $scope.filteredJob.unshift($scope.allOptionValue);
-        $scope.selectedValues.job = $scope.allOptionValue;
-        
-        modalService.hideDataLoadingModal();
+          $scope.filteredJob.unshift($scope.allOptionValue);
+          $scope.selectedValues.job = $scope.allOptionValue;
+          
+          modalService.hideDataLoadingModal();
+        });
       });
     }
 
@@ -181,6 +189,7 @@ app.controller('jobcostCtrl', [
           data.scope = $scope;
           jobcostService.insertTable(data, function(err, response) {
             $rootScope.$broadcast('reloadHiddenRows', { rows: data.hiddenRows });
+            $scope.$apply(function (){})
             modalService.hideReportLoadingModal();
           });
           

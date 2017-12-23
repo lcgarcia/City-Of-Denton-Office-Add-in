@@ -4,7 +4,7 @@
 - Current App version 0.1.1
 
 ## Open issues
-- Cherie's personal computer does not want to connect. (Probably need to clear local storage);
+- Cherie's personal computer does not want to connect. (Probably need to clear local storage)
 
 ### 12-21-17
 - Fixed loading issues with *All reports

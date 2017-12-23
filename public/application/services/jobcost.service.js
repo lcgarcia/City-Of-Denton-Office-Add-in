@@ -1,53 +1,71 @@
 app.service("jobcostService", [
   '$http',
   function($http){
+    var timeoutMs = 2000;
+    var requestRetry = function (method) {
+      return new Promise(function (resolve, reject) {
+        async.retry({ times: 3, interval: 500 }, method, function (err, result) {
+          if (err) reject(err);
+          else resolve(result);
+        });
+      });
+    };
 
   	this.getReportData = function(type) {
-  		console.log("Fetching Jobcost Data, Type: '" + type + "'");
-      var query = getQueryType(type);
+      var makeRequest = function (cb) {
+        console.log("Fetching Jobcost Data, Type: '" + type + "'");
+        var query = getQueryType(type);
 
-  		return $http.get("/ks2inc/job/ui/data" + query)
-        .then(
-    		function(response) {
-    			return response.data;
-    		},
-        function (httpError) {
-          // translate the error
-          throw httpError.status + " : " + httpError.data;
-        }
-      );
+        $http.get("/ks2inc/job/ui/data" + query, { timeout: timeoutMs })
+          .then(
+          function(response) {
+            cb(null, response.data);
+          },
+          function (httpError) {
+            cb(httpError.status + " : " + httpError.data);
+          }
+        );
+      }
+
+      return requestRetry(makeRequest);
   	};
 
     this.getCompanies = function(type, key) {
-      console.log("Fetching Jobcost Companies, Type: '" + type + "'");
-      var query = getQueryType(type);
+      var makeRequest = function (cb) {
+        console.log("Fetching Jobcost Companies, Type: '" + type + "'");
+        var query = getQueryType(type);
 
-      return $http.get("/ks2inc/job/companies/" + key + query)
-        .then(
-        function(response) {
-          return response.data;
-        },
-        function (httpError) {
-          // translate the error
-          throw httpError.status + " : " + httpError.data;
-        }
-      );
+        $http.get("/ks2inc/job/companies/" + key + query, { timeout: timeoutMs })
+          .then(
+          function(response) {
+            cb(null, response.data);
+          },
+          function (httpError) {
+            cb(httpError.status + " : " + httpError.data);
+          }
+        );
+      }
+
+      return requestRetry(makeRequest);
     };
 
     this.getProjects = function(type, departmentKey, companyKey) {
-      console.log("Fetching Jobcost Projects, Type: '" + type + "'");
-      var query = getQueryType(type);
-      
-      return $http.get("/ks2inc/job/project/"+departmentKey+"/"+companyKey+query)
-        .then(
-        function(response) {
-          return response.data;
-        },
-        function (httpError) {
-          // translate the error
-          throw httpError.status + " : " + httpError.data;
-        }
-      );
+      var makeRequest = function (cb) {
+        console.log("Fetching Jobcost Projects, Type: '" + type + "'");
+        var query = getQueryType(type);
+        
+        $http.get("/ks2inc/job/project/"+departmentKey+"/"+companyKey+query, { timeout: timeoutMs })
+          .then(
+          function(response) {
+            cb(null, response.data);
+          },
+          function (httpError) {
+            cb(httpError.status + " : " + httpError.data);
+          }
+        );
+      }
+
+      return requestRetry(makeRequest);
     };
 
     this.getJobs = function (type, departmentKey, companyKey, projectKey) {
@@ -64,32 +82,38 @@ app.service("jobcostService", [
     };
 
     this.getJobsAPIRequest = function (url) {
-      return $http.get(url)
-        .then(
-        function(response) {
-          return response.data;
-        },
-        function (httpError) {
-          // translate the error
-          throw httpError.status + " : " +httpError.data;
-        }
-      );
+      var makeRequest = function (cb) {
+        $http.get(url, { timeout: timeoutMs })
+          .then(
+          function(response) {
+            cb(null, response.data);
+          },
+          function (httpError) {
+            cb(httpError.status + " : " +httpError.data);
+          }
+        );
+      }
+
+      return requestRetry(makeRequest);
     };
 
     this.getCatCodeDescription = function(type, departmentKey, companyKey, projectKey, jobStatusKey, jobKey, catCodeKey) {
-      console.log("Fetching Jobcost Jobs, Type: '" + type + "'");
-      var query = getQueryType(type);
-      
-      return $http.get("/ks2inc/job/code/detail/"+departmentKey+"/"+companyKey+"/"+projectKey+"/"+jobStatusKey+"/"+jobKey+"/"+catCodeKey+query)
-        .then(
-        function(response) {
-          return response.data;
-        },
-        function (httpError) {
-          // translate the error
-          throw httpError.status + " : " + httpError.data;
-        }
-      );
+      var makeRequest = function (cb) {
+        console.log("Fetching Jobcost Jobs, Type: '" + type + "'");
+        var query = getQueryType(type);
+        
+        $http.get("/ks2inc/job/code/detail/"+departmentKey+"/"+companyKey+"/"+projectKey+"/"+jobStatusKey+"/"+jobKey+"/"+catCodeKey+query, { timeout: timeoutMs })
+          .then(
+          function(response) {
+            cb(null, response.data);
+          },
+          function (httpError) {
+            cb(httpError.status + " : " +httpError.data);
+          }
+        );
+      }
+
+      return requestRetry(makeRequest);
     };
 
     /**
@@ -104,32 +128,36 @@ app.service("jobcostService", [
      * @return {promise}              Promise from the $http request
      */
     this.getSheetData = function (type, month, year, departmentKey, companyKey, projectKey, jobKey, layout, options) {
-      var requestData = {
-        month: month,
-        year: year,
-        layout: 'Cost Code/Type Details',
-        department: departmentKey,
-        company: companyKey,
-        project: projectKey,
-        job: jobKey,
-        projectList: options.projects, 
+      var makeRequest = function (cb) {
+        var requestData = {
+          month: month,
+          year: year,
+          layout: 'Cost Code/Type Details',
+          department: departmentKey,
+          company: companyKey,
+          project: projectKey,
+          job: jobKey,
+          projectList: options.projects, 
+        };
+
+        if (type === 'new' || type === 'ka') {
+          requestData.status = options.jobStatus;
+          requestData.catField = options.catCode1;
+          requestData.catField1 = options.catCode1Description;
+          requestData.catCode = options.catCode2;
+          requestData.catCode2 = options.catCode2Description;
+        }
+
+        return $http.post('/ks2inc/job/sheet/data', JSON.stringify(requestData), {headers: {'Content-Type': 'application/json'} })
+        .then(function (response) {
+          cb(null, response.data);
+        },
+        function (httpError) {
+          cb(httpError.status + " : " + httpError.data);
+        });
       };
 
-      if (type === 'new' || type === 'ka') {
-        requestData.status = options.jobStatus;
-        requestData.catField = options.catCode1;
-        requestData.catField1 = options.catCode1Description;
-        requestData.catCode = options.catCode2;
-        requestData.catCode2 = options.catCode2Description;
-      }
-
-      return $http.post('/ks2inc/job/sheet/data', JSON.stringify(requestData), {headers: {'Content-Type': 'application/json'} })
-      .then(function (response) {
-        return response.data;
-      },
-      function (httpError) {
-        throw httpError.status + " : " + httpError.data;
-      });
+      return requestRetry(makeRequest);
     };
 
     function getQueryType(type){

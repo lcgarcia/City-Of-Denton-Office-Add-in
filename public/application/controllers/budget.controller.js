@@ -73,7 +73,9 @@ app.controller('budgetCtrl', [
         $scope.userSelection.user = $scope.user.displayName;
         BookService.getUserBooks($scope.user.oid, ($stateParams.type || 'default'))
         .then(function (books) {
-          $scope.filteredBooks = _.concat($scope.filteredBooks, books);
+          $scope.$apply(function () {
+            $scope.filteredBooks = _.concat($scope.filteredBooks, books);
+          });
         }).catch(function (err) {
           console.log(err);
         });
@@ -104,19 +106,21 @@ app.controller('budgetCtrl', [
       
       modalService.showDataLoadingModal();
       budgetService.getReportData(rType).then(function(data){
-        var children;
-        $scope.parentList = _.orderBy(data, ['mcco'], ['asc']);
-        _.forEach($scope.parentList, function(parent) {
-          children = parent.childList;
-          _.forEach(children, function(child) {
-            child.selected = false;
-            child.id = (child.id).trim();
+        $scope.$apply(function () {
+          var children;
+          $scope.parentList = _.orderBy(data, ['mcco'], ['asc']);
+          _.forEach($scope.parentList, function(parent) {
+            children = parent.childList;
+            _.forEach(children, function(child) {
+              child.selected = false;
+              child.id = (child.id).trim();
+            });
+            parent.selected = false;
+            parent.id = (parent.id).trim();
+            parent.childList = children;
           });
-          parent.selected = false;
-          parent.id = (parent.id).trim();
-          parent.childList = children;
+          modalService.hideDataLoadingModal();
         });
-        modalService.hideDataLoadingModal();
       });
     }
 
@@ -263,9 +267,11 @@ app.controller('budgetCtrl', [
           // Save book to cloudant 
           BookService.updateBook(book)
             .then(function (data) {
-              var bookIndex = _.findIndex($scope.filteredBooks, ['id', $scope.selectedValues.book.id]);
-              $scope.filteredBooks[bookIndex] = data;
-              $scope.selectedValues.book = data;
+              $scope.$apply(function () {
+                var bookIndex = _.findIndex($scope.filteredBooks, ['id', $scope.selectedValues.book.id]);
+                $scope.filteredBooks[bookIndex] = data;
+                $scope.selectedValues.book = data;
+              });
             }).catch(function (err) {
               console.log(err);
             });
@@ -286,8 +292,10 @@ app.controller('budgetCtrl', [
           // Save book to cloudant 
           BookService.createBook(bookCopy)
             .then(function (data) {
-              $scope.filteredBooks.push(data);
-              $scope.selectedValues.book = $scope.filteredBooks[$scope.filteredBooks.length-1];
+              $scope.$apply(function () {
+                $scope.filteredBooks.push(data);
+                $scope.selectedValues.book = $scope.filteredBooks[$scope.filteredBooks.length-1];
+              });
             }).catch(function (err) {
               console.log(err);
             });
@@ -317,9 +325,11 @@ app.controller('budgetCtrl', [
         book.userId = $scope.user.oid || 'xxx';
         BookService.updateBook(book)
           .then(function (data) {
-            var bookIndex = _.findIndex($scope.filteredBooks, ['id', $scope.selectedValues.book.id]);
-            $scope.filteredBooks[bookIndex] = data;
-            $scope.selectedValues.book = data;
+            $scope.$apply(function () {
+              var bookIndex = _.findIndex($scope.filteredBooks, ['id', $scope.selectedValues.book.id]);
+              $scope.filteredBooks[bookIndex] = data;
+              $scope.selectedValues.book = data;
+            });
           }).catch(function (err) {
             console.log(err);
           });
@@ -341,8 +351,10 @@ app.controller('budgetCtrl', [
           // Save book to cloudant 
           BookService.createBook(bookCopy)
             .then(function (data) {
-              $scope.filteredBooks.push(data);
-              $scope.selectedValues.book = $scope.filteredBooks[$scope.filteredBooks.length-1];
+              $scope.$apply(function () {
+                $scope.filteredBooks.push(data);
+                $scope.selectedValues.book = $scope.filteredBooks[$scope.filteredBooks.length-1];
+              });
             }).catch(function (err) {
               console.log(err);
             });
@@ -672,6 +684,7 @@ app.controller('budgetCtrl', [
            *   -> 0:{range: "A7:Z25", key: "CASH AND DEPOSITS"}
            * 
            */
+          $scope.$apply(function () {})
           budgetService.deleteWorkSheets({ scope: $scope }, function (err, newSheetData) {
             var dummySheetName = newSheetData.dummySheetName;
 
