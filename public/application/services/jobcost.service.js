@@ -1,7 +1,8 @@
 app.service("jobcostService", [
   '$http',
-  function($http){
-    var timeoutMs = 6000;
+  '$timeout',
+  function($http, $timeout){
+    var timeoutMs = $timeout( function(){}, 20000 );
     var requestRetry = function (method) {
       return new Promise(function (resolve, reject) {
         async.retry({ times: 3, interval: 500 }, method, function (err, result) {
@@ -16,7 +17,7 @@ app.service("jobcostService", [
         console.log("Fetching Jobcost Data, Type: '" + type + "'");
         var query = getQueryType(type);
 
-        $http.get("/ks2inc/job/ui/data" + query, { timeout: timeoutMs })
+        $http.get("/ks2inc/job/ui/data" + query)
           .then(
           function(response) {
             cb(null, response.data);
@@ -35,7 +36,7 @@ app.service("jobcostService", [
         console.log("Fetching Jobcost Companies, Type: '" + type + "'");
         var query = getQueryType(type);
 
-        $http.get("/ks2inc/job/companies/" + key + query, { timeout: timeoutMs })
+        $http.get("/ks2inc/job/companies/" + key + query)
           .then(
           function(response) {
             cb(null, response.data);

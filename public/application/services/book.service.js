@@ -1,7 +1,7 @@
 app.service("BookService", [
   '$http',
   function($http){
-    var timeoutMs = 6000;
+    var timeoutMs = $timeout( function(){}, 20000 );
     var requestRetry = function (method) {
       return new Promise(function (resolve, reject) {
         async.retry({ times: 3, interval: 500 }, method, function (err, result) {
@@ -13,7 +13,7 @@ app.service("BookService", [
 
     this.createBook = function (book) {
       var makeRequest = function (cb) {
-        return $http.post('/ks2inc/book', JSON.stringify(book), {headers: {'Content-Type': 'application/json'}, timeout: timeoutMs })
+        return $http.post('/ks2inc/book', JSON.stringify(book), {headers: {'Content-Type': 'application/json'} })
         .then(function (response) {
           var data = response.data;
           delete book.rev;
@@ -29,7 +29,7 @@ app.service("BookService", [
 
     this.updateBook = function (book) {
       var makeRequest = function (cb) {
-        return $http.put('/ks2inc/book', JSON.stringify(book), {headers: {'Content-Type': 'application/json'}, timeout: timeoutMs })
+        return $http.put('/ks2inc/book', JSON.stringify(book), {headers: {'Content-Type': 'application/json'} })
         .then(function (response) {
           var data = response.data;
           delete book.rev;
@@ -45,7 +45,7 @@ app.service("BookService", [
 
     this.getBookById = function (bookId) {
       var makeRequest = function (cb) {
-        return $http.get('/ks2inc/book/' + bookId, { timeout: timeoutMs })
+        return $http.get('/ks2inc/book/' + bookId)
         .then(function (response) {
           cb(null, response.data);
         },
@@ -59,7 +59,7 @@ app.service("BookService", [
 
     this.getUserBooks = function (userId, reportType) {
       var makeRequest = function (cb) {
-        $http.get('/ks2inc/book/user/' + userId + '/' + reportType, { timeout: timeoutMs })
+        $http.get('/ks2inc/book/user/' + userId + '/' + reportType)
         .then(function (response) {
           cb(null, response.data);
         },
@@ -72,7 +72,7 @@ app.service("BookService", [
 
     this.deleteBook = function (book) {
       var makeRequest = function (cb) {
-        $http.delete('/ks2inc/book/' + book.id + '/' + book.rev, { timeout: timeoutMs })
+        $http.delete('/ks2inc/book/' + book.id + '/' + book.rev)
         .then(function (response) {
           cb(null, response.data);
         },

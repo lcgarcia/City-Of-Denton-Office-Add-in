@@ -1,7 +1,7 @@
 app.service("budgetService", [
   '$http',
   function($http){
-    var timeoutMs = 6000;
+    var timeoutMs = $timeout( function(){}, 20000 );
     var requestRetry = function (method) {
       return new Promise(function (resolve, reject) {
         async.retry({ times: 3, interval: 500 }, method, function (err, result) {
@@ -18,7 +18,7 @@ app.service("budgetService", [
         if(type === 'a') query = '?type=a'
         if(type === 'e') query = '?type=e'
         if(type === 'f') query = '?type=f'
-        return $http.get("/ks2inc/budget/business/unit" + query, { timeout: timeoutMs })
+        return $http.get("/ks2inc/budget/business/unit" + query)
           .then(
           function(response) {
             cb(null, response.data);
