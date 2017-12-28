@@ -1,7 +1,7 @@
 app.service("budgetService", [
   '$http',
   function($http){
-    var timeoutMs = $timeout( function(){}, 20000 );
+    //var timeoutMs = $timeout( function(){}, 20000 );
     var requestRetry = function (method) {
       return new Promise(function (resolve, reject) {
         async.retry({ times: 3, interval: 500 }, method, function (err, result) {
