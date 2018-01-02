@@ -39,6 +39,8 @@ app.controller('loginCtrl', [
     var getHost = function () {
       if (/addin-dev/gi.test(window.location.host) || /cityofdenton/gi.test(window.location.host))
         return 'https://cityofdenton.mybluemix.net';
+      else if (/citydev/gi.test(window.location.host))
+        return 'https://citydev.mybluemix.net';
       else
         return 'https://localhost:3000';
     }
