@@ -55,7 +55,7 @@ app.service("jobcostService", [
         console.log("Fetching Jobcost Projects, Type: '" + type + "'");
         var query = getQueryType(type);
         
-        $http.get("/ks2inc/job/project/"+departmentKey+"/"+companyKey+query, { timeout: timeoutMs })
+        $http.get("/ks2inc/job/project/"+departmentKey+"/"+companyKey+query)
           .then(
           function(response) {
             cb(null, response.data);
@@ -84,7 +84,7 @@ app.service("jobcostService", [
 
     this.getJobsAPIRequest = function (url) {
       var makeRequest = function (cb) {
-        $http.get(url, { timeout: timeoutMs })
+        $http.get(url)
           .then(
           function(response) {
             cb(null, response.data);
@@ -103,7 +103,7 @@ app.service("jobcostService", [
         console.log("Fetching Jobcost Jobs, Type: '" + type + "'");
         var query = getQueryType(type);
         
-        $http.get("/ks2inc/job/code/detail/"+departmentKey+"/"+companyKey+"/"+projectKey+"/"+jobStatusKey+"/"+jobKey+"/"+catCodeKey+query, { timeout: timeoutMs })
+        $http.get("/ks2inc/job/code/detail/"+departmentKey+"/"+companyKey+"/"+projectKey+"/"+jobStatusKey+"/"+jobKey+"/"+catCodeKey+query)
           .then(
           function(response) {
             cb(null, response.data);

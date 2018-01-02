@@ -60,7 +60,7 @@ app.controller('setupCtrl', [
         ];
         jobcostIndex = 1;
       } else {
-        window.location.href = '/logout';
+        $scope.filterReports = $scope.filterReports;
       }
 
       var i;
