@@ -53,7 +53,7 @@ app.service("budgetService", [
           cb(null, response.data);
         },
         function (httpError) {
-          cb(httpError.status + " : " + httpError.data, response.data);
+          cb(httpError.status + " : " + httpError.data);
         });
       }
 
