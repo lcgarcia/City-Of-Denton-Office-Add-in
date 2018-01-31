@@ -303,7 +303,6 @@ app.controller('budgetCtrl', [
       }
       else if(option == 'Delete'){
         var bookIndex = _.findIndex($scope.filteredBooks, ['id', book.id]);
-        var bookCopy = _.clone($scope.filteredBooks.splice(bookIndex, 1));
         $scope.filteredBooks.splice(bookIndex, 1);
         $scope.selectedValues.book = $scope.filteredBooks[0];
         $scope.changeBook();
