@@ -28,8 +28,14 @@ app.controller('setupCtrl', [
     ];
     $scope.modalLoad = {};
     $scope.user = {};
+    $scope.modalData = {message: 'Loading...', offlineMessage: 'Oh no! You are offline!'};
 
-    $scope.modalData = {message: 'Loading...'};
+    window.addEventListener('online', function() {
+      modalService.hideOfflineModal();
+    });
+    window.addEventListener('offline', function() {
+      modalService.showOfflineModal();
+    });
 
     $scope.selectedValues = {};
 

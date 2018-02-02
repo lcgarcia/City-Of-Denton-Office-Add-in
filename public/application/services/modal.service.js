@@ -36,15 +36,33 @@ app.service("modalService", [
 	   }
 
 	   this.hideReportLoadingModal = function() {
-	      $('#loadModal').modal('hide');
+			  $('#loadModal').modal('hide');
 
-	      while ($('body').hasClass('modal-open')) {
-	      	$('body').removeClass('modal-open');
-	      	$('.modal-backdrop').remove();
-	      }
+			  while ($('body').hasClass('modal-open')) {
+			  	$('body').removeClass('modal-open');
+			  	$('.modal-backdrop').remove();
+			  }
 
-	      $("#collapse1").collapse('hide');
-	    }
+			  $("#collapse1").collapse('hide');
+		 }
+
+		 this.showOfflineModal = function() {
+	   		if (!($("#offlineModal").data('bs.modal') || {}).isShown) {
+	   			$('#offlineModal').modal({
+		        backdrop: 'static',
+		        show: true
+		      });
+	   		}
+	   }
+
+	   this.hideOfflineModal = function() {
+			  $('#offlineModal').modal('hide');
+
+			  while ($('body').hasClass('modal-open')) {
+			  	$('body').removeClass('modal-open');
+			  	$('.modal-backdrop').remove();
+			  }
+		 }
 
 	}
 ]);
