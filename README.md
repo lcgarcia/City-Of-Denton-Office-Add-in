@@ -33,15 +33,22 @@ Make sure if you create a new function to do your best to write unit tests for i
 ### Permissions
 Permissions for the app are stored and managed in the City of Denton Azure AD service. A user must be added to one of the following services.
 
-13d4a1b3-a96e-43e0-a747-bbea092ae269 -> Accounting
-01300353-41d6-4320-bed4-618e2bfeb19d -> Budget and Jobcost
-dc448ad6-3a34-437d-ab81-63498fb36dc0 -> Electric
 
-* Job cost -> Accounting, Electric, Budget and JobCost
-* Budget Report -> Accounting, Electric, Budget and JobCost
-* Job cost KA -> Accounting
-* Job cost E -> Accounting, Electric
-* new Job cost -> Accounting, Electric
-* Budget Repot A -> Accounting
-* Budget Repot E -> Accounting, Electric
-* Budget Report Ferc -> Accounting, Electric
+Azure AD Permission Groups
+
+| Group Id | Role |
+| --- | --- |
+| 13d4a1b3-a96e-43e0-a747-bbea092ae269 | Accounting |
+| 01300353-41d6-4320-bed4-618e2bfeb19d | Budget and Jobcost |
+| dc448ad6-3a34-437d-ab81-63498fb36dc0 | Electric |
+
+| Report | Roles |
+| --- | --- |
+| Job cost | Accounting, Electric, Budget and JobCost |
+| Budget Report | Accounting, Electric, Budget and JobCost |
+| Job cost KA | Accounting |
+| Job cost E | Accounting, Electric |
+| new Job cost | Accounting, Electric |
+| Budget Repot A | Accounting |
+| Budget Repot E | Accounting, Electric |
+| Budget Report Ferc | Accounting, Electric |
