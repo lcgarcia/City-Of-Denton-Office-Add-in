@@ -22,16 +22,7 @@ app.controller('jobcost2Ctrl', [
       {key:"Closed", name:"Closed", jobList:[]}
     ];
 
-    $scope.filteredDetails = [
-      {name:"No Details"},
-      {name:"Cost Code/Type Details"},
-      {name:"FERC/Cost Code Subtotals"},
-      {name:"Cost Type Subtotals"},
-      {name:"Trend - Expenditures"},
-      {name:"Trend - Budget"},
-      {name:"Trend - Encumbrances"}
-    ];
-
+    $scope.filteredDetails = [];
     $scope.filteredCatCode1 = [];
     $scope.filteredCC1Descriptions = [];
     $scope.filteredCatCode2 = [];
@@ -64,11 +55,28 @@ app.controller('jobcost2Ctrl', [
       $scope.reportDetails.show = false;
       $scope.reportDetails.msg = "";
 
-      //Set Deatil IDs
+      setDetailData();
+      setReportData();
+    }
+
+
+    function setDetailData(){
+      $scope.filteredDetails = [
+        {name:"No Details"},
+        {name:"Cost Code/Type Details"},
+        {name:"FERC/Cost Code Subtotals"}/*,
+        {name:"Cost Type Subtotals"},
+        {name:"Trend - Expenditures"},
+        {name:"Trend - Budget"},
+        {name:"Trend - Encumbrances"}*/
+      ];
+
+      //Set Detail IDs
+      var i;
       for(i=0; i<$scope.filteredDetails.length; i++){
         $scope.filteredDetails[i].key = i;
       }
-      setReportData();
+      $scope.selectedValues.details = $scope.filteredDetails[1];
     }
 
     /**
@@ -91,7 +99,7 @@ app.controller('jobcost2Ctrl', [
         $scope.filteredCompany.unshift($scope.allOptionValue);
         $scope.filteredProject.unshift($scope.allOptionValue);
         $scope.filteredJob.unshift($scope.allOptionValue);
-        $scope.filteredDetails.unshift($scope.allOptionValue);
+        //$scope.filteredDetails.unshift($scope.allOptionValue);
         $scope.jobStatus.unshift($scope.allOptionValue);
         $scope.filteredCatCode1.unshift($scope.allOptionValue);
         $scope.filteredCC1Descriptions.unshift($scope.allOptionValue);
@@ -102,7 +110,7 @@ app.controller('jobcost2Ctrl', [
         $scope.selectedValues.project = $scope.allOptionValue;
         $scope.selectedValues.job = $scope.allOptionValue;
         $scope.selectedValues.jobStatus = $scope.allOptionValue;
-        $scope.selectedValues.details = $scope.allOptionValue;
+        //$scope.selectedValues.details = $scope.allOptionValue;
 
         $scope.filteredCatCode2 = $scope.filteredCatCode1;
         $scope.selectedValues.optional.cat1 = $scope.allOptionValue;
@@ -239,7 +247,7 @@ app.controller('jobcost2Ctrl', [
       var year = $scope.selectedValues.dates.jdeYear;
       var month = $scope.selectedValues.dates.monthStart;
       var jobStatus = $scope.selectedValues.jobStatus.key;
-      var layout = $scope.selectedValues.details;
+      var layout = $scope.selectedValues.details.name;
       var catField = $scope.selectedValues.optional.cat1.key;
       var catField1 = $scope.selectedValues.optional.cat1Description.key;
       var catCode = $scope.selectedValues.optional.cat2.key;

@@ -62,9 +62,10 @@ router.get('/ui/data', (req, res) => {
 router.post('/sheet/data', (req, res) => {
   getDataSource()
   .then(schema => {
-    const reportSelected = req.query.type || '';
-    const generator = new Generator({ type: req.query.type || '', schema: schema.schema, ctrlSchema: schema.controlSchema })
+    const reportSelected = req.body.reportSelected || '';
+    const generator = new Generator({ type: reportSelected || '', schema: schema.schema, ctrlSchema: schema.controlSchema })
     const options = {
+      reportSelected: reportSelected,
       layout: req.body.layout,
       department: req.body.department,
       company: req.body.company,

@@ -131,9 +131,10 @@ app.service("jobcostService", [
     this.getSheetData = function (type, month, year, departmentKey, companyKey, projectKey, jobKey, layout, options) {
       var makeRequest = function (cb) {
         var requestData = {
+          reportSelected: type,
           month: month,
           year: year,
-          layout: 'Cost Code/Type Details',
+          layout: layout,
           department: departmentKey,
           company: companyKey,
           project: projectKey,
@@ -143,10 +144,10 @@ app.service("jobcostService", [
 
         if (type === 'new' || type === 'ka') {
           requestData.status = options.jobStatus;
-          requestData.catField = options.catCode1;
-          requestData.catField1 = options.catCode1Description;
-          requestData.catCode = options.catCode2;
-          requestData.catCode2 = options.catCode2Description;
+          requestData.catField = options.catField;
+          requestData.catField1 = options.catField1;
+          requestData.catCode = options.catCode;
+          requestData.catCode1 = options.catCode1;
         }
 
         return $http.post('/ks2inc/job/sheet/data', JSON.stringify(requestData), {headers: {'Content-Type': 'application/json'} })
@@ -170,34 +171,58 @@ app.service("jobcostService", [
 
     this.insertTable = function (data, cb) {
       try {
-        async.waterfall([
-          function (next) {
-            var alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
-            if (data.sheetData.length > 0)
+        if(data.sheetData.length == 0){
+          async.waterfall([
+            function (next) {
+              var alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+              data.sheetData = ["No Data Found. Please change your selections amd try again"," "," "," "," "," "," "," "," "," "," "];
               data.alphabetRangeValue = alphabet[data.sheetData[0].length-1];
-            data.headerOffset = 6;
-            data.alphabet = alphabet;
-            if (data.sheetData.length > 5000) {
-              data.scope.modalData.message = 'This is going to take a while...';
-            }
-            next(null, data);
-          },
-          //deleteWorkSheets,
-          loadWorkSheets,
-          findWorkSheet,
-          initalizeWorkSheet,
-          clearSheet,
-          setHeader,
-          createTable,
-          addTableHeader,
-          //insertDataToWorkSheet,
-          addTableRows,
-          addFilter,
-          addGrandTotal,
-          addFormatting,
-          //removeOldSheet,
-          //insertData
-        ], cb);
+              data.headerOffset = 6;
+              data.alphabet = alphabet;
+              data.isEmpty = true;
+              next(null, data);
+            },
+            loadWorkSheets,
+            findWorkSheet,
+            initalizeWorkSheet,
+            clearSheet,
+            setHeader,
+            createTable,
+            addTableHeader,
+            addEmptyTableRows
+          ], cb);
+        }
+        else{
+          async.waterfall([
+            function (next) {
+              var alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+              if (data.sheetData.length > 0)
+                data.alphabetRangeValue = alphabet[data.sheetData[0].length-1];
+              data.headerOffset = 6;
+              data.alphabet = alphabet;
+              data.isEmpty = false;
+              if (data.sheetData.length > 5000) {
+                data.scope.modalData.message = 'This is going to take a while...';
+              }
+              next(null, data);
+            },
+            //deleteWorkSheets,
+            loadWorkSheets,
+            findWorkSheet,
+            initalizeWorkSheet,
+            clearSheet,
+            setHeader,
+            createTable,
+            addTableHeader,
+            //insertDataToWorkSheet,
+            addTableRows,
+            addFilter,
+            addGrandTotal,
+            addFormatting,
+            //removeOldSheet,
+            //insertData
+          ], cb);
+        }
       } catch (e) {
         cb(e);
       }
@@ -383,7 +408,6 @@ app.service("jobcostService", [
         var titleCell = worksheet.getRange('D1');
         titleCell.format.font.bold = true;
 
-
         var infoCell = worksheet.getRange('D3');
         infoCell.format.font.color = 'red';
         infoCell.format.font.italic = true;
@@ -399,7 +423,8 @@ app.service("jobcostService", [
         var tableHeader = worksheet.getRange('A5:K5');
         tableHeader.format.fill.color = '#174888';
         tableHeader.format.font.color = 'white';
-        tableHeader.rowHidden = true;
+        if(data.isEmpty) tableHeader.rowHidden = false;
+        else tableHeader.rowHidden = true;
 
         var leftColumns = worksheet.getRange('A:C');
         leftColumns.format.horizontalAlignment = 'Center';
@@ -469,6 +494,25 @@ app.service("jobcostService", [
           });
       });
     }
+
+
+    var addEmptyTableRows = function (data, next) {
+      Excel.run(function (ctx) {
+        var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+        var messageData = [["No Data Found. Please change your selections amd try again", "", "", "", "", "", "", "", "", "", ""]];
+        var messageRange = worksheet.getRange('A6:K6');
+        messageRange.merge(true);
+        messageRange.load('values');
+        messageRange.values = messageData;
+
+        return ctx.sync()
+          .then(function (response) {
+            next(null, data);  
+          }).catch(function (err) {
+            next(null, data);
+          });
+      });
+    };
 
     var addTableRows = function (data, next) {
       var splitLen = 40;

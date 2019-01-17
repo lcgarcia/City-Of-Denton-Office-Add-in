@@ -16,16 +16,6 @@ app.controller('jobcostCtrl', [
     $scope.filteredJob = [];
     $scope.filteredDetails = [];
 
-    $scope.filteredDetails = [
-      {name:"No Details"},
-      {name:"Cost Code/Type Details"},
-      {name:"FERC/Cost Code Subtotals"},
-      {name:"Cost Type Subtotals"},
-      {name:"Trend - Expenditures"},
-      {name:"Trend - Budget"},
-      {name:"Trend - Encumbrances"}
-    ];
-
     $scope.allOptionValue = {key:"*All", name:"*All"};
 
     $scope.reportDetails = {};
@@ -52,12 +42,32 @@ app.controller('jobcostCtrl', [
       $scope.reportDetails.show = false;
       $scope.reportDetails.msg = "";
 
-      //Set Deatil IDs
+      setDetailData();
+      setReportData();
+    }
+
+    function setDetailData(){
+      var rType = $scope.selectedValues.report.type;
+
+      $scope.filteredDetails = [
+        {name:"No Details"},
+        {name:"Cost Code/Type Details"}
+      ];
+
+      if (rType == 'e') {
+        $scope.filteredDetails = [
+          {name:"No Details"},
+          {name:"Cost Code/Type Details"},
+          {name:"FERC Details"}
+        ];
+      } 
+
+      //Set Detail IDs
+      var i;
       for(i=0; i<$scope.filteredDetails.length; i++){
         $scope.filteredDetails[i].key = i;
       }
-
-      setReportData();
+      $scope.selectedValues.details = $scope.filteredDetails[1];
     }
 
     /**
@@ -78,14 +88,14 @@ app.controller('jobcostCtrl', [
           $scope.filteredCompany.unshift($scope.allOptionValue);
           $scope.filteredProject.unshift($scope.allOptionValue);
           $scope.filteredJob.unshift($scope.allOptionValue);
-          $scope.filteredDetails.unshift($scope.allOptionValue);
+          //$scope.filteredDetails.unshift($scope.allOptionValue);
 
 
           $scope.selectedValues.department = $scope.allOptionValue;
           $scope.selectedValues.company = $scope.allOptionValue;
           $scope.selectedValues.project = $scope.allOptionValue;
           $scope.selectedValues.job = $scope.allOptionValue;
-          $scope.selectedValues.details = $scope.allOptionValue;
+          //$scope.selectedValues.details = $scope.allOptionValue;
           modalService.hideDataLoadingModal();
         });
       });
@@ -175,10 +185,12 @@ app.controller('jobcostCtrl', [
       var jKey = $scope.selectedValues.job.key;
       var year = $scope.selectedValues.dates.jdeYear;
       var month = $scope.selectedValues.dates.monthStart;
-      var layout = $scope.selectedValues.details;
+      var layout = $scope.selectedValues.details.name;
+      var options = { projects: $scope.filteredProject };
+
       
       modalService.showReportLoadingModal();
-      jobcostService.getSheetData(rType, month, year, dKey, cKey, pKey, jKey, layout, { projects: $scope.filteredProject })
+      jobcostService.getSheetData(rType, month, year, dKey, cKey, pKey, jKey, layout, options)
       .then(function (data) {
         try {
           var hiddenRows = data.hiddenRows;
