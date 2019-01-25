@@ -2,6 +2,10 @@ app.service("budgetService", [
   '$http',
   function($http){
     //var timeoutMs = $timeout( function(){}, 20000 );
+    var formatPricing = '_(* #,##0.00_);_(* (#,##0.00);_(* #,##0.00_);_(@_)';
+    var formatPricingRed = '_(* #,##0.00_);[Red]_(* (#,##0.00);_(* #,##0.00_);_(@_)';
+    var formatPricingTotal = '_($* #,##0.00_);[Red]_($* (#,##0.00);_($* #,##0.00_);_(@_)';
+
     var requestRetry = function (method) {
       return new Promise(function (resolve, reject) {
         async.retry({ times: 3, interval: 500 }, method, function (err, result) {
@@ -298,8 +302,7 @@ app.service("budgetService", [
         range.format.autofitColumns()
 
         var numberRange = worksheet.getRange('F' + headerOffset + ':' + alphabetRangeValue + sheetLength)
-        var format = '_($* #,##0.00_);_($* (#,##0.00);_($* #,##0.00_);_(@_)';
-        numberRange.numberFormat = _.fill(Array(data.sheetData.length),_.fill(Array(14), format));
+        numberRange.numberFormat = _.fill(Array(data.sheetData.length),_.fill(Array(14), formatPricing));
         return ctx.sync()
           .then(function (res) {
             next(null, data);
@@ -318,8 +321,7 @@ app.service("budgetService", [
           var range = worksheet.getRange('A'+val+':Z'+val);
           //range.format.font.color = 'blue';
           range.format.font.bold = true;
-          var format = '_($* #,##0.00_);[Red]_($* (#,##0.00);_($* #,##0.00_);_(@_)';
-          numberRange.numberFormat = [_.fill(Array(14), format)];
+          numberRange.numberFormat = [_.fill(Array(14), formatPricingRed)];
         });
 
         var headerOffset = 6;
@@ -347,9 +349,7 @@ app.service("budgetService", [
         var range = worksheet.getRange(range);
         range.load('values');
         range.values = grandTotalData;
-
-        var format = '_($* #,##0.00_);[Red]_($* (#,##0.00);_($* #,##0.00_);_(@_)';
-        range.numberFormat = [_.fill(Array(15), format)];
+        range.numberFormat = [_.fill(Array(15), formatPricingTotal)];
         range.format.font.bold = true;
         range.format.font.color = '#00037B';
         range.format.rowHeight = 40;
@@ -397,8 +397,8 @@ app.service("budgetService", [
             var numberRange = worksheet.getRange('F'+val+':S'+val);
             var range = worksheet.getRange('E'+val+':Z'+val);
             range.format.font.bold = false;
-            var format = '_($* #,##0.00_);[Red]_($* (#,##0.00);_(" "_);_(@_)';
-            numberRange.numberFormat = [_.fill(Array(14), format)];
+            numberRange.format.borders.getItem('EdgeTop').style = 'Continuous';
+            numberRange.numberFormat = [_.fill(Array(14), formatPricingRed)];
           });
 
           return ctx.sync()

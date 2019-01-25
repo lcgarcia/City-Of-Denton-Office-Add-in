@@ -3,6 +3,10 @@ app.service("jobcostService", [
   '$timeout',
   function($http, $timeout){
     //var timeoutMs = $timeout( function(){}, 20000 );
+    var formatPricing = '_(* #,##0.00_);_(* (#,##0.00);_(* #,##0.00_);_(@_)';
+    var formatPricingRed = '_(* #,##0.00_);[Red]_(* (#,##0.00);_(* #,##0.00_);_(@_)';
+    var formatPricingTotal = '_($* #,##0.00_);[Red]_($* (#,##0.00);_($* #,##0.00_);_(@_)';
+
     var requestRetry = function (method) {
       return new Promise(function (resolve, reject) {
         async.retry({ times: 3, interval: 500 }, method, function (err, result) {
@@ -620,11 +624,19 @@ app.service("jobcostService", [
             values: ["-"]
         });
 
-        var len = data.sheetData.length + data.headerOffset;
         sheet.getUsedRange().format.autofitColumns();
+        var len = data.sheetData.length + data.headerOffset;
         var sheetLength = data.sheetData.length + data.headerOffset - 1;
-        var range = sheet.getRange('E' + data.headerOffset + ':K' + len)
+        var range = sheet.getRange('E' + data.headerOffset + ':K' + len);
+        var rangeTitles = sheet.getRange('A' + (data.headerOffset+1) + ':K' + len);
         range.format.columnWidth = 110;
+        rangeTitles.format.font.bold = true;
+
+        // _.forEach(data.hiddenRows, function (rowData) {
+        //   var row = rowData.rows.substring(1, rowData.rows.length-1);
+        //   var rowRange = worksheet.getRange("A"+row+":Z"+row);
+        //   rowRange.format.font.bold = true;
+        // });
         return ctx.sync()
           .then(function (response) {
             //data.tableName = table.name;
@@ -638,8 +650,7 @@ app.service("jobcostService", [
     var addFormatting = function (data, next) {
       if (data.sheetData.length > 5000) {
         var len = data.sheetData.length + data.headerOffset;
-        var format = '_($* #,##0.00_);[Red]_($* (#,##0.00);_($* "-"??_);_(@_)';
-        var formatArray = _.fill(Array(len),_.fill(Array(5), format));
+        var formatArray = _.fill(Array(len),_.fill(Array(5), formatPricingRed));
         var chunk = 200;
         var split = _.chunk(formatArray, chunk);
         var water = [];
@@ -687,9 +698,7 @@ app.service("jobcostService", [
           var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
           var len = data.sheetData.length + data.headerOffset;
           var numberRange = worksheet.getRange('G7:' + data.alphabetRangeValue + len)
-
-          var format = '_($* #,##0.00_);[Red]_($* (#,##0.00);_($* "-"??_);_(@_)';
-          numberRange.numberFormat = _.fill(Array(data.sheetData.length),_.fill(Array(5), format));
+          numberRange.numberFormat = _.fill(Array(data.sheetData.length),_.fill(Array(5), formatPricingRed));
 
           var len = data.sheetData.length + data.headerOffset;
           worksheet.getUsedRange().format.autofitColumns();
@@ -769,6 +778,11 @@ app.service("jobcostService", [
         //var fullrange = worksheet.getRange();
         //fullrange.load('values');
         //fullrange.clear();
+        _.forEach(data.hiddenRows, function (rowData) {
+          var row = rowData.rows.substring(1, rowData.rows.length-1);
+          var rowRange = worksheet.getRange("A"+row+":Z"+row);
+          rowRange.format.font.bold = true;
+        });
 
         var headerOffset = 7;
         var sheetLength = data.sheetData.length + headerOffset - 1;
@@ -778,8 +792,7 @@ app.service("jobcostService", [
         range.format.autofitColumns()
 
         var numberRange = worksheet.getRange('G' + headerOffset + ':' + alphabetRangeValue + sheetLength)
-        var format = '_($* #,##0.00_);_($* (#,##0.00);_($* "-"??_);_(@_)';
-        numberRange.numberFormat = _.fill(Array(data.sheetData.length),_.fill(Array(5), format));
+        numberRange.numberFormat = _.fill(Array(data.sheetData.length),_.fill(Array(5), formatPricing));
         return ctx.sync()
           .then(function (res) {
             next(null, data);
@@ -798,8 +811,7 @@ app.service("jobcostService", [
           var range = worksheet.getRange('A'+val+':Z'+val);
           range.format.font.color = 'blue';
           range.format.font.bold = true;
-          var format = '_($* #,##0.00_);[Red]_($* (#,##0.00);_($* "-"??_);_(@_)';
-          numberRange.numberFormat = [_.fill(Array(7), format)];
+          numberRange.numberFormat = [_.fill(Array(7), formatPricingRed)];
         });
 
         var headerOffset = 6;
@@ -828,10 +840,9 @@ app.service("jobcostService", [
         range.load('values');
         range.values = grandTotalData;
 
-        var format = '_($* #,##0.00_);_($* (#,##0.00);_($* "-"??_);_(@_)';
-        range.numberFormat = [_.fill(Array(8), format)];
+        range.numberFormat = [_.fill(Array(8), formatPricingTotal)];
         range.format.font.bold = true;
-        range.format.font.color = 'black';
+        range.format.font.color = 'blue';
 
         return ctx.sync()
           .then(function (res) {
