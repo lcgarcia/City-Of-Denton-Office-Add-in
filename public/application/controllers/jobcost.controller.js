@@ -15,6 +15,7 @@ app.controller('jobcostCtrl', [
     $scope.filteredProject = [];
     $scope.filteredJob = [];
     $scope.filteredDetails = [];
+    $scope.monthValues = [{nameShort:"jan", name:"January"}, {nameShort:"feb", name:"February"}, {nameShort:"mar", name:"March"}, {nameShort:"apr", name:"April"}, {nameShort:"may", name:"May"}, {nameShort:"jun", name:"June"}, {nameShort:"jul", name:"July"}, {nameShort:"aug", name:"August"}, {nameShort:"sep", name:"September"}, {nameShort:"oct", name:"October"}, {nameShort:"nov", name:"November"}, {nameShort:"dec", name:"December"}, {nameShort:"13th", name:"13th"}];
 
     $scope.allOptionValue = {key:"*All", name:"*All"};
 
@@ -41,6 +42,14 @@ app.controller('jobcostCtrl', [
 
       $scope.reportDetails.show = false;
       $scope.reportDetails.msg = "";
+
+      //Set Detail IDs
+      var i;
+      for(i=0; i<$scope.monthValues.length; i++){
+        $scope.monthValues[i].key = i;
+      }
+
+      $scope.selectedValues.dates.monthStart = $scope.monthValues[8];
 
       setDetailData();
       setReportData();
@@ -184,7 +193,7 @@ app.controller('jobcostCtrl', [
       var pKey = $scope.selectedValues.project.key;
       var jKey = $scope.selectedValues.job.key;
       var year = $scope.selectedValues.dates.jdeYear;
-      var month = $scope.selectedValues.dates.monthStart;
+      var month = $scope.selectedValues.dates.monthStart.nameShort;
       var layout = $scope.selectedValues.details.name;
       var options = { projects: $scope.filteredProject };
 

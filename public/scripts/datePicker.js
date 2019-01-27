@@ -61,6 +61,7 @@ var budgetReportDates = function (event) {
 
 var jobcostReportDates = function (event) {
     //Month & Year Start
+    /*
     $("#monthStart").datepicker({
         autoclose: !0,
         disableTouchKeyboard: !0,
@@ -68,6 +69,7 @@ var jobcostReportDates = function (event) {
         maxViewMode: 1,
         format: "MM"
     });
+    */
     
     //JDE Year
     $("#jdeYear").datepicker({
@@ -109,43 +111,22 @@ var jobcostReportDates = function (event) {
         }
     });
 
-
+    /*
     $("#monthStartSelection").val("September"); 
     $("#monthStartSelection").datepicker("update"); 
+    */
 
     $("#jdeYearSelection").val(currentYear.toString()); 
     $("#jdeYearSelection").datepicker("update");
 
+    // $('#monthStartSelection').change(function (e) {
+    //     var a = $('#debugMsg');
+    //     var selectedMonth = $('#monthStartSelection')[0];
+    //     a[0].textContent = selectedMonth.selectedOptions[0].text;
+    // });
 
-    function changeStartMonth(){
-        var startMonth = getMonthFromString($("#monthStartSelection").val());
-        var endMonth =  getMonthFromString($("#monthEndSelection").val());
-        var startYear = parseInt($("#yearStartSelection").val());
-        var endYear = parseInt($("#yearEndSelection").val());
+    
 
-        if((startMonth > endMonth) && (startYear == endYear)){
-            return true;
-        }
-        return false;
-    }
-
-    function changeStartYear(){
-        startYear = parseInt($("#yearStartSelection").val());
-        endYear = parseInt($("#yearEndSelection").val());
-        if(endYear < startYear){
-            return true;
-        }
-        return false;
-    }
-
-
-    function getMonthFromString(month){
-       var d = Date.parse(month + "1, "+currentYear);
-       if(!isNaN(d)){
-          return new Date(d).getMonth() + 1;
-       }
-       return -1;
-     }
 }
 
 var jobcost2ReportDates = function (event) {
