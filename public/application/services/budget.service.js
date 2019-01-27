@@ -421,7 +421,8 @@ app.service("budgetService", [
         var a = worksheet.getRange('A1:A3000');
         a.format.columnWidth = 2;
         var cd = worksheet.getRange('C1:D3000');
-        cd.format.columnWidth = 3;
+        cd.clear();
+        cd.format.columnWidth = 1;
 
         //Hidden JSON Data
         var jsonDataRange = worksheet.getRange('A1:E2');
