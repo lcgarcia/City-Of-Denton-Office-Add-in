@@ -536,8 +536,11 @@ app.service("budgetService", [
         sheetTypeTitle2.format.font.bold = true;
         sheetTypeTitle2.merge(true);
 
-        var dateFormatted = moment(data.year + ' ' + data.month, 'YYYY MMM', 'en').endOf('month').format('MMMM D, YYYY');
-        var dateLabelValues = 'For the Twelve Periods Ending ' + dateFormatted;
+        var periods = ["Four", "Five", "Six", "Seven", "Eight", "Nine","Ten", "Eleven", "Twelve", "One", "Two", "Three", "Thirteen"];
+        var month = data.month == "13th" ? "September" : data.month;
+        var dateFormatted = moment(data.year + ' ' + month, 'YYYY MMM', 'en').endOf('month').format('MMMM D, YYYY');
+        var periodValue = data.month == "13th" ? 12 : new Date(dateFormatted).getMonth();
+        var dateLabelValues = 'For the ' + periods[periodValue] + ' Periods Ending ' + dateFormatted;
         var dateLabel = worksheet.getRange('F3:N3');
         dateLabel.load('values');
         dateLabel.values = [[dateLabelValues, '', '', '', '', '', '', '', '']];

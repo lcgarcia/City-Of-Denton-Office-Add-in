@@ -24,6 +24,7 @@ app.controller('budgetCtrl', [
     $scope.modalLoad = {};
     $scope.budgetList = [];
     $scope.parentList = [];
+    $scope.monthValues = [{nameShort:"oct", name:"October"}, {nameShort:"nov", name:"November"}, {nameShort:"dec", name:"December"}, {nameShort:"jan", name:"January"}, {nameShort:"feb", name:"February"}, {nameShort:"mar", name:"March"}, {nameShort:"apr", name:"April"}, {nameShort:"may", name:"May"}, {nameShort:"jun", name:"June"}, {nameShort:"jul", name:"July"}, {nameShort:"aug", name:"August"}, {nameShort:"sep", name:"September"}, {nameShort:"13th", name:"13th"}];
     $scope.filteredBooks = [
       {id:"00", name:"---Select Book---", user:"default",
         selectionList:[]
@@ -65,6 +66,13 @@ app.controller('budgetCtrl', [
       $scope.reportDetails.msg = "";
 
       $scope.selectedValues.worksheet = "";
+
+      //Set Month IDs
+      var i;
+      for(i=0; i<$scope.monthValues.length; i++){
+        $scope.monthValues[i].key = i;
+      }
+      $scope.selectedValues.month = $scope.monthValues[11];
 
       var userd = $stateParams.data.user;
       if (userd != '' && userd != undefined && userd != null) {
@@ -678,7 +686,7 @@ app.controller('budgetCtrl', [
           subledgers = keysAndSubledgers.subledgers;
         }
         
-        budgetService.getSheetData($scope.selectedValues.report.type, keys, $scope.selectedValues.month, 'Comp', $scope.selectedValues.dates.jdeYear, accounts, { subledgers: subledgers })
+        budgetService.getSheetData($scope.selectedValues.report.type, keys, $scope.selectedValues.month.name, 'Comp', $scope.selectedValues.dates.jdeYear, accounts, { subledgers: subledgers })
         .then(function (data) {
           /**
            * [data has object data ararys that contain sheet data by keys]
@@ -703,7 +711,7 @@ app.controller('budgetCtrl', [
               });
               sheetData.scope = $scope;
               sheetData.accountType = accounts;
-              sheetData.month = $scope.selectedValues.month;
+              sheetData.month = $scope.selectedValues.month.name;
               sheetData.year = $scope.selectedValues.dates.jdeYear;
               sheetData.sheetKey = key;
               sheetData.dummySheetName = dummySheetName;

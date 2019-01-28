@@ -16,6 +16,7 @@ app.controller('jobcost2Ctrl', [
     $scope.filteredProject = [];
     $scope.filteredJob = [];
     $scope.filteredDetails = [];
+    $scope.monthValues = [{nameShort:"oct", name:"October"}, {nameShort:"nov", name:"November"}, {nameShort:"dec", name:"December"}, {nameShort:"jan", name:"January"}, {nameShort:"feb", name:"February"}, {nameShort:"mar", name:"March"}, {nameShort:"apr", name:"April"}, {nameShort:"may", name:"May"}, {nameShort:"jun", name:"June"}, {nameShort:"jul", name:"July"}, {nameShort:"aug", name:"August"}, {nameShort:"sep", name:"September"}, {nameShort:"13th", name:"13th"}];
 
     $scope.jobStatus = [
       {key:"Open", name:"Open", jobList:[]},
@@ -54,6 +55,14 @@ app.controller('jobcost2Ctrl', [
 
       $scope.reportDetails.show = false;
       $scope.reportDetails.msg = "";
+
+      //Set Month IDs
+      var i;
+      for(i=0; i<$scope.monthValues.length; i++){
+        $scope.monthValues[i].key = i;
+      }
+      $scope.selectedValues.dates.monthStart = $scope.monthValues[11];
+      $scope.selectedValues.dates.monthEnd = $scope.monthValues[11];
 
       setDetailData();
       setReportData();
@@ -223,6 +232,24 @@ app.controller('jobcost2Ctrl', [
       });
     }
 
+    /**
+     * [selectedMonthStart updates end month when start date > end date]
+     */
+    $scope.selectedMonthStart = function(){
+      if($scope.selectedValues.dates.yearStart == $scope.selectedValues.dates.yearEnd && $scope.selectedValues.dates.monthStart.key > $scope.selectedValues.dates.monthEnd.key){
+        $scope.selectedValues.dates.monthEnd = $scope.selectedValues.dates.monthStart;
+      }
+    }
+
+    /**
+     * [selectedMonthEnd updates start month when start date > end date]
+     */
+    $scope.selectedMonthEnd = function(){
+      if($scope.selectedValues.dates.yearStart == $scope.selectedValues.dates.yearEnd && $scope.selectedValues.dates.monthStart.key > $scope.selectedValues.dates.monthEnd.key){
+        $scope.selectedValues.dates.monthStart = $scope.selectedValues.dates.monthEnd;
+      }
+    }
+
     //Set JDE Fiscal Years
     $scope.jdeYearChange = function() {
       var selectedDates = $scope.selectedValues.dates;
@@ -245,7 +272,7 @@ app.controller('jobcost2Ctrl', [
       var pKey = $scope.selectedValues.project.key;
       var jKey = $scope.selectedValues.job.key;
       var year = $scope.selectedValues.dates.jdeYear;
-      var month = $scope.selectedValues.dates.monthStart;
+      var month = $scope.selectedValues.dates.monthStart.name;
       var jobStatus = $scope.selectedValues.jobStatus.key;
       var layout = $scope.selectedValues.details.name;
       var catField = $scope.selectedValues.optional.cat1.key;

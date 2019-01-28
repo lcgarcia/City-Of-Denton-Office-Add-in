@@ -49,12 +49,22 @@
                <div id="collapse1_2" class="panel-collapse collapse">
                   <div class="panel-body">
                      <label>Select Month:</label>
-                     <div style="height: 100%;" class="input-group input-daterange" id="monthStart">
-                        <input id="monthSelection" type="text" name="start" ng-model="selectedValues.month" class="form-control input-dates dateInputBox"/>
-                        <div class="input-group-addon calendarBox">
-                           <span class="fa fa-calendar"></span>
-                        </div>
-                     </div>
+                     <table style="width: 100%;">
+                        <tbody>
+                        <tr>
+                           <td>
+                              <div id="monthStart">
+                                 <select id="monthStartSelection"  
+                                    class="form-control" 
+                                    ng-model="selectedValues.month" 
+                                    ng-options="month.name for month in monthValues track by month.key"
+                                    >
+                                 </select>
+                              </div>
+                           </td>
+                        </tr>
+                        </tbody>
+                     </table>
 
                      <section style="padding-top: 5px;">
                         <label>Select Year</label>

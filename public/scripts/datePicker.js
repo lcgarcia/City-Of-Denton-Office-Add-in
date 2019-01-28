@@ -3,13 +3,13 @@ currentDate.setFullYear( currentDate.getFullYear() - 1 );
 var currentYear = currentDate.getFullYear();
 
 var budgetReportDates = function (event) {
-    $("#monthStart").datepicker({
-        autoclose: !0,
-        disableTouchKeyboard: !0,
-        minViewMode: 1,
-        maxViewMode: 1,
-        format: "MM"
-    });
+    // $("#monthStart").datepicker({
+    //     autoclose: !0,
+    //     disableTouchKeyboard: !0,
+    //     minViewMode: 1,
+    //     maxViewMode: 1,
+    //     format: "MM"
+    // });
 
     //JDE Year
     $("#jdeYear").datepicker({
@@ -51,8 +51,8 @@ var budgetReportDates = function (event) {
         }
     });
 
-    $("#monthSelection").val("September"); 
-    $("#monthSelection").datepicker("update"); 
+    // $("#monthSelection").val("September"); 
+    // $("#monthSelection").datepicker("update"); 
 
     $("#jdeYearSelection").val(currentYear.toString()); 
     $("#jdeYearSelection").datepicker("update");
@@ -117,27 +117,19 @@ var jobcostReportDates = function (event) {
     */
 
     $("#jdeYearSelection").val(currentYear.toString()); 
-    $("#jdeYearSelection").datepicker("update");
-
-    // $('#monthStartSelection').change(function (e) {
-    //     var a = $('#debugMsg');
-    //     var selectedMonth = $('#monthStartSelection')[0];
-    //     a[0].textContent = selectedMonth.selectedOptions[0].text;
-    // });
-
-    
+    $("#jdeYearSelection").datepicker("update");    
 
 }
 
 var jobcost2ReportDates = function (event) {
     //Month & Year Start
-    $("#monthStart").datepicker({
-        autoclose: !0,
-        disableTouchKeyboard: !0,
-        minViewMode: 1,
-        maxViewMode: 1,
-        format: "MM"
-    });
+    // $("#monthStart").datepicker({
+    //     autoclose: !0,
+    //     disableTouchKeyboard: !0,
+    //     minViewMode: 1,
+    //     maxViewMode: 1,
+    //     format: "MM"
+    // });
     $("#yearStart").datepicker({
         autoclose: !0,
         disableTouchKeyboard: !0,
@@ -148,13 +140,13 @@ var jobcost2ReportDates = function (event) {
     });
 
     //Month & Year End
-    $("#monthEnd").datepicker({
-        autoclose: !0,
-        disableTouchKeyboard: !0,
-        minViewMode: 1,
-        maxViewMode: 1,
-        format: "MM"
-    });
+    // $("#monthEnd").datepicker({
+    //     autoclose: !0,
+    //     disableTouchKeyboard: !0,
+    //     minViewMode: 1,
+    //     maxViewMode: 1,
+    //     format: "MM"
+    // });
     $("#yearEnd").datepicker({
         autoclose: !0,
         disableTouchKeyboard: !0,
@@ -177,41 +169,42 @@ var jobcost2ReportDates = function (event) {
 
 
     //Month Start Events
-    $("#monthStart").datepicker().on('changeDate', function(selected){
-        if($("#yearStartSelection").val() && $("#yearEndSelection").val() &&
-            $("#monthStartSelection").val() && $("#monthEndSelection").val()){
-            startDate = $("#monthStartSelection").val();
+    // $("#monthStart").datepicker().on('changeDate', function(selected){
+    //     if($("#yearStartSelection").val() && $("#yearEndSelection").val() &&
+    //         $("#monthStartSelection").val() && $("#monthEndSelection").val()){
+    //         startDate = $("#monthStartSelection").val();
 
-            if(changeStartMonth()){
-                $('#monthEndSelection').datepicker('setDate', startDate);
-            }       
-        }
-    });
+    //         if(changeStartMonth()){
+    //             $('#monthEndSelection').datepicker('setDate', startDate);
+    //         }       
+    //     }
+    // });
     //Month End Events
-    $("#monthEnd").datepicker().on('changeDate', function(selected){
-        if($("#yearStartSelection").val() && $("#yearEndSelection").val() &&
-            $("#monthStartSelection").val() && $("#monthEndSelection").val()){
-            startDate = $("#monthEndSelection").val();
+    // $("#monthEnd").datepicker().on('changeDate', function(selected){
+    //     if($("#yearStartSelection").val() && $("#yearEndSelection").val() &&
+    //         $("#monthStartSelection").val() && $("#monthEndSelection").val()){
+    //         startDate = $("#monthEndSelection").val();
 
-            if(changeStartMonth()){
-                $('#monthStartSelection').datepicker('setDate', startDate);
-            }       
-        }
-    });
+    //         if(changeStartMonth()){
+    //             $('#monthStartSelection').datepicker('setDate', startDate);
+    //         }       
+    //     }
+    // });
 
 
     //Year Start Events
     $("#yearStart").datepicker().on('changeDate', function(selected){
         if($("#yearStartSelection").val() && $("#yearEndSelection").val()){
+            var selectedStartMonth = $('#monthStartSelection')[0];
             startDate = $("#yearStartSelection").val();
-            startMonth = $("#monthStartSelection").val();
+            startMonth = selectedStartMonth.selectedOptions[0].text;
            
             if(changeStartYear()){
                 $('#yearEndSelection').datepicker('setDate', startDate);
             }
-            if(changeStartMonth()){
-                $('#monthEndSelection').datepicker('setDate', startMonth);
-            }   
+            // if(changeStartMonth()){
+            //     $('#monthEndSelection').datepicker('setDate', startMonth);
+            // }   
 
         }
     });
@@ -257,14 +250,14 @@ var jobcost2ReportDates = function (event) {
     });
 
 
-    $("#monthStartSelection").val("September"); 
-    $("#monthStartSelection").datepicker("update"); 
+    // $("#monthStartSelection").val("September"); 
+    // $("#monthStartSelection").datepicker("update"); 
     $("#yearStartSelection").val(currentYear.toString()); 
     $("#yearStartSelection").datepicker("update"); 
 
 
-    $("#monthEndSelection").val("September"); 
-    $("#monthEndSelection").datepicker("update"); 
+    // $("#monthEndSelection").val("September"); 
+    // $("#monthEndSelection").datepicker("update"); 
     $("#yearEndSelection").val((currentYear+1).toString()); 
     $("#yearEndSelection").datepicker("update"); 
 
@@ -274,8 +267,12 @@ var jobcost2ReportDates = function (event) {
 
 
     function changeStartMonth(){
-        var startMonth = getMonthFromString($("#monthStartSelection").val());
-        var endMonth =  getMonthFromString($("#monthEndSelection").val());
+        var selectedStartMonth = $('#monthStartSelection')[0];
+        var selectedEndMonth = $('#monthEndSelection')[0];
+        // var startMonth = getMonthFromString($("#monthStartSelection").val());
+        // var endMonth =  getMonthFromString($("#monthEndSelection").val());
+        var startMonth = getMonthFromString(selectedStartMonth.selectedOptions[0].text);
+        var endMonth =  getMonthFromString(selectedEndMonth.selectedOptions[0].text);
         var startYear = parseInt($("#yearStartSelection").val());
         var endYear = parseInt($("#yearEndSelection").val());
 

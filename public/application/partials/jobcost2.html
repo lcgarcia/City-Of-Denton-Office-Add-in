@@ -147,15 +147,17 @@
                      <table style="width: 100%;">
                         <tbody>
                         <tr>
-                           <td class="dateBox" style="padding-right: 5px;">
-                              <div style="height: 100%;" class="input-group input-daterange" id="monthStart">
-                                 <input id="monthStartSelection" type="text" ng-model="selectedValues.dates.monthStart" class="form-control input-dates dateInputBox" readonly/>
-                                 <div class="input-group-addon calendarBox">
-                                    <span class="fa fa-calendar"></span>
-                                 </div>
+                           <td class="dateRangeBox" style="padding-right: 5px;">
+                              <div id="monthStart">
+                                 <select id="monthStartSelection"  
+                                    class="form-control" 
+                                    ng-model="selectedValues.dates.monthStart" 
+                                    ng-options="month.name for month in monthValues track by month.key"
+                                    ng-change="selectedMonthStart()">
+                                 </select>
                               </div>
                            </td>
-                           <td class="dateBox">
+                           <td class="dateRangeBox">
                               <div style="height: 100%;" class="input-group input-daterange" id="yearStart">
                                  <input id="yearStartSelection" type="text" ng-model="selectedValues.dates.yearStart" class="form-control input-dates dateInputBox" readonly/>
                                  <div class="input-group-addon calendarBox">
@@ -172,15 +174,17 @@
                      <table style="width: 100%;">
                         <tbody>
                         <tr>
-                           <td class="dateBox" style="padding-right: 5px;">
-                              <div style="height: 100%;" class="input-group input-daterange" id="monthEnd">
-                                 <input id="monthEndSelection" type="text" ng-model="selectedValues.dates.monthEnd" class="form-control input-dates dateInputBox" readonly/>
-                                 <div class="input-group-addon calendarBox">
-                                    <span class="fa fa-calendar"></span>
-                                 </div>
+                           <td class="dateRangeBox" style="padding-right: 5px;">
+                              <div id="monthEnd">
+                                 <select id="monthEndSelection"  
+                                    class="form-control" 
+                                    ng-model="selectedValues.dates.monthEnd" 
+                                    ng-options="month.name for month in monthValues track by month.key"
+                                    ng-change="selectedMonthEnd()">
+                                 </select>
                               </div>
                            </td>
-                           <td class="dateBox">
+                           <td class="dateRangeBox">
                               <div style="height: 100%;" class="input-group input-daterange" id="yearEnd">
                                  <input id="yearEndSelection" type="text" ng-model="selectedValues.dates.yearEnd" class="form-control input-dates dateInputBox" readonly/>
                                  <div class="input-group-addon calendarBox">

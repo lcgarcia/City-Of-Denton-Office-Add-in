@@ -391,7 +391,7 @@ app.service("jobcostService", [
         var jsonHiddenData = JSON.stringify(data.hiddenRows);
 
         var header = [
-          ['', '', '', 'City of Denton - Job Cost Summary', '', '', 'Dept:', data.scope.selectedValues.department.name, 'Month:', data.scope.selectedValues.dates.monthStart, ''],
+          ['', '', '', 'City of Denton - Job Cost Summary', '', '', 'Dept:', data.scope.selectedValues.department.name, 'Month:', data.scope.selectedValues.dates.monthStart.name, ''],
           [data.hiddenRows.length > 1000 ? '' : jsonHiddenData, '', '', moment().format('MM/DD/YYYY, h:mm:ss a'), '', '', 'Company:', data.scope.selectedValues.company.name, 'JDE Fiscal Year:', data.scope.selectedValues.dates.jdeYear + ' - ' + (parseInt(data.scope.selectedValues.dates.jdeYear)+1), ''],
           ['', '', '', 'Unaudited/Unofficial-Not intended for public distribution', '', '', 'Project:', data.scope.selectedValues.project.name, 'Layout:', 'Cost Code/Type Details', ''],
           ['', '', '', '', '', '', 'Job:', data.scope.selectedValues.job.name, '', '', ''],
@@ -834,7 +834,7 @@ app.service("jobcostService", [
         var headerOffset = 6;
         var length = headerOffset + data.sheetData.length;
         var range = 'D' + (length+1) + ':K' + (length+1);
-        var grandTotalData = [['Grand Total', '', '', '=SUM(G5:G' + (length) + ')/2', '=SUM(H6:H' + (length) + ')/2', '=SUM(I6:I' + (length) + ')/2', '=SUM(J6:J' + (length) + ')/2', '=SUM(K6:K' + (length) + ')/2']];
+        var grandTotalData = [['Grand Total', '', '', '=SUM(G6:G' + (length-1) + ')/2', '=SUM(H6:H' + (length-1) + ')/2', '=SUM(I6:I' + (length-1) + ')/2', '=SUM(J6:J' + (length-1) + ')/2', '=SUM(K6:K' + (length-1) + ')/2']];
 
         var range = worksheet.getRange(range);
         range.load('values');
