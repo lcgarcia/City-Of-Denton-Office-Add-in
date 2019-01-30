@@ -423,7 +423,6 @@ app.controller('budgetCtrl', [
                   child = _.find(parent.childList, ['id', item.childList[j].id]);
                   if(item.childList[j].selected == null || item.childList[j].selected == false){
                     setChildSelected(child, false);
-                    $scope.selectedKeys.push(child);
                   }
                   else{
                     setChildSelected(child, true);
