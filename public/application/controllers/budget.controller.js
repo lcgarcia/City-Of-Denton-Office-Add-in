@@ -465,6 +465,7 @@ app.controller('budgetCtrl', [
         });
       }
       setParentSelected(parent, parent.selected);
+      $scope.debugMsg = JSON.stringify($scope.selectedKeys[0]);
     }
 
     /**
@@ -645,6 +646,7 @@ app.controller('budgetCtrl', [
 
     $scope.getKeysAndSubledgers = function () {
       var keys = [], subledgers = [];
+
       _.forEach($scope.selectedKeys, function (val) {
         if (val.id == 'ferc') {
           subledgers = _.map(val.childList, function(val){ return val.id });

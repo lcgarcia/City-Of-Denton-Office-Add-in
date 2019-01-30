@@ -221,6 +221,7 @@ app.service("jobcostService", [
             //insertDataToWorkSheet,
             addTableRows,
             addFilter,
+            addSubTotal,
             addGrandTotal,
             addFormatting,
             //removeOldSheet,
@@ -615,6 +616,27 @@ app.service("jobcostService", [
       */
     }
 
+    var addSubTotal = function (data, next) {
+      Excel.run(function (ctx) {
+        var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+
+        _.forEach(data.subTotalRows, function (val) {
+          var numberRange = worksheet.getRange('E'+val+':K'+val);
+          var range = worksheet.getRange('A'+val+':Z'+val);
+          range.format.font.color = 'blue';
+          range.format.font.bold = true;
+          numberRange.numberFormat = [_.fill(Array(7), formatPricingRed)];
+        });
+
+        return ctx.sync()
+          .then(function (response) {
+            next(null, data);  
+          }).catch(function (err) {
+            next(null, data);
+          });
+      });
+    }
+
     var addFilter = function (data, next) {
       Excel.run(function (ctx) {
         var sheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
@@ -632,7 +654,7 @@ app.service("jobcostService", [
         var range = sheet.getRange('E' + data.headerOffset + ':K' + len);
         var rangeTitles = sheet.getRange('A' + (data.headerOffset+1) + ':K' + len);
         range.format.columnWidth = 110;
-        rangeTitles.format.font.bold = true;
+        //rangeTitles.format.font.bold = true;
 
         // _.forEach(data.hiddenRows, function (rowData) {
         //   var row = rowData.rows.substring(1, rowData.rows.length-1);
@@ -707,10 +729,7 @@ app.service("jobcostService", [
           worksheet.getUsedRange().format.autofitColumns();
           //var sheetLength = data.sheetData.length + data.headerOffset - 1;
           var range = worksheet.getRange('E' + data.headerOffset + ':K' + len);
-          var rangeRow = worksheet.getRange('A' + (data.headerOffset+1) + ':K' + (len) );
           range.format.columnWidth = 110;
-          rangeRow.format.font.bold = true;
-          rangeRow.format.font.color = 'blue';
           return ctx.sync()
             .then(function (response) {
               //data.tableName = table.name;
@@ -849,7 +868,6 @@ app.service("jobcostService", [
         range.numberFormat = [_.fill(Array(8), formatPricingTotal)];
         range.format.font.bold = true;
         range.format.font.color = '#00037B';
-        range.format.font.size = 14;
 
         return ctx.sync()
           .then(function (res) {
