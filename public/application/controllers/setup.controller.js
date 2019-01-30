@@ -176,6 +176,25 @@ app.controller('setupCtrl', [
       });
     }
 
+
+    $scope.updateRowSelections = function(){
+      Excel.run(function (ctx) {
+        var activeWorksheet = ctx.workbook.worksheets.getActiveWorksheet();
+        var jsonDataRange = activeWorksheet.getRange("A2:A2");
+        activeWorksheet.load('name');
+        jsonDataRange.load("values");
+
+        if($scope.reportDetails.hiddenRows && $scope.reportDetails.hiddenRows.length > 0){
+          jsonDataRange.values = [[JSON.stringify($scope.reportDetails.hiddenRows)]];
+        }
+        
+        return ctx.sync()
+          .then(function () {}).catch(function (err) {
+            $scope.reportDetails.msg = err;
+          });
+      });
+    };
+
     function changeReportDetails(sheetName, jsonSheetData){
       $scope.$apply(function () {
         $scope.reportDetails.worksheet = sheetName;

@@ -25,7 +25,7 @@
       </div>
 
       <!-- Panel Report Deatils Start--> 
-      <div class="panel-group" style="margin-bottom:0; margin-left: 0.5px;" ng-mouseover=getActiveSheet()>
+      <div class="panel-group" style="margin-bottom:0; margin-left: 0.5px;" ng-mouseover=getActiveSheet() ng-mouseleave="updateRowSelections()">
          <div class="panel panel-default panel-report">
             
             <div class="alert alert-info" 

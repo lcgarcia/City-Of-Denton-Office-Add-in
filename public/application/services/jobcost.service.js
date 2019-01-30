@@ -542,6 +542,8 @@ app.service("jobcostService", [
             } else {
               var rangeAddress = 'A' + (chunk*j + data.headerOffset + 1) + ':K' + (chunk*j + split[j].length + data.headerOffset);
               var range = sheet.getRange(rangeAddress);
+              range.format.font.color = 'black';
+              range.format.font.bold = false;
               range.values = split[j];
             }
 
@@ -667,6 +669,7 @@ app.service("jobcostService", [
               } else {
                 var rangeAddress = 'G' + (chunk*j + data.headerOffset + 1) + ':' + data.alphabetRangeValue + (chunk*j + split[j].length + data.headerOffset);
                 var range = sheet.getRange(rangeAddress);
+
                 range.numberFormat = split[j];
               }
 
@@ -702,9 +705,12 @@ app.service("jobcostService", [
 
           var len = data.sheetData.length + data.headerOffset;
           worksheet.getUsedRange().format.autofitColumns();
-          var sheetLength = data.sheetData.length + data.headerOffset - 1;
-          var range = worksheet.getRange('E' + data.headerOffset + ':K' + len)
+          //var sheetLength = data.sheetData.length + data.headerOffset - 1;
+          var range = worksheet.getRange('E' + data.headerOffset + ':K' + len);
+          var rangeRow = worksheet.getRange('A' + (data.headerOffset+1) + ':K' + (len) );
           range.format.columnWidth = 110;
+          rangeRow.format.font.bold = true;
+          rangeRow.format.font.color = 'blue';
           return ctx.sync()
             .then(function (response) {
               //data.tableName = table.name;
@@ -789,7 +795,7 @@ app.service("jobcostService", [
         var range = worksheet.getRange('A' + headerOffset + ':' + alphabetRangeValue + sheetLength)
         range.load('values')
         range.values = data.sheetData
-        range.format.autofitColumns()
+        range.format.autofitColumns();
 
         var numberRange = worksheet.getRange('G' + headerOffset + ':' + alphabetRangeValue + sheetLength)
         numberRange.numberFormat = _.fill(Array(data.sheetData.length),_.fill(Array(5), formatPricing));
@@ -842,7 +848,8 @@ app.service("jobcostService", [
 
         range.numberFormat = [_.fill(Array(8), formatPricingTotal)];
         range.format.font.bold = true;
-        range.format.font.color = 'blue';
+        range.format.font.color = '#00037B';
+        range.format.font.size = 14;
 
         return ctx.sync()
           .then(function (res) {
