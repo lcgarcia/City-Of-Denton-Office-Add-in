@@ -248,11 +248,10 @@ app.controller('setupCtrl', [
     };
 
     $scope.toggleAllRows = function (show) {
-      var i;
-      for (i = 0; i < $scope.reportDetails.hiddenRows.length; i++) { 
-        $scope.reportDetails.hiddenRows[i].selected = show;
-        toggleHiddenRow($scope.reportDetails.hiddenRows[i]);
-      }
+      _.forEach($scope.reportDetails.hiddenRows, function (row) {
+        row.selected = !show;
+        toggleHiddenRow(row);
+      });
     }
 
     $scope.toggleRow = function (label) {
@@ -269,9 +268,10 @@ app.controller('setupCtrl', [
         //   var split = label.range.split(':')
         //   label.range = 'A7:' + split[1];
         // }
+        
         var worksheet = ctx.workbook.worksheets.getItem($scope.reportDetails.worksheet);
         var range = worksheet.getRange(label.range);
-        range.rowHidden = !label.selected;
+        range.rowHidden = label.selected;
 
         return ctx.sync()
           .then(function () {}).catch(function (err) {
