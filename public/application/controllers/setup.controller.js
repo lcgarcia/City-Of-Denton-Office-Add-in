@@ -248,6 +248,7 @@ app.controller('setupCtrl', [
     };
 
     $scope.toggleAllRows = function (show) {
+      modalService.showDataLoadingModal();
       var selected = $('#selectAll').is(':checked');
       _.forEach($scope.reportDetails.hiddenRows, function (row) {
         row.selected = selected;
@@ -256,6 +257,7 @@ app.controller('setupCtrl', [
     }
 
     $scope.toggleRow = function (label) {
+      //modalService.showDataLoadingModal();
       var selections = $('#containerList').find("input");
       var labels = $('#containerList').find("label");
       var selectAll = true;
@@ -283,8 +285,14 @@ app.controller('setupCtrl', [
         var range = worksheet.getRange(label.range);
         range.rowHidden = !selected;
 
+        
+
         return ctx.sync()
-          .then(function () {}).catch(function (err) {
+          .then(function(){
+            $scope.$apply(function () {
+              modalService.hideDataLoadingModal();
+            });
+          }).catch(function (err) {
             /*
             $scope.$apply(function () {
               $scope.reportDetails.msg = err;
