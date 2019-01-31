@@ -247,33 +247,31 @@ app.controller('setupCtrl', [
       }
     };
 
-    $scope.toggleHiddenRow = function(label, selectAll){
+    $scope.toggleAllRows = function (show) {
+      var i;
+      for (i = 0; i < $scope.reportDetails.hiddenRows.length; i++) { 
+        $scope.reportDetails.hiddenRows[i].selected = show;
+        toggleHiddenRow($scope.reportDetails.hiddenRows[i]);
+      }
+    }
+
+    $scope.toggleRow = function (label) {
+      var unselectedFound = _.find($scope.reportDetails.hiddenRows, function(o) { return o.selected == false; });
+      if(unselectedFound) $scope.reportDetails.selectAll = false;
+      else $scope.reportDetails.selectAll = true;
+      toggleHiddenRow(label);
+    };
+
+    function toggleHiddenRow(label){
       Excel.run(function (ctx) {
+        // var regex = new RegExp(label.range,"gi");
+        // if (regex.test("A6")) {
+        //   var split = label.range.split(':')
+        //   label.range = 'A7:' + split[1];
+        // }
         var worksheet = ctx.workbook.worksheets.getItem($scope.reportDetails.worksheet);
-        var range;
-
-        if(selectAll){
-          _.forEach($scope.reportDetails.hiddenRows, function (row) {
-            row.selected = label;
-            range = worksheet.getRange(row.range);
-            range.rowHidden = !label;
-          });
-        }
-        else{
-          /*
-          var regex = new RegExp(label.range,"gi");
-          if (regex.test("A6")) {
-            var split = label.range.split(':')
-            label.range = 'A7:' + split[1];
-          }
-          */
-          range = worksheet.getRange(label.range);
-          range.rowHidden = !label.selected;
-
-          var unselectedFound = _.find($scope.reportDetails.hiddenRows, function(o) { return o.selected == false; });
-          if(unselectedFound) $scope.reportDetails.selectAll = false;
-          else $scope.reportDetails.selectAll = true;
-        }
+        var range = worksheet.getRange(label.range);
+        range.rowHidden = !label.selected;
 
         return ctx.sync()
           .then(function () {}).catch(function (err) {
