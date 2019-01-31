@@ -58,7 +58,7 @@
                            <input type="checkbox" 
                            style="margin: 0; margin-left: 4px; width: 16px; cursor: pointer;" 
                            ng-model="reportDetails.selectAll"
-                           ng-click="toggleAllRows(reportDetails.selectAll)"
+                           ng-click="toggleHiddenRow(reportDetails.selectAll, true)"
                            >
                         </div>
                      </td>
@@ -78,7 +78,7 @@
                <ul id="containerList" style="list-style: none; width: 120%">
                   <li class="containerData" style="margin-top: 6px;" ng-repeat="label in reportDetails.hiddenRows">
                      <div class="parentOptions">
-                        <input type="checkbox" ng-model="label.selected" ng-click="toggleRow(label)" style="cursor: pointer;">
+                        <input type="checkbox" ng-model="label.selected" ng-click="toggleHiddenRow(label, false)" style="cursor: pointer;">
                         <label style="display: inline; font-weight: normal;">
                            {{label.rows}} {{label.key}}
                         </label>

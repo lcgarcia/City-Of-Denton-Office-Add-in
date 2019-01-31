@@ -247,31 +247,33 @@ app.controller('setupCtrl', [
       }
     };
 
-    $scope.toggleAllRows = function (show) {
-      _.forEach($scope.reportDetails.hiddenRows, function (row) {
-        row.selected = show;
-        toggleHiddenRow(row);
-      });
-    }
-
-    $scope.toggleRow = function (label) {
-      var unselectedFound = _.find($scope.reportDetails.hiddenRows, function(o) { return o.selected == false; });
-      if(unselectedFound) $scope.reportDetails.selectAll = false;
-      else $scope.reportDetails.selectAll = true;
-      toggleHiddenRow(label);
-    };
-
-    function toggleHiddenRow(label){
+    $scope.toggleHiddenRow = function(label, selectAll){
       Excel.run(function (ctx) {
-        var regex = new RegExp(label.range,"gi");
-        if (regex.test("A6")) {
-          var split = label.range.split(':')
-          label.range = 'A7:' + split[1];
-        }
-        
         var worksheet = ctx.workbook.worksheets.getItem($scope.reportDetails.worksheet);
-        var range = worksheet.getRange(label.range);
-        range.rowHidden = !label.selected;
+        var range;
+
+        if(selectAll){
+          _.forEach($scope.reportDetails.hiddenRows, function (row) {
+            row.selected = label;
+            range = worksheet.getRange(row.range);
+            range.rowHidden = !label;
+          });
+        }
+        else{
+          /*
+          var regex = new RegExp(label.range,"gi");
+          if (regex.test("A6")) {
+            var split = label.range.split(':')
+            label.range = 'A7:' + split[1];
+          }
+          */
+          range = worksheet.getRange(label.range);
+          range.rowHidden = !label.selected;
+
+          var unselectedFound = _.find($scope.reportDetails.hiddenRows, function(o) { return o.selected == false; });
+          if(unselectedFound) $scope.reportDetails.selectAll = false;
+          else $scope.reportDetails.selectAll = true;
+        }
 
         return ctx.sync()
           .then(function () {}).catch(function (err) {
