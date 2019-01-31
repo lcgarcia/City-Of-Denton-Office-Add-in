@@ -226,16 +226,6 @@ app.controller('setupCtrl', [
       });
     }
 
-
-    /**
-     * [selectedDataAll selectAll checkbox selected. Set Sheet Data values to selectAll value]
-     */
-    $scope.selectedDataAll = function(){
-      _.forEach($scope.reportDetails.hiddenRows, function(parent) {
-        parent.selected = $scope.reportDetails.selectAll;
-      });
-    }
-
     /**
      * [searchData shows/hides options depending on the value that is entered in searchbox]
      */
@@ -257,22 +247,9 @@ app.controller('setupCtrl', [
     };
 
     $scope.toggleAllRows = function (show) {
-      Excel.run(function (ctx) {
-        var worksheet = ctx.workbook.worksheets.getItem($scope.reportDetails.worksheet);
-
-        _.forEach($scope.reportDetails.hiddenRows, function (row) {
-          var range = worksheet.getRange(row.range);
-          range.rowHidden = !show;
-        });
-
-        return ctx.sync()
-          .then(function () {}).catch(function (err) {
-            /*
-            $scope.$apply(function () {
-              $scope.reportDetails.msg = err;
-            });
-            */
-          });
+      _.forEach($scope.reportDetails.hiddenRows, function (row) {
+        row.selected = show;
+        $scope.toggleRow(row);
       });
     }
 
