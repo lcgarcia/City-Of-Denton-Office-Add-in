@@ -465,7 +465,6 @@ app.controller('budgetCtrl', [
         });
       }
       setParentSelected(parent, parent.selected);
-      $scope.debugMsg = JSON.stringify($scope.selectedKeys[0]);
     }
 
     /**
