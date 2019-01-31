@@ -165,6 +165,8 @@ app.controller('setupCtrl', [
         activeWorksheet.load('name');
         jsonDataRange.load("values");
 
+
+
         return ctx.sync()
           .then(function(response) {
             if($scope.reportDetails.worksheet != activeWorksheet.name){
@@ -213,6 +215,10 @@ app.controller('setupCtrl', [
             $scope.reportDetails.hiddenRows.push(JSON.parse("{"+data));
           });
 
+          var unselectedFound = _.find($scope.reportDetails.hiddenRows, function(o) { return o.selected == false; });
+          if(unselectedFound) $scope.reportDetails.selectAll = false;
+          else $scope.reportDetails.selectAll = true;
+
           if($scope.reportDetails.hiddenRows && $scope.reportDetails.hiddenRows.length > 0){
             $scope.reportDetails.msg = "";
           }
@@ -254,6 +260,10 @@ app.controller('setupCtrl', [
     }
 
     $scope.toggleRow = function (label) {
+      var unselectedFound = _.find($scope.reportDetails.hiddenRows, function(o) { return o.selected == false; });
+      if(unselectedFound) $scope.reportDetails.selectAll = false;
+      else $scope.reportDetails.selectAll = true;
+
       Excel.run(function (ctx) {
         var regex = new RegExp(label.range,"gi");
         if (regex.test("A6")) {
