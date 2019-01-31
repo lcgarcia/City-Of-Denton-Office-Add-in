@@ -248,16 +248,22 @@ app.controller('setupCtrl', [
     };
 
     $scope.toggleAllRows = function (show) {
+      var selected = $('#selectAll').is(':checked');
       _.forEach($scope.reportDetails.hiddenRows, function (row) {
-        row.selected = !show;
+        row.selected = selected;
         toggleHiddenRow(row);
       });
     }
 
     $scope.toggleRow = function (label) {
-      var unselectedFound = _.find($scope.reportDetails.hiddenRows, function(o) { return o.selected == false; });
-      if(unselectedFound) $scope.reportDetails.selectAll = false;
-      else $scope.reportDetails.selectAll = true;
+      var selections = $('#containerList').find("input");
+      var selectAll = true;
+      var i;
+      for(i=0; i<selections.length; i++){
+        if(!$(selections[i]).is(':checked')) selectAll = false;
+      }
+
+      $scope.reportDetails.selectAll = selectAll;
       toggleHiddenRow(label);
     };
 
@@ -271,7 +277,7 @@ app.controller('setupCtrl', [
         
         var worksheet = ctx.workbook.worksheets.getItem($scope.reportDetails.worksheet);
         var range = worksheet.getRange(label.range);
-        range.rowHidden = label.selected;
+        range.rowHidden = !label.selected;
 
         return ctx.sync()
           .then(function () {}).catch(function (err) {
