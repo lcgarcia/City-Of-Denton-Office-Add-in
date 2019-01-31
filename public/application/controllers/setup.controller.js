@@ -251,23 +251,27 @@ app.controller('setupCtrl', [
       var selected = $('#selectAll').is(':checked');
       _.forEach($scope.reportDetails.hiddenRows, function (row) {
         row.selected = selected;
-        toggleHiddenRow(row);
+        toggleHiddenRow(row, selected);
       });
     }
 
     $scope.toggleRow = function (label) {
       var selections = $('#containerList').find("input");
+      var labels = $('#containerList').find("label");
       var selectAll = true;
-      var i;
+      var i, labelText, row, selected;
       for(i=0; i<selections.length; i++){
+        labelText = labels[i].textContent.trim();
+        row = labelText.split(']');
         if(!$(selections[i]).is(':checked')) selectAll = false;
+        if(label.rows == (row[0]+"]") )selected = $(selections[i]).is(':checked');
       }
 
       $scope.reportDetails.selectAll = selectAll;
-      toggleHiddenRow(label);
+      toggleHiddenRow(label, selected);
     };
 
-    function toggleHiddenRow(label){
+    function toggleHiddenRow(label, selected){
       Excel.run(function (ctx) {
         // var regex = new RegExp(label.range,"gi");
         // if (regex.test("A6")) {
@@ -277,7 +281,7 @@ app.controller('setupCtrl', [
         
         var worksheet = ctx.workbook.worksheets.getItem($scope.reportDetails.worksheet);
         var range = worksheet.getRange(label.range);
-        range.rowHidden = !label.selected;
+        range.rowHidden = !selected;
 
         return ctx.sync()
           .then(function () {}).catch(function (err) {
