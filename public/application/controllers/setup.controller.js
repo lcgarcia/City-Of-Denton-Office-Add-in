@@ -165,8 +165,6 @@ app.controller('setupCtrl', [
         activeWorksheet.load('name');
         jsonDataRange.load("values");
 
-
-
         return ctx.sync()
           .then(function(response) {
             if($scope.reportDetails.worksheet != activeWorksheet.name){
@@ -174,7 +172,6 @@ app.controller('setupCtrl', [
             }
           }).catch(function (err) {
           });
-
       });
     }
 
@@ -189,6 +186,7 @@ app.controller('setupCtrl', [
         if($scope.reportDetails.hiddenRows && $scope.reportDetails.hiddenRows.length > 0){
           jsonDataRange.values = [[JSON.stringify($scope.reportDetails.hiddenRows)]];
         }
+        activeWorksheet.getRange("A1:A1").select();
         
         return ctx.sync()
           .then(function () {}).catch(function (err) {
@@ -222,13 +220,10 @@ app.controller('setupCtrl', [
           if($scope.reportDetails.hiddenRows && $scope.reportDetails.hiddenRows.length > 0){
             $scope.reportDetails.msg = "";
           }
-          else{
-            $scope.reportDetails.msg = "No Data Returned";
-          }
+          else $scope.reportDetails.msg = "No Data Returned";
         }
-        else{
-          $scope.reportDetails.msg = "No Data Returned";
-        }
+        else $scope.reportDetails.msg = "No Data Returned";
+        
       });
     }
 
@@ -255,7 +250,7 @@ app.controller('setupCtrl', [
     $scope.toggleAllRows = function (show) {
       _.forEach($scope.reportDetails.hiddenRows, function (row) {
         row.selected = show;
-        $scope.toggleRow(row);
+        toggleHiddenRow(row);
       });
     }
 
@@ -263,7 +258,10 @@ app.controller('setupCtrl', [
       var unselectedFound = _.find($scope.reportDetails.hiddenRows, function(o) { return o.selected == false; });
       if(unselectedFound) $scope.reportDetails.selectAll = false;
       else $scope.reportDetails.selectAll = true;
+      toggleHiddenRow(label);
+    };
 
+    function toggleHiddenRow(label){
       Excel.run(function (ctx) {
         var regex = new RegExp(label.range,"gi");
         if (regex.test("A6")) {
@@ -284,7 +282,7 @@ app.controller('setupCtrl', [
             */
           });
       });
-    };
+    }
     
 
     function getDateTime(){
