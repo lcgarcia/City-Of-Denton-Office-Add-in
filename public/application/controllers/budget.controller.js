@@ -452,18 +452,8 @@ app.controller('budgetCtrl', [
      * @param parentSelected [selected parent]
      */
     $scope.selectedParent = function(parent) {
-      if(parent.selected){
-        $scope.selectedKeys.push(parent);
-        _.forEach(parent.childList, function(child) {
-          setChildSelected(child, true);
-        });
-      }
-      else{
-        _.remove($scope.selectedKeys, { id: parent.id });
-        _.forEach(parent.childList, function(child) {
-          setChildSelected(child, false);
-        });
-      }
+      if(parent.selected) $scope.selectedKeys.push(parent);
+      else _.remove($scope.selectedKeys, { id: parent.id });
       setParentSelected(parent, parent.selected);
     }
 
@@ -647,17 +637,28 @@ app.controller('budgetCtrl', [
       var keys = [], subledgers = [];
 
       _.forEach($scope.selectedKeys, function (val) {
-        if (val.id == 'ferc') {
-          subledgers = _.map(val.childList, function(val){ return val.id });
-        } else if ('subledger' in val) {
-          subledgers.push(val.id);
-        } else {
-          keys.push({
-            id: val.id,
-            buLevel: _.isArray(val.childList) ? 'comp' : 'busu'
+        if ('childList' in val) {
+          subledgers = _.map(val.childList, function(val){
+            var sub = "        ";
+            if(val.id && val.id.length > 0){
+              sub = ' '.repeat(8 - val.id.length) + val.id;
+            }
+            return sub;
           });
-          //keys.push(val.id);
-        }
+        } 
+        else if ('subledger' in val) {
+          subledgers.push(val.id);
+        } 
+        
+        keys.push({
+          id: val.id,
+          buLevel: _.isArray(val.childList) ? 'comp' : 'busu',
+          adHoc: false,
+          companyKey: [],
+          businessUnitKey: []
+        });
+        //keys.push(val.id);
+        
       });
       var ledgerText = 'in ' + JSON.stringify(subledgers).replace(/"/gi,"'").replace(/\[/gi,"(").replace(/\]/gi,")");
       return { keys: keys, subledgers: ledgerText };
@@ -669,7 +670,10 @@ app.controller('budgetCtrl', [
       var keys = _.map($scope.selectedKeys, function (key) { 
         return {
           id: key.id,
-          buLevel: _.isArray(key.childList) ? 'comp' : 'busu'
+          buLevel: _.isArray(key.childList) ? 'comp' : 'busu',
+          adHoc: false,
+          companyKey: [],
+          businessUnitKey: []
         }
       });
       var accounts = $scope.selectedValues.reportType;
