@@ -654,8 +654,8 @@ app.controller('budgetCtrl', [
           id: val.id,
           buLevel: _.isArray(val.childList) ? 'comp' : 'busu',
           adHoc: false,
-          companyKey: [],
-          businessUnitKey: []
+          companyKey: "",
+          businessUnitKey: ""
         });
         //keys.push(val.id);
         
@@ -672,8 +672,8 @@ app.controller('budgetCtrl', [
           id: key.id,
           buLevel: _.isArray(key.childList) ? 'comp' : 'busu',
           adHoc: false,
-          companyKey: [],
-          businessUnitKey: []
+          companyKey: "",
+          businessUnitKey: ""
         }
       });
       var accounts = $scope.selectedValues.reportType;
@@ -688,6 +688,29 @@ app.controller('budgetCtrl', [
           keys = keysAndSubledgers.keys;
           subledgers = keysAndSubledgers.subledgers;
         }
+
+        if($scope.selectedValues.totalSheet == "Yes"){
+          var adHoc = {
+            id: 'Selected Total',
+            buLevel: 'adHoc',
+            adHoc: true
+          };
+          var companyKey = "";
+          var businessUnitKey = "";
+          _.forEach(keys, function (key) {
+            if(key.buLevel == 'comp') companyKey += ("'"+key.id + "',");
+            else if(key.buLevel == 'busu'){
+              businessUnitKey += "'"+(' '.repeat(12 - key.id.length) + key.id) + "',";
+            }
+          });
+
+          if(companyKey.length > 0) companyKey = companyKey.slice(0, -1) + " ";
+          if(businessUnitKey.length > 0) businessUnitKey = businessUnitKey.slice(0, -1) + " ";
+          adHoc.companyKey = companyKey;
+          adHoc.businessUnitKey = businessUnitKey;
+          keys.push(adHoc);
+        } 
+        //$scope.debugMsg = JSON.stringify(keys);
         
         budgetService.getSheetData($scope.selectedValues.report.type, keys, $scope.selectedValues.month.name, 'Comp', $scope.selectedValues.dates.jdeYear, accounts, { subledgers: subledgers })
         .then(function (data) {
