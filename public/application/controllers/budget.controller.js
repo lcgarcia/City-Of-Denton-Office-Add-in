@@ -52,7 +52,7 @@ app.controller('budgetCtrl', [
     function buildPage(){
       $scope.selectedValues.dates = {};
       $scope.selectedValues.reportType ="Income Statement";
-      $scope.selectedValues.totalSheet = false;
+      $scope.selectedValues.totalSheet = "No";
       $scope.selectedValues.month = "";
       $scope.selectedValues.year = "";
 
@@ -145,7 +145,12 @@ app.controller('budgetCtrl', [
      * [selectedTotalSheet ]
      */
     $scope.selectedTotalSheet = function () {
-      //$scope.selectedValues.totalSheet = totalSelected;
+      if($scope.selectedValues.totalSheet == "No"){
+        $scope.selectedValues.totalSheet = "Yes";
+      }
+      else{
+        $scope.selectedValues.totalSheet = "No";
+      }
     }
 
 
@@ -447,8 +452,18 @@ app.controller('budgetCtrl', [
      * @param parentSelected [selected parent]
      */
     $scope.selectedParent = function(parent) {
-      if(parent.selected) $scope.selectedKeys.push(parent);
-      else _.remove($scope.selectedKeys, { id: parent.id });
+      if(parent.selected){
+        $scope.selectedKeys.push(parent);
+        _.forEach(parent.childList, function(child) {
+          setChildSelected(child, true);
+        });
+      }
+      else{
+        _.remove($scope.selectedKeys, { id: parent.id });
+        _.forEach(parent.childList, function(child) {
+          setChildSelected(child, false);
+        });
+      }
       setParentSelected(parent, parent.selected);
     }
 
@@ -555,7 +570,6 @@ app.controller('budgetCtrl', [
       else{
         $('#parentLabel-'+parent.id).css("font-weight", "normal");
       }
-      //$scope.debugMsg = JSON.stringify($scope.selectedKeys);
     }
 
     function setChildSelected(child, selected){
@@ -633,24 +647,17 @@ app.controller('budgetCtrl', [
       var keys = [], subledgers = [];
 
       _.forEach($scope.selectedKeys, function (val) {
-        if ('childList' in val) {
-          subledgers = _.map(val.childList, function(val){ 
-            return val.id;//`${' '.repeat(8 - val.id.length) + val.id}`
-          });
-        } 
-        else if ('subledger' in val) {
+        if (val.id == 'ferc') {
+          subledgers = _.map(val.childList, function(val){ return val.id });
+        } else if ('subledger' in val) {
           subledgers.push(val.id);
-        } 
-        
-        keys.push({
-          id: val.id,
-          buLevel: _.isArray(val.childList) ? 'comp' : 'busu',
-          adHoc: false,
-          companyKey: [],
-          businessUnitKey: []
-        });
-        //keys.push(val.id);
-        
+        } else {
+          keys.push({
+            id: val.id,
+            buLevel: _.isArray(val.childList) ? 'comp' : 'busu'
+          });
+          //keys.push(val.id);
+        }
       });
       var ledgerText = 'in ' + JSON.stringify(subledgers).replace(/"/gi,"'").replace(/\[/gi,"(").replace(/\]/gi,")");
       return { keys: keys, subledgers: ledgerText };
@@ -659,15 +666,10 @@ app.controller('budgetCtrl', [
 
     $scope.getSheetData = function () {
       $scope.modalData.message = 'Loading...';
-      var createTotalSheet = true;
-      
       var keys = _.map($scope.selectedKeys, function (key) { 
         return {
           id: key.id,
-          buLevel: _.isArray(key.childList) ? 'comp' : 'busu',
-          adHoc: false,
-          companyKey: [],
-          businessUnitKey: []
+          buLevel: _.isArray(key.childList) ? 'comp' : 'busu'
         }
       });
       var accounts = $scope.selectedValues.reportType;
@@ -681,28 +683,7 @@ app.controller('budgetCtrl', [
           var keysAndSubledgers = $scope.getKeysAndSubledgers();
           keys = keysAndSubledgers.keys;
           subledgers = keysAndSubledgers.subledgers;
-          //$scope.debugMsg = JSON.stringify(keysAndSubledgers);
         }
-
-        if($scope.selectedValues.totalSheet){
-          var adHoc = {
-            id: 'Selected Total',
-            buLevel: 'adHoc',
-            adHoc: true
-          };
-          var companyKey = "";
-          var businessUnitKey = "";
-          _.forEach(keys, function (key) {
-            if(key.buLevel == 'comp') companyKey += `'${key.id}',`
-            else if(key.buLevel == 'busu') businessUnitKey += key.id + ",";
-            //`'${' '.repeat(12 - key.id.length) + key.id}',`
-          });
-          adHoc.companyKey = companyKey.slice(0, -1) + ' ';
-          adHoc.businessUnitKey = businessUnitKey.slice(0, -1) + ' ';
-          keys.push(adHoc);
-
-          //$scope.debugMsg = JSON.stringify(adHoc);
-        }        
         
         budgetService.getSheetData($scope.selectedValues.report.type, keys, $scope.selectedValues.month.name, 'Comp', $scope.selectedValues.dates.jdeYear, accounts, { subledgers: subledgers })
         .then(function (data) {

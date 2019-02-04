@@ -29,34 +29,13 @@
                            </li>
                         </ul>
                      </section>
-
-                     <!--DOESNT WORK IN IE -->
-
-                     <!-- <input id="toggle-two" ng-click="selectedTotalSheet()" type="checkbox" data-toggle="toggle" data-on="Yes" data-off="No" data-width="100%"> -->
-<!--                      
+                     <!-- 
                      <span class="divider"></span>
                      <label>Create Total Sheet:</label>
-                     <table width="100%">
-
-                        
-                        <tr>
-                           <td>
-                           <div class="switch-field">
-                              <input type="radio" id="switch_left" name="switch_2" value="yes" ng-click="selectedTotalSheet(true)"/>
-                              <label for="switch_left">Yes</label>
-                              <input style="display: none;" type="radio" id="switch_left_2" name="switch_2_2" value="yes"/>
-                              <label style="display: none;" for="switch_left_2">Yes</label>
-                           </div>
-                           </td>
-                           <td>
-                           <div class="switch-field">
-                              <input type="radio" id="switch_right" name="switch_2" value="no" ng-click="selectedTotalSheet(false)" checked/>
-                              <label for="switch_right">No</label>
-                           </div>
-                           </td>
-                        </tr>
-                     </table>
--->
+                     <section>
+                        <input id="toggle-two" ng-click="selectedTotalSheet()" type="checkbox" data-toggle="toggle" data-on="Yes" data-off="No" data-width="100%">
+                     </section>
+                     -->
                   </div>
                </div>
                <!-- Panel 1.1 End-->
@@ -226,54 +205,17 @@
                         </ul>
                         <br>
                      </div>
-
-<!--                      
-                     <div class="modal-header" style="padding: 0;">
-                        <table width="100%;">
-                           <tbody>
-                           <tr>
-                              <td width="20px">
-                                 <div class="panel-addon">
-                                    <input type="checkbox" 
-                                    style="margin: 0; margin-left: 4px; width: 16px; cursor: pointer;" 
-                                    ng-model="selectedValues.totalSheet"
-                                    ng-change="selectedTotalSheet()"
-                                    >
-                                 </div>
-                              </td>
-                              <td>
-                                 <p class="panel-label">
-                                    Create Total Sheet
-                                 </p>
-                              </td>
-                           </tr>
-                           </tbody>
-                        </table>
-                     </div> 
--->
-
+                     
                      <section style="padding-top: 10px; float: right">
-                        <table width="100%;">
-                           <tbody>
-                           <tr>
-                              <td><td>
-                              <td style="padding-right: 5px;">
-                                 <!-- Trigger the modal with a button -->
-                                 <button id="clearButton" type="button" class="btn btn-primary" style="width: 90px; float: right;" ng-click="clearAll()">
-                                    Clear All
-                                 </button>
-                              </td>
-                              
-                              <td>
-                                 <button type="button" class="btn btn-primary" style="width: 90px; float: right;" data-toggle="modal" data-target="#bookModal" ng-click="editBook('Save')">
-                                    Save New
-                                 </button>
-                              </td>
-                           </tr>
-                           </tbody>
-                        </table>
-                        
+                        <!-- Trigger the modal with a button -->
+                        <button id="clearButton" type="button" class="btn btn-primary" style="width: 90px;" ng-click="clearAll()">
+                           Clear All
+                        </button>
+                        <button type="button" class="btn btn-primary" style="width: 90px;" data-toggle="modal" data-target="#bookModal" ng-click="editBook('Save')">
+                           Save New
+                        </button>
                      </section>
+
                   </div>
                </div>
                <!-- Panel 1.3 End-->
@@ -367,6 +309,6 @@
 <!-- Option Selections View -->
 <!-- *************** MODALS END *************** -->
 
-<!-- <p>{{ debugMsg }}</p> -->
+<p>{{ debugMsg }}</p>
 
 <!-- *************** BUDGET REPORT END *************** -->
