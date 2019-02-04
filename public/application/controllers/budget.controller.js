@@ -144,8 +144,8 @@ app.controller('budgetCtrl', [
     /**
      * [selectedTotalSheet ]
      */
-    $scope.selectedTotalSheet = function (totalSelected) {
-      $scope.selectedValues.totalSheet = totalSelected;
+    $scope.selectedTotalSheet = function () {
+      //$scope.selectedValues.totalSheet = totalSelected;
     }
 
 
