@@ -635,7 +635,7 @@ app.controller('budgetCtrl', [
       _.forEach($scope.selectedKeys, function (val) {
         if ('childList' in val) {
           subledgers = _.map(val.childList, function(val){ 
-            return `${' '.repeat(8 - val.id.length) + val.id}`
+            return val.id;//`${' '.repeat(8 - val.id.length) + val.id}`
           });
         } 
         else if ('subledger' in val) {
@@ -694,7 +694,8 @@ app.controller('budgetCtrl', [
           var businessUnitKey = "";
           _.forEach(keys, function (key) {
             if(key.buLevel == 'comp') companyKey += `'${key.id}',`
-            else if(key.buLevel == 'busu') businessUnitKey += `'${' '.repeat(12 - key.id.length) + key.id}',`
+            else if(key.buLevel == 'busu') businessUnitKey += key.id + ",";
+            //`'${' '.repeat(12 - key.id.length) + key.id}',`
           });
           adHoc.companyKey = companyKey.slice(0, -1) + ' ';
           adHoc.businessUnitKey = businessUnitKey.slice(0, -1) + ' ';
