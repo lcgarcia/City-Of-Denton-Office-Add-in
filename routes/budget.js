@@ -35,7 +35,7 @@ router.get('/business/unit', (req, res) => {
       const queryDB = (cb) => {
         async.waterfall([
           (next) => {
-            knexQuery.query(generator.getBusinessUnitData(), dataFormater.formatBusinessUnit)
+            knexQuery.query(generator.getBusinessUnitData('f'), dataFormater.formatBusinessUnit)
             .then(data => next(null, data))
             .catch(err => next(err));
           }, 
@@ -76,12 +76,12 @@ router.post('/sheet/data', (req, res) => {
     let querySets = _.map(keys, key => {
       if (type === 'f') {
         return { 
-          sql: generator.createSelectStatement(false, type, year, month, accounts, { buLevel: key.buLevel, key: key.id, subledgers: subledgers }),
+          sql: generator.createSelectStatement(key.adHoc, type, year, month, accounts, { buLevel: key.buLevel, key: key.id, companyKey: key.companyKey, businessUnitKey: key.businessUnitKey, subledgers: subledgers }),
           id: key.id
         }
       } else {
         return {
-          sql: generator.createSelectStatement(false, type, year, month, accounts, { buLevel: key.buLevel, key: key.id }),
+          sql: generator.createSelectStatement(key.adHoc, type, year, month, accounts, { buLevel: key.buLevel, key: key.id, companyKey: key.companyKey, businessUnitKey: key.businessUnitKey }),
           id: key.id
         }
       }

@@ -424,6 +424,11 @@ app.service("budgetService", [
         cd.clear();
         cd.format.columnWidth = 1;
 
+        //USED FOR TESTING QUERY 
+        // var sqlData = worksheet.getRange("T1:T1");
+        // sqlData.load("values");
+        // sqlData.values = [[data.sql]];
+
         //Hidden JSON Data
         var jsonDataRange = worksheet.getRange('A1:E2');
         var jsonDataValues = [['', '', '', '', ''],['', '', '', '', '']];

@@ -50,6 +50,17 @@
   border: 1px solid #ddd;
 }
 
+.panel-label{
+  width: 100%;
+  padding: 8px 8px;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
+  color: #555;
+  background-color: #fcfcfc;
+  border: 1px solid #ddd;
+}
+
 /* .button */
 .user-logout {
     display: inline-block;

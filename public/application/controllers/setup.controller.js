@@ -190,7 +190,7 @@ app.controller('setupCtrl', [
         
         return ctx.sync()
           .then(function () {}).catch(function (err) {
-            $scope.reportDetails.msg = err;
+            //$scope.reportDetails.msg = err;
           });
       });
     };
