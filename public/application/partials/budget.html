@@ -29,12 +29,29 @@
                            </li>
                         </ul>
                      </section>
+
                      
                      <span class="divider"></span>
                      <label>Create Total Sheet:</label>
-                     <section>
-                        <input id="toggle-two" ng-click="selectedTotalSheet()" type="checkbox" data-toggle="toggle" data-on="Yes" data-off="No" data-width="100%">
-                     </section>
+                     <table width="100%">
+                        <!-- <input id="toggle-two" ng-click="selectedTotalSheet()" type="checkbox" data-toggle="toggle" data-on="Yes" data-off="No" data-width="100%"> -->
+                        <tr>
+                           <td>
+                           <div class="switch-field">
+                              <input type="radio" id="switch_left" name="switch_2" value="yes" ng-click="selectedTotalSheet(true)"/>
+                              <label for="switch_left">Yes</label>
+                              <input style="display: none;" type="radio" id="switch_left_2" name="switch_2_2" value="yes"/>
+                              <label style="display: none;" for="switch_left_2">Yes</label>
+                           </div>
+                           </td>
+                           <td>
+                           <div class="switch-field">
+                              <input type="radio" id="switch_right" name="switch_2" value="no" ng-click="selectedTotalSheet(false)" checked/>
+                              <label for="switch_right">No</label>
+                           </div>
+                           </td>
+                        </tr>
+                     </table>
                      
                   </div>
                </div>

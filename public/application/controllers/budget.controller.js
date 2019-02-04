@@ -52,7 +52,7 @@ app.controller('budgetCtrl', [
     function buildPage(){
       $scope.selectedValues.dates = {};
       $scope.selectedValues.reportType ="Income Statement";
-      $scope.selectedValues.totalSheet = "No";
+      $scope.selectedValues.totalSheet = false;
       $scope.selectedValues.month = "";
       $scope.selectedValues.year = "";
 
@@ -144,13 +144,10 @@ app.controller('budgetCtrl', [
     /**
      * [selectedTotalSheet ]
      */
-    $scope.selectedTotalSheet = function () {
-      if($scope.selectedValues.totalSheet == "No"){
-        $scope.selectedValues.totalSheet = "Yes";
-      }
-      else{
-        $scope.selectedValues.totalSheet = "No";
-      }
+    $scope.selectedTotalSheet = function (totalSelected) {
+      $scope.selectedValues.totalSheet = totalSelected;
+
+      $scope.debugMsg = $scope.selectedValues.totalSheet;
     }
 
 
@@ -689,7 +686,7 @@ app.controller('budgetCtrl', [
           //$scope.debugMsg = JSON.stringify(keysAndSubledgers);
         }
 
-        if($scope.selectedValues.totalSheet == "Yes"){
+        if($scope.selectedValues.totalSheet){
           var adHoc = {
             id: 'Selected Total',
             buLevel: 'adHoc',
