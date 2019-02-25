@@ -667,6 +667,12 @@ app.controller('budgetCtrl', [
 
     $scope.getSheetData = function () {
       $scope.modalData.message = 'Loading...';
+
+      //2-25-19: REMOVING FERC SELECTIONS
+      $scope.selectedKeys = _.remove($scope.selectedKeys, function(val) {
+        return 'ferc' in val == false;
+      });
+
       var keys = _.map($scope.selectedKeys, function (key) { 
         return {
           id: key.id,
