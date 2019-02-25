@@ -452,8 +452,13 @@ app.controller('budgetCtrl', [
      * @param parentSelected [selected parent]
      */
     $scope.selectedParent = function(parent) {
-      if(parent.selected) $scope.selectedKeys.push(parent);
-      else _.remove($scope.selectedKeys, { id: parent.id });
+      if('ferc' in parent){
+        //DO NOTHING
+      }
+      else{
+        if(parent.selected) $scope.selectedKeys.push(parent);
+        else _.remove($scope.selectedKeys, { id: parent.id });
+      }
       setParentSelected(parent, parent.selected);
     }
 
@@ -462,8 +467,13 @@ app.controller('budgetCtrl', [
      * @param parent [parent of selected child]
      */
     $scope.selectedChild = function(parent, child) {
-      if(child.selected) $scope.selectedKeys.push(child);
-      else _.remove($scope.selectedKeys, { id: child.id });
+      if('ferc' in child){
+        //DO NOTHING
+      }
+      else{
+        if(child.selected) $scope.selectedKeys.push(child);
+        else _.remove($scope.selectedKeys, { id: child.id });
+      }
       setChildSelected(child, child.selected);
     }
 
