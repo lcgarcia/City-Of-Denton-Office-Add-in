@@ -858,14 +858,18 @@ app.service("jobcostService", [
         var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
         var headerOffset = 6;
         var length = headerOffset + data.sheetData.length;
-        var range = 'D' + (length+1) + ':K' + (length+1);
-        var grandTotalData = [['Grand Total', '', '', '=SUM(G6:G' + (length-1) + ')/2', '=SUM(H6:H' + (length-1) + ')/2', '=SUM(I6:I' + (length-1) + ')/2', '=SUM(J6:J' + (length-1) + ')/2', '=SUM(K6:K' + (length-1) + ')/2']];
+        var grandTotalData = [['=SUM(G7:G' + (length) + ')/2', '=SUM(H7:H' + (length) + ')/2', '=SUM(I7:I' + (length) + ')/2', '=SUM(J7:J' + (length) + ')/2', '=SUM(K7:K' + (length) + ')/2']];
 
-        var range = worksheet.getRange(range);
+        var grandRange = worksheet.getRange('D' + (length+1));
+        grandRange.load('values');
+        grandRange.values = "Grand Total";
+        grandRange.format.font.bold = true;
+        grandRange.format.font.color = '#00037B';
+
+        var range = worksheet.getRange('G' + (length+1) + ':K' + (length+1));
         range.load('values');
         range.values = grandTotalData;
-
-        range.numberFormat = [_.fill(Array(8), formatPricingTotal)];
+        range.numberFormat = [_.fill(Array(5), formatPricingTotal)];
         range.format.font.bold = true;
         range.format.font.color = '#00037B';
 
