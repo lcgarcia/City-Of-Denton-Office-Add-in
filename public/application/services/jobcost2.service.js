@@ -2,7 +2,6 @@ app.service("jobcostService2", [
   '$http',
   '$timeout',
   function($http, $timeout){
-    //var timeoutMs = $timeout( function(){}, 20000 );
     var formatPricing = '_(* #,##0.00_);_(* (#,##0.00);_(* #,##0.00_);_(@_)';
     var formatPricingRed = '_(* #,##0.00_);[Red]_(* (#,##0.00);_(* #,##0.00_);_(@_)';
     var formatPricingTotal = '_($* #,##0.00_);[Red]_($* (#,##0.00);_($* #,##0.00_);_(@_)';
@@ -44,7 +43,6 @@ app.service("jobcostService2", [
               }
               next(null, data);
             },
-            //deleteWorkSheets,
             loadWorkSheets,
             findWorkSheet,
             initalizeWorkSheet,
@@ -52,14 +50,11 @@ app.service("jobcostService2", [
             setHeader,
             createTable,
             addTableHeader,
-            //insertDataToWorkSheet,
             addTableRows,
             addFilter,
             addSubTotal,
             addGrandTotal,
             addFormatting
-            //removeOldSheet,
-            //insertData
           ], cb);
         }
       } catch (e) {
@@ -71,61 +66,6 @@ app.service("jobcostService2", [
         cb(e);
       }
     };
-
-    var removeOldSheet = function (data, next) {
-      var deletePlaceholder = function (cb) {
-        Excel.run(function (ctx) {
-          var worksheets = ctx.workbook.worksheets.load('name');
-          var worksheet = worksheets.getItem('report-' + data.dummySheetName);
-          worksheet.delete();
-          
-          return ctx.sync()
-            .then(function(response) {
-              cb(null, data);  
-            }).catch(function (err) {
-              cb(err);
-            });
-        });
-      }
-
-      async.retry({times: 2, interval: 300}, deletePlaceholder, function(err, data) {
-        next(null, data);
-      });
-    }
-
-    var deleteWorkSheets = function (data, next) {
-      Excel.run(function (ctx) {
-        var sheets = ctx.workbook.worksheets;
-        var worksheet = sheets.add();
-        var date = new Date();
-        data.dummySheetName = date.getTime();
-        worksheet.name = 'report-' + data.dummySheetName;
-        worksheet.load("name, position");
-        worksheet.activate();
-        sheets.load("items");
-        var count = ctx.workbook.worksheets.getCount();
-        return ctx.sync()
-          .then(function(response) {
-            var sheets = ctx.workbook.worksheets;
-            sheets.load("items");
-            var ids = _.map(sheets.items, function(sheet) { return sheet.id });
-            _.forEach(ids, function (id, key) {
-              var ws = ctx.workbook.worksheets.getItem(id);
-              if (key < ids.length - 1) 
-                ws.delete();
-            });
-           
-            return ctx.sync()
-            .then(function (response) {
-              next(null, data);  
-            }).catch(function (err) {
-              next(null, data);
-            });
-          }).catch(function (err) {
-            next(err);
-          });
-      });
-    }
 
     var loadWorkSheets = function (data, next) {
       Excel.run(function (ctx) {
@@ -241,7 +181,7 @@ app.service("jobcostService2", [
         //USED FOR TESTING 
         // var sqlData = worksheet.getRange('N1');
         // sqlData.load("values");
-        // sqlData.values = JSON.stringify(data.subTotalRows);
+        // sqlData.values = JSON.stringify(data.sql);
 
         var range = worksheet.getRange('A1:L5');
         range.load('values');
@@ -277,6 +217,9 @@ app.service("jobcostService2", [
 
         var leftColumns = worksheet.getRange('A:C');
         leftColumns.format.horizontalAlignment = 'Center';
+
+        var rightColumns = worksheet.getRange('E:G');
+        rightColumns.format.horizontalAlignment = 'Center';
 
         var headerOffset = 6;
         var sheetLength = data.sheetData.length + headerOffset - 1;
@@ -369,9 +312,6 @@ app.service("jobcostService2", [
       var chunk = data.sheetData.length;
       var split = [data.sheetData];
       var water = [];
-
-      
-
       
       if (data.sheetData.length > 5000) {
         chunk = 200;
@@ -379,18 +319,10 @@ app.service("jobcostService2", [
       }
 
       var j = 0;
-
       for(var i = 0; i < split.length; i++) {
         water.push(function (cb) {
           Excel.run(function(ctx) {
             var sheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
-
-            //TODO: Failing here
-            // var sqlData = sheet.getRange("M1");
-            // sqlData.load("values");
-            // sqlData.values = JSON.stringify(split);
-            //sqlData.values = 'A' + (chunk * (j - 1) + split[j-1].length + data.headerOffset + 1) + ':L' + (chunk*j + split[j].length + data.headerOffset);
-
             
             if (split.length > 1 && j === (split.length - 1)) {
               var range = 'A' + (chunk * (j - 1) + split[j-1].length + data.headerOffset + 1) + ':L' + (chunk*j + split[j].length + data.headerOffset);
@@ -431,57 +363,13 @@ app.service("jobcostService2", [
 
       async.waterfall(water, function (err, res) {
         next(null, data);
-      })
-
-      // I'm keeping this here for reference. This method below is much faster and the only reason we do it the way we do above is because the online Excel sucks.
-      /*
-      Excel.run(function (ctx) {
-        var splitLen = 40;
-        var chunk = data.sheetData.length;
-        var split = [data.sheetData];
-
-        if (data.sheetData.length > 5000) {
-          chunk = 200;
-          split = _.chunk(data.sheetData, chunk);
-        }
-
-        var sheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
-        var table = ctx.workbook.tables.getItem(data.tableName);
-
-        data.scope.debugMsg = '';
-        for(var i = 0; i < split.length; i++) {
-          if (split.length > 1 && i === (split.length - 1)) {
-            var range = 'A' + (chunk * (i - 1) + split[i-1].length + data.headerOffset + 1) + ':K' + (chunk*i + split[i].length + data.headerOffset);
-            sheet.getRange(range).values = split[i];
-            //table.rows.add((chunk * (i - 1) + split[i-1].length), split[i]);
-          } else if (split[i].length && split[i].length > 0) {
-            var rangeAddress = 'A' + (chunk*i + data.headerOffset + 1) + ':K' + (chunk*i + split[i].length + data.headerOffset);
-            var range = sheet.getRange(rangeAddress);
-            data.scope.$apply(function () {
-              data.scope.debugMsg += rangeAddress + '';
-            });
-            range.values = split[i];
-            //sheet.getRange(range).values = split[i];
-            //table.rows.add((chunk * i), split[i]);
-          }
-        }
-
-        //table.getDataBodyRange().values = data.sheetData;
-
-        return ctx.sync()
-          .then(function (response) {
-            next(null, data);  
-          }).catch(function (err) {
-            next(null, data);
-          });
       });
-      */
     }
 
     var addSubTotal = function (data, next) {
       Excel.run(function (ctx) {
         var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
-        
+
         _.forEach(data.subTotalRows, function (val) {
           var numberRange = worksheet.getRange('E'+val+':L'+val);
           var range = worksheet.getRange('A'+val+':Z'+val);
@@ -595,36 +483,6 @@ app.service("jobcostService2", [
       }
     }
 
-    /**
-     * Insert data into spreadsheet
-     * @depricated             This function is depricated
-     * 
-     * @param  {object}   data Data object from the getSheetData call
-     * @param  {Function} cb   Callback function
-     * @return {(err, data)}   Data and error object form async call
-     */
-    this.insertSpreadSheetData = function (data, cb) {
-      // Callback with (err, result)
-      try {
-        async.waterfall([
-          function (next) {
-            next(null, data);
-          },
-          deleteWorkSheets,
-          loadWorkSheets,
-          findWorkSheet,
-          initalizeWorkSheet,
-          hideRows,
-          insertDataToWorkSheet,
-          setSubTotalFormat,
-          addGrandTotal,
-          setHeader,
-        ], cb);
-      } catch (e) {
-        cb(e);
-      }
-    };
-
     var hideRows = function (data, next) {
       Excel.run(function (ctx) {
         var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
@@ -642,41 +500,6 @@ app.service("jobcostService2", [
             next(null, data);
           }).catch(function (err) {
             next({err: err, stage: 'hideRows'});
-          });
-      });
-    };
-
-    var insertDataToWorkSheet = function (data, next) {
-      Excel.run(function (ctx) {
-        var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
-        var range = 'O';
-        var alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
-        if (data.sheetData.length > 0)
-          var alphabetRangeValue = alphabet[data.sheetData[0].length-1];
-
-        //var fullrange = worksheet.getRange();
-        //fullrange.load('values');
-        //fullrange.clear();
-        _.forEach(data.hiddenRows, function (rowData) {
-          var row = rowData.rows.substring(1, rowData.rows.length-1);
-          var rowRange = worksheet.getRange("A"+row+":Z"+row);
-          rowRange.format.font.bold = true;
-        });
-
-        var headerOffset = 7;
-        var sheetLength = data.sheetData.length + headerOffset - 1;
-        var range = worksheet.getRange('A' + headerOffset + ':' + alphabetRangeValue + sheetLength)
-        range.load('values')
-        range.values = data.sheetData
-        range.format.autofitColumns();
-
-        var numberRange = worksheet.getRange('H' + headerOffset + ':' + alphabetRangeValue + sheetLength)
-        numberRange.numberFormat = _.fill(Array(data.sheetData.length),_.fill(Array(5), formatPricing));
-        return ctx.sync()
-          .then(function (res) {
-            next(null, data);
-          }).catch(function (err) {
-            next({err: err, stage: 'insertHttpDataIntoSpreadSheet', len: sheetLength });
           });
       });
     };

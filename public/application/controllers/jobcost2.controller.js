@@ -317,18 +317,6 @@ app.controller('jobcost2Ctrl', [
               modalService.hideReportLoadingModal();
             });
           }
-          /*
-          jobcostService2.insertSpreadSheetData(data, function(err, response){
-            modalService.hideReportLoadingModal();
-            if (err) {
-              $scope.reportDetails.msg = $scope.dataErrorMsg;
-              $scope.$apply(function () {
-                $scope.reportDetails.msg = $scope.dataErrorMsg;
-              });
-            }
-
-          });
-          */
         } catch (e) {
           console.log(data);
         }       
