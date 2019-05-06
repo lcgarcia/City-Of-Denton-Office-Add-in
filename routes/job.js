@@ -78,20 +78,57 @@ router.post('/sheet/data', (req, res) => {
       options.catField1 = req.body.catField1;
       options.catCode = req.body.catCode;
       options.catCode1 = req.body.catCode1;
+
+      if(reportSelected == 'ka'){
+        const sql = generator.createSelectStatement(req.body.month, req.body.year, options);
+        const queryDB = (cb) => {
+          async.waterfall([
+            (next) => {
+              knexQuery.query("SELECT DISTINCT trim(MCMCU) AS MCMCU, trim(DRDL01) AS DRDL01 FROM prodctl.f0005 A, proddta.f0006 B WHERE A.DRKY = B.MCRP21 (+) and A.DRSY = '00' and A.DRRT = '21' and trim(MCMCU) Is not Null ORDER BY trim(MCMCU) ")
+              .then(managers => next(null, managers))
+              .catch(err => next(err));
+            }, 
+            (managers, next) => {
+              knexQuery.jobSheetDataQuery(sql, req.body.projectList, managers)
+              .then(result => cb(null, result))
+              .catch(err => next(err));
+            }
+          ], (err) => cb(err));
+        };
+
+        async.retry(2, queryDB, (err, result) => {
+          if (err) res.send(err);
+          else res.send(result);
+        });
+      }
+      else{
+        const sql = generator.createSelectStatement(req.body.month, req.body.year, options);
+        const queryDB = (cb) => {
+          knexQuery.jobSheetDataQuery(sql, req.body.projectList, null)
+          .then(result => cb(null, result))
+          .catch(err => cb(err));
+        };
+
+        async.retry(2, queryDB, (err, result) => {
+          if (err) res.send(err);
+          else res.send(result);
+        });
+      }
+    }
+    else{
+      const sql = generator.createSelectStatement(req.body.month, req.body.year, options);
+      const queryDB = (cb) => {
+        knexQuery.jobSheetDataQuery(sql, req.body.projectList, null)
+        .then(result => cb(null, result))
+        .catch(err => cb(err));
+      };
+
+      async.retry(2, queryDB, (err, result) => {
+        if (err) res.send(err);
+        else res.send(result);
+      });
     }
 
-    const sql = generator.createSelectStatement(req.body.month, req.body.year, options);
-
-    const queryDB = (cb) => {
-      knexQuery.jobSheetDataQuery(sql, req.body.projectList)
-      .then(result => cb(null, result))
-      .catch(err => cb(err));
-    };
-
-    async.retry(2, queryDB, (err, result) => {
-      if (err) res.send(err);
-      else res.send(result);
-    });
   });
 });
 

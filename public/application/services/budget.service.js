@@ -452,8 +452,8 @@ app.service("budgetService", [
         var ranges = [
           { fullRange: 'F4:G5', title: 'F4:G4', titleText: [['Prior Year Actuals', '']], subTitle: 'F5:G5',  subText: [['Annual', 'YTD']] },
           { fullRange: 'H4:J5', title: 'H4:J4', titleText: [['Current Annual Budget', '', '']], subTitle: 'H5:J5',  subText: [['Original', 'Modified', 'Avail Balance']] },
-          { fullRange: 'K4:N5', title: 'K4:N4', titleText: [['Current Year to Date', '', '', '']], subTitle: 'K5:N5',  subText: [['Budget', 'Encumberances', '(Rev)/Expanded', 'Total']] },
-          { fullRange: 'O4:R5', title: 'O4:R4', titleText: [['Current Period', '', '', '']], subTitle: 'O5:R5',  subText: [['Budget', 'Encumberances', '(Rev)/Expanded', 'Total']] },
+          { fullRange: 'K4:N5', title: 'K4:N4', titleText: [['Current Year to Date', '', '', '']], subTitle: 'K5:N5',  subText: [['Budget', 'Encumbrances', '(Rev)/Expanded', 'Total']] },
+          { fullRange: 'O4:R5', title: 'O4:R4', titleText: [['Current Period', '', '', '']], subTitle: 'O5:R5',  subText: [['Budget', 'Encumbrances', '(Rev)/Expanded', 'Total']] },
           { fullRange: 'S4:S5', title: 'S4:S4', titleText: [['Proposed']], subTitle: 'S5:S5',  subText: [['Budget']] },
         ];
 

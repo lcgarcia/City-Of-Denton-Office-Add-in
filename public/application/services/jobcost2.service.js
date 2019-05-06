@@ -1,4 +1,4 @@
-app.service("jobcostService", [
+app.service("jobcostService2", [
   '$http',
   '$timeout',
   function($http, $timeout){
@@ -6,172 +6,6 @@ app.service("jobcostService", [
     var formatPricing = '_(* #,##0.00_);_(* (#,##0.00);_(* #,##0.00_);_(@_)';
     var formatPricingRed = '_(* #,##0.00_);[Red]_(* (#,##0.00);_(* #,##0.00_);_(@_)';
     var formatPricingTotal = '_($* #,##0.00_);[Red]_($* (#,##0.00);_($* #,##0.00_);_(@_)';
-
-    var requestRetry = function (method) {
-      return new Promise(function (resolve, reject) {
-        async.retry({ times: 3, interval: 500 }, method, function (err, result) {
-          if (err) reject(err);
-          else resolve(result);
-        });
-      });
-    };
-
-  	this.getReportData = function(type) {
-      var makeRequest = function (cb) {
-        console.log("Fetching Jobcost Data, Type: '" + type + "'");
-        var query = getQueryType(type);
-
-        $http.get("/ks2inc/job/ui/data" + query)
-          .then(
-          function(response) {
-            cb(null, response.data);
-          },
-          function (httpError) {
-            cb(httpError.status + " : " + httpError.data);
-          }
-        );
-      }
-
-      return requestRetry(makeRequest);
-  	};
-
-    this.getCompanies = function(type, key) {
-      var makeRequest = function (cb) {
-        console.log("Fetching Jobcost Companies, Type: '" + type + "'");
-        var query = getQueryType(type);
-
-        $http.get("/ks2inc/job/companies/" + key + query)
-          .then(
-          function(response) {
-            cb(null, response.data);
-          },
-          function (httpError) {
-            cb(httpError.status + " : " + httpError.data);
-          }
-        );
-      }
-
-      return requestRetry(makeRequest);
-    };
-
-    this.getProjects = function(type, departmentKey, companyKey) {
-      var makeRequest = function (cb) {
-        console.log("Fetching Jobcost Projects, Type: '" + type + "'");
-        var query = getQueryType(type);
-        
-        $http.get("/ks2inc/job/project/"+departmentKey+"/"+companyKey+query)
-          .then(
-          function(response) {
-            cb(null, response.data);
-          },
-          function (httpError) {
-            cb(httpError.status + " : " + httpError.data);
-          }
-        );
-      }
-
-      return requestRetry(makeRequest);
-    };
-
-    this.getJobs = function (type, departmentKey, companyKey, projectKey) {
-      console.log("Fetching Jobcost Jobs, Type: '" + type + "'");
-      var query = getQueryType(type);
-      return this.getJobsAPIRequest("/ks2inc/job/"+departmentKey+"/"+companyKey+"/"+projectKey+query);
-    }
-
-    this.getJobWithStatus = function (type, departmentKey, companyKey, projectKey, jobStatusKey) {
-      console.log("Fetching Jobcost Jobs, Type: '" + type + "'");
-      var query = getQueryType(type);
-      query += "&jobstatus=" + jobStatusKey;
-      return this.getJobsAPIRequest("/ks2inc/job/"+departmentKey+"/"+companyKey+"/"+projectKey+query);
-    };
-
-    this.getJobsAPIRequest = function (url) {
-      var makeRequest = function (cb) {
-        $http.get(url)
-          .then(
-          function(response) {
-            cb(null, response.data);
-          },
-          function (httpError) {
-            cb(httpError.status + " : " +httpError.data);
-          }
-        );
-      }
-
-      return requestRetry(makeRequest);
-    };
-
-    this.getCatCodeDescription = function(type, departmentKey, companyKey, projectKey, jobStatusKey, jobKey, catCodeKey) {
-      var makeRequest = function (cb) {
-        console.log("Fetching Jobcost Jobs, Type: '" + type + "'");
-        var query = getQueryType(type);
-        
-        $http.get("/ks2inc/job/code/detail/"+departmentKey+"/"+companyKey+"/"+projectKey+"/"+jobStatusKey+"/"+jobKey+"/"+catCodeKey+query)
-          .then(
-          function(response) {
-            cb(null, response.data);
-          },
-          function (httpError) {
-            cb(httpError.status + " : " +httpError.data);
-          }
-        );
-      }
-
-      return requestRetry(makeRequest);
-    };
-
-    /**
-     * Get data for the spreadsheet
-     * @param  {string} type          Type of spreadsheet
-     * @param  {string} departmentKey 
-     * @param  {string} companyKey    
-     * @param  {string} projectKey    
-     * @param  {string} jobKey        
-     * @param  {object} options       Object containing the data for new and ka jobcosts
-     *                                { status: jobStatus, catField, catField1, catCode, catCode1 }
-     * @return {promise}              Promise from the $http request
-     */
-    this.getSheetData = function (type, month, year, departmentKey, companyKey, projectKey, jobKey, layout, options) {
-      var makeRequest = function (cb) {
-        var requestData = {
-          reportSelected: type,
-          month: month,
-          year: year,
-          layout: layout,
-          department: departmentKey,
-          company: companyKey,
-          project: projectKey,
-          job: jobKey,
-          projectList: options.projects, 
-        };
-
-        if (type === 'new' || type === 'ka') {
-          requestData.status = options.jobStatus;
-          requestData.catField = options.catField;
-          requestData.catField1 = options.catField1;
-          requestData.catCode = options.catCode;
-          requestData.catCode1 = options.catCode1;
-        }
-
-        return $http.post('/ks2inc/job/sheet/data', JSON.stringify(requestData), {headers: {'Content-Type': 'application/json'} })
-        .then(function (response) {
-          cb(null, response.data);
-        },
-        function (httpError) {
-          cb(httpError.status + " : " + httpError.data);
-        });
-      };
-
-      return requestRetry(makeRequest);
-    };
-
-    function getQueryType(type){
-      if(type === 'ka') {return '?type=ka'}
-      else if(type === 'e') {return '?type=e'}
-      else if(type === 'new') {return '?type=new'}
-      return '';
-    }
 
     this.insertTable = function (data, cb) {
       try {
@@ -223,12 +57,17 @@ app.service("jobcostService", [
             addFilter,
             addSubTotal,
             addGrandTotal,
-            addFormatting,
+            addFormatting
             //removeOldSheet,
             //insertData
           ], cb);
         }
       } catch (e) {
+        //USED FOR TESTING ERROR START
+        var errData = worksheet.getRange('M2');
+        errData.load("values");
+        errData.values = JSON.stringify("ERROOOORRR!!");
+        //USED FOR TESTING ERROR END
         cb(e);
       }
     };
@@ -392,20 +231,19 @@ app.service("jobcostService", [
         var jsonHiddenData = JSON.stringify(data.hiddenRows);
 
         var header = [
-          ['', '', '', 'City of Denton - Job Cost Summary', '', '', 'Dept:', data.scope.selectedValues.department.name, 'Month:', data.scope.selectedValues.dates.monthStart.name, ''],
-          [data.hiddenRows.length > 1000 ? '' : jsonHiddenData, '', '', moment().format('MM/DD/YYYY, h:mm:ss a'), '', '', 'Company:', data.scope.selectedValues.company.name, 'JDE Fiscal Year:', data.scope.selectedValues.dates.jdeYear + ' - ' + (parseInt(data.scope.selectedValues.dates.jdeYear)+1), ''],
-          ['', '', '', 'Unaudited/Unofficial-Not intended for public distribution', '', '', 'Project:', data.scope.selectedValues.project.name, 'Layout:', 'Cost Code/Type Details', ''],
-          ['', '', '', '', '', '', 'Job:', data.scope.selectedValues.job.name, '', '', ''],
-          ["Dept", "Company", "Project", "Bus Unit", "Object", "Subsidary", "Budget", "Expendatures", "Remaining", "Encumbrances", "Unencumbered"]
+          ['', '', '', 'City of Denton - Job Cost Summary', '', '', 'Dept:', data.scope.selectedValues.department.name, 'Month:', data.scope.selectedValues.dates.monthStart.name, '', ''],
+          [data.hiddenRows.length > 1000 ? '' : jsonHiddenData, '', '', moment().format('MM/DD/YYYY, h:mm:ss a'), '', '', 'Company:', data.scope.selectedValues.company.name, 'JDE Fiscal Year:', data.scope.selectedValues.dates.jdeYear + ' - ' + (parseInt(data.scope.selectedValues.dates.jdeYear)+1), '', ''],
+          ['', '', '', 'Unaudited/Unofficial-Not intended for public distribution', '', '', 'Project:', data.scope.selectedValues.project.name, 'Layout:', 'Cost Code/Type Details', '', ''],
+          ['', '', '', '', '', '', 'Job:', data.scope.selectedValues.job.name, '', '', '', ''],
+          ["Dept", "Company", "Project Manager", "Project", "Bus Unit", "Object", "Subsidary", "Budget", "Expendatures", "Remaining", "Encumbrances", "Unencumbered"]
         ];
-
 
         //USED FOR TESTING 
         // var sqlData = worksheet.getRange('N1');
         // sqlData.load("values");
-        // sqlData.values = JSON.stringify(data.test);
+        // sqlData.values = JSON.stringify(data.subTotalRows);
 
-        var range = worksheet.getRange('A1:K5');
+        var range = worksheet.getRange('A1:L5');
         range.load('values');
         range.values = header;
 
@@ -423,7 +261,7 @@ app.service("jobcostService", [
         infoCell.format.font.color = 'red';
         infoCell.format.font.italic = true;
 
-        var reportheaders = worksheet.getRange('G1:G4');
+        var reportheaders = worksheet.getRange('H1:G4');
         reportheaders.format.font.color = '#174888';
         reportheaders.format.font.bold = true;
 
@@ -431,7 +269,7 @@ app.service("jobcostService", [
         reportRangeHeader.format.font.color = '#174888';
         reportRangeHeader.format.font.bold = true;
 
-        var tableHeader = worksheet.getRange('A5:K5');
+        var tableHeader = worksheet.getRange('A5:L5');
         tableHeader.format.fill.color = '#174888';
         tableHeader.format.font.color = 'white';
         if(data.isEmpty) tableHeader.rowHidden = false;
@@ -442,11 +280,11 @@ app.service("jobcostService", [
 
         var headerOffset = 6;
         var sheetLength = data.sheetData.length + headerOffset - 1;
-        var fullSheetRange = worksheet.getRange('A1:K' + sheetLength);
+        var fullSheetRange = worksheet.getRange('A1:L' + sheetLength);
         fullSheetRange.load('values');
         fullSheetRange.format.autofitColumns();
 
-        var gCol = worksheet.getRange('G1:G' + sheetLength);
+        var gCol = worksheet.getRange('H1:H' + sheetLength);
         gCol.format.columnWidth = 110;
 
         return ctx.sync()
@@ -454,7 +292,8 @@ app.service("jobcostService", [
             data.header = header;
             next(null, data);
           }).catch(function (err) {
-            next({err: err, stage: 'setHeader', range: 'A1:K' + sheetLength, header: header});
+
+            next({err: err, stage: 'setHeader', range: 'A1:L' + sheetLength, header: header});
           });
       });
     };
@@ -495,7 +334,7 @@ app.service("jobcostService", [
       Excel.run(function (ctx) {
         var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
         var tables = ctx.workbook.tables;
-        tables.getItem(data.tableName).getHeaderRowRange().values = [["Dept", "Company", "Project", "Bus Unit", "Object", "Subsidary", "Budget", "Expendatures", "Remaining", "Encumbrances", "Unencumbered"]];
+        tables.getItem(data.tableName).getHeaderRowRange().values = [["Dept", "Company", "Project Manager", "Project", "Bus Unit", "Object", "Subsidary", "Budget", "Expendatures", "Remaining", "Encumbrances", "Unencumbered"]];
 
         return ctx.sync()
           .then(function (response) {
@@ -511,7 +350,7 @@ app.service("jobcostService", [
       Excel.run(function (ctx) {
         var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
         var messageData = [["No Data Found. Please change your selections amd try again", "", "", "", "", "", "", "", "", "", ""]];
-        var messageRange = worksheet.getRange('A6:K6');
+        var messageRange = worksheet.getRange('A6:L6');
         messageRange.merge(true);
         messageRange.load('values');
         messageRange.values = messageData;
@@ -531,6 +370,9 @@ app.service("jobcostService", [
       var split = [data.sheetData];
       var water = [];
 
+      
+
+      
       if (data.sheetData.length > 5000) {
         chunk = 200;
         split = _.chunk(data.sheetData, chunk);
@@ -543,11 +385,19 @@ app.service("jobcostService", [
           Excel.run(function(ctx) {
             var sheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
 
+            //TODO: Failing here
+            // var sqlData = sheet.getRange("M1");
+            // sqlData.load("values");
+            // sqlData.values = JSON.stringify(split);
+            //sqlData.values = 'A' + (chunk * (j - 1) + split[j-1].length + data.headerOffset + 1) + ':L' + (chunk*j + split[j].length + data.headerOffset);
+
+            
             if (split.length > 1 && j === (split.length - 1)) {
-              var range = 'A' + (chunk * (j - 1) + split[j-1].length + data.headerOffset + 1) + ':K' + (chunk*j + split[j].length + data.headerOffset);
+              var range = 'A' + (chunk * (j - 1) + split[j-1].length + data.headerOffset + 1) + ':L' + (chunk*j + split[j].length + data.headerOffset);
               sheet.getRange(range).values = split[j];
-            } else {
-              var rangeAddress = 'A' + (chunk*j + data.headerOffset + 1) + ':K' + (chunk*j + split[j].length + data.headerOffset);
+            } 
+            else {
+              var rangeAddress = 'A' + (chunk*j + data.headerOffset + 1) + ':L' + (chunk*j + split[j].length + data.headerOffset);
               var range = sheet.getRange(rangeAddress);
               range.format.font.color = 'black';
               range.format.font.bold = false;
@@ -561,17 +411,23 @@ app.service("jobcostService", [
                 data.scope.modalData.message = 'Loading ' + (j+1)*chunk + ' rows of ' + data.sheetData.length;
               }
             });
+            
             j++;
 
             return ctx.sync()
             .then(function (response) {
               cb(null);
             }).catch(function (err) {
+              // var sheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+              // var sqlData = sheet.getRange("M1");
+              // sqlData.load("values");
+              // sqlData.values = JSON.stringify(err);
               cb(null);
             });
           });
         });
       }
+      
 
       async.waterfall(water, function (err, res) {
         next(null, data);
@@ -625,13 +481,13 @@ app.service("jobcostService", [
     var addSubTotal = function (data, next) {
       Excel.run(function (ctx) {
         var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
-
+        
         _.forEach(data.subTotalRows, function (val) {
-          var numberRange = worksheet.getRange('E'+val+':K'+val);
+          var numberRange = worksheet.getRange('E'+val+':L'+val);
           var range = worksheet.getRange('A'+val+':Z'+val);
           range.format.font.color = 'blue';
           range.format.font.bold = true;
-          numberRange.numberFormat = [_.fill(Array(7), formatPricingRed)];
+          //numberRange.numberFormat = [_.fill(Array(7), formatPricingRed)];
         });
 
         return ctx.sync()
@@ -648,25 +504,17 @@ app.service("jobcostService", [
         var sheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
         var table = sheet.tables.getItem(data.tableName);
 
-        filter = table.columns.getItem("Project").filter;
+        filter = table.columns.getItem("Project Manager").filter;
         filter.apply({
             filterOn: Excel.FilterOn.values,
             values: ["-"]
         });
 
-        sheet.getUsedRange().format.autofitColumns();
-        var len = data.sheetData.length + data.headerOffset;
-        var sheetLength = data.sheetData.length + data.headerOffset - 1;
-        var range = sheet.getRange('E' + data.headerOffset + ':K' + len);
-        var rangeTitles = sheet.getRange('A' + (data.headerOffset+1) + ':K' + len);
-        range.format.columnWidth = 110;
-        //rangeTitles.format.font.bold = true;
+        // sheet.getUsedRange().format.autofitColumns();
+        // var len = data.sheetData.length + data.headerOffset;
+        // var range = sheet.getRange('E' + data.headerOffset + ':L' + len);
+        // range.format.columnWidth = 110;
 
-        // _.forEach(data.hiddenRows, function (rowData) {
-        //   var row = rowData.rows.substring(1, rowData.rows.length-1);
-        //   var rowRange = worksheet.getRange("A"+row+":Z"+row);
-        //   rowRange.format.font.bold = true;
-        // });
         return ctx.sync()
           .then(function (response) {
             //data.tableName = table.name;
@@ -692,10 +540,10 @@ app.service("jobcostService", [
               var sheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
 
               if (split.length > 1 && j === (split.length - 1)) {
-                var range = 'G' + (chunk * (j - 1) + split[j-1].length + data.headerOffset + 1) + ':' + data.alphabetRangeValue + (chunk*j + split[j].length + data.headerOffset);
+                var range = 'H' + (chunk * (j - 1) + split[j-1].length + data.headerOffset + 1) + ':' + data.alphabetRangeValue + (chunk*j + split[j].length + data.headerOffset);
                 sheet.getRange(range).numberFormat = split[j];
               } else {
-                var rangeAddress = 'G' + (chunk*j + data.headerOffset + 1) + ':' + data.alphabetRangeValue + (chunk*j + split[j].length + data.headerOffset);
+                var rangeAddress = 'H' + (chunk*j + data.headerOffset + 1) + ':' + data.alphabetRangeValue + (chunk*j + split[j].length + data.headerOffset);
                 var range = sheet.getRange(rangeAddress);
 
                 range.numberFormat = split[j];
@@ -728,13 +576,13 @@ app.service("jobcostService", [
         Excel.run(function (ctx) {
           var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
           var len = data.sheetData.length + data.headerOffset;
-          var numberRange = worksheet.getRange('G7:' + data.alphabetRangeValue + len)
+          var numberRange = worksheet.getRange('H7:' + data.alphabetRangeValue + len)
           numberRange.numberFormat = _.fill(Array(data.sheetData.length),_.fill(Array(5), formatPricingRed));
 
           var len = data.sheetData.length + data.headerOffset;
           worksheet.getUsedRange().format.autofitColumns();
           //var sheetLength = data.sheetData.length + data.headerOffset - 1;
-          var range = worksheet.getRange('E' + data.headerOffset + ':K' + len);
+          var range = worksheet.getRange('E' + data.headerOffset + ':L' + len);
           range.format.columnWidth = 110;
           return ctx.sync()
             .then(function (response) {
@@ -822,7 +670,7 @@ app.service("jobcostService", [
         range.values = data.sheetData
         range.format.autofitColumns();
 
-        var numberRange = worksheet.getRange('G' + headerOffset + ':' + alphabetRangeValue + sheetLength)
+        var numberRange = worksheet.getRange('H' + headerOffset + ':' + alphabetRangeValue + sheetLength)
         numberRange.numberFormat = _.fill(Array(data.sheetData.length),_.fill(Array(5), formatPricing));
         return ctx.sync()
           .then(function (res) {
@@ -838,7 +686,7 @@ app.service("jobcostService", [
         var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
 
         _.forEach(data.subTotalRows, function (val) {
-          var numberRange = worksheet.getRange('E'+val+':K'+val);
+          var numberRange = worksheet.getRange('E'+val+':L'+val);
           var range = worksheet.getRange('A'+val+':Z'+val);
           range.format.font.color = 'blue';
           range.format.font.bold = true;
@@ -847,7 +695,7 @@ app.service("jobcostService", [
 
         var headerOffset = 6;
         var sheetLength = data.sheetData.length + headerOffset - 1;
-        var range = worksheet.getRange('E' + headerOffset + ':K' + sheetLength)
+        var range = worksheet.getRange('E' + headerOffset + ':L' + sheetLength)
         range.format.columnWidth = 110;
 
         return ctx.sync()
@@ -864,7 +712,7 @@ app.service("jobcostService", [
         var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
         var headerOffset = 6;
         var length = headerOffset + data.sheetData.length;
-        var grandTotalData = [['=SUM(G7:G' + (length) + ')/2', '=SUM(H7:H' + (length) + ')/2', '=SUM(I7:I' + (length) + ')/2', '=SUM(J7:J' + (length) + ')/2', '=SUM(K7:K' + (length) + ')/2']];
+        var grandTotalData = [['=SUM(H7:H' + (length) + ')/2', '=SUM(I7:I' + (length) + ')/2', '=SUM(J7:J' + (length) + ')/2', '=SUM(K7:K' + (length) + ')/2', '=SUM(L7:L' + (length) + ')/2']];
 
         var grandRange = worksheet.getRange('D' + (length+1));
         grandRange.load('values');
@@ -872,7 +720,7 @@ app.service("jobcostService", [
         grandRange.format.font.bold = true;
         grandRange.format.font.color = '#00037B';
 
-        var range = worksheet.getRange('G' + (length+1) + ':K' + (length+1));
+        var range = worksheet.getRange('H' + (length+1) + ':L' + (length+1));
         range.load('values');
         range.values = grandTotalData;
         range.numberFormat = [_.fill(Array(5), formatPricingTotal)];

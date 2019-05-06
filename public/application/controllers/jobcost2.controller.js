@@ -8,8 +8,9 @@ app.controller('jobcost2Ctrl', [
   '$rootScope',
   '$state',
   'jobcostService',
+  'jobcostService2',
   'modalService',
-  function ($http, $scope, $rootScope, $state, jobcostService, modalService) {
+  function ($http, $scope, $rootScope, $state, jobcostService, jobcostService2, modalService) {
 
     $scope.filteredDepartment = [];
     $scope.filteredCompany = [];
@@ -73,8 +74,8 @@ app.controller('jobcost2Ctrl', [
       $scope.filteredDetails = [
         {name:"No Details"},
         {name:"Cost Code/Type Details"},
-        {name:"FERC/Cost Code Subtotals"}/*,
-        {name:"Cost Type Subtotals"},
+        {name:"FERC/Cost Code Subtotals"},
+        {name:"Cost Type Subtotals"}/*,
         {name:"Trend - Expenditures"},
         {name:"Trend - Budget"},
         {name:"Trend - Encumbrances"}*/
@@ -94,6 +95,7 @@ app.controller('jobcost2Ctrl', [
     function setReportData(){
       var rType = $scope.selectedValues.report.type;
 
+      
       modalService.showDataLoadingModal();
       jobcostService.getReportData(rType).then(function(data){
         $scope.filteredDepartment = (data.departments) ? data.departments : [];
@@ -129,6 +131,7 @@ app.controller('jobcost2Ctrl', [
 
         modalService.hideDataLoadingModal();
       });
+      
     }
 
     $scope.selectedDepartment = function(){
@@ -302,12 +305,20 @@ app.controller('jobcost2Ctrl', [
           });
           
           data.scope = $scope;
-          jobcostService.insertTable(data, function(err, response) {
-            $rootScope.$broadcast('reloadHiddenRows', { rows: data.hiddenRows });
-            modalService.hideReportLoadingModal();
-          });
+          if(rType == 'ka'){
+            jobcostService2.insertTable(data, function(err, response) {
+              $rootScope.$broadcast('reloadHiddenRows', { rows: data.hiddenRows });
+              modalService.hideReportLoadingModal();
+            });
+          }
+          else{
+            jobcostService.insertTable(data, function(err, response) {
+              $rootScope.$broadcast('reloadHiddenRows', { rows: data.hiddenRows });
+              modalService.hideReportLoadingModal();
+            });
+          }
           /*
-          jobcostService.insertSpreadSheetData(data, function(err, response){
+          jobcostService2.insertSpreadSheetData(data, function(err, response){
             modalService.hideReportLoadingModal();
             if (err) {
               $scope.reportDetails.msg = $scope.dataErrorMsg;
@@ -322,6 +333,7 @@ app.controller('jobcost2Ctrl', [
           console.log(data);
         }       
       });
+      
     };
 
     
