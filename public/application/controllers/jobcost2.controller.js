@@ -137,6 +137,7 @@ app.controller('jobcost2Ctrl', [
     $scope.selectedDepartment = function(){
       var rType = $scope.selectedValues.report.type;
       var dKey = $scope.selectedValues.department.key;
+      var cKey = $scope.selectedValues.company.key;
 
       if(dKey == "*All"){
         setReportData();
@@ -144,12 +145,24 @@ app.controller('jobcost2Ctrl', [
       else{
         modalService.showDataLoadingModal();
         jobcostService.getCompanies(rType, dKey).then(function(data){
-          $scope.filteredCompany = data;
+          $scope.$apply(function () {
+            $scope.filteredCompany = data;
 
-          $scope.filteredCompany.unshift($scope.allOptionValue);
-          $scope.selectedValues.company = $scope.allOptionValue;
+            $scope.filteredCompany.unshift($scope.allOptionValue);
+            $scope.selectedValues.company = $scope.allOptionValue;
 
-          modalService.hideDataLoadingModal();
+            jobcostService.getProjects(rType, dKey, cKey).then(function(projects){
+              $scope.$apply(function () {
+                //$scope.debugMsg = JSON.stringify(projects);
+                $scope.filteredProject = projects;
+
+                $scope.filteredProject.unshift($scope.allOptionValue);
+                $scope.selectedValues.project = $scope.allOptionValue;
+                
+                modalService.hideDataLoadingModal();
+              });
+            });
+          });
         });
       }
     }
