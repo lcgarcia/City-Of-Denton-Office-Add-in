@@ -182,7 +182,8 @@ router.get('/project/:department/:company', (req, res) => {
     const generator = new Generator({ type: req.query.type || '', schema: schema.schema, ctrlSchema: schema.controlSchema })
 
     const queryDB = (cb) => {
-      knexQuery.query(generator.getProjectSelections(req.params.department, req.params.company))
+      var query = generator.getProjectSelections(req.params.department, req.params.company);
+      knexQuery.query(query)
       .then(result => cb(null, result))
       .catch(err => cb(err));
     };
