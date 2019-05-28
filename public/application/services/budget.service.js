@@ -559,6 +559,7 @@ app.service("budgetService", [
         dateLabel2.merge(true);
 
         worksheet.freezePanes.freezeRows(5);
+        worksheet.freezePanes.freezeColumns(5);
         return ctx.sync()
           .then(function (res) {
             next(null, data);
