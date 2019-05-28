@@ -83,6 +83,7 @@ app.service("budgetService", [
           setMainHeaderFormat,
           setHeader,
           removeOldSheet,
+          splitSections
         ], cb);
       } catch (e) {
         cb(e);
@@ -93,6 +94,45 @@ app.service("budgetService", [
       Excel.run(function (ctx) {
         var worksheet = ctx.workbook.worksheets.getItem('report-' + data.dummySheetName);
         worksheet.delete();
+        
+        return ctx.sync()
+          .then(function(response) {
+            next(null, data);  
+          }).catch(function (err) {
+            next(null, data);
+          });
+      });
+    }
+
+    var splitSections = function (data, next) {
+      Excel.run(function (ctx) {
+        var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+        var length = 6 + data.sheetData.length;
+        var columnWidth = 20;
+
+        var range = worksheet.getRange("H:H");
+        range.insert("Right");
+        range = worksheet.getRange("H4:H"+length);
+        range.format.columnWidth = columnWidth;
+        range.delete("Up");
+
+        range = worksheet.getRange("L:L");
+        range.insert("Right");
+        range = worksheet.getRange("L4:L"+length);
+        range.format.columnWidth = columnWidth;
+        range.delete("Up");
+
+        range = worksheet.getRange("Q:Q");
+        range.insert("Right");
+        range = worksheet.getRange("Q4:Q"+length);
+        range.format.columnWidth = columnWidth;
+        range.delete("Up");
+
+        range = worksheet.getRange("V:V");
+        range.insert("Right");
+        range = worksheet.getRange("V4:V"+length);
+        range.format.columnWidth = columnWidth;
+        range.delete("Up");
         
         return ctx.sync()
           .then(function(response) {
@@ -472,10 +512,15 @@ app.service("budgetService", [
         var t2 = worksheet.getRange(ranges[2].title);
         var t3 = worksheet.getRange(ranges[3].title);
         var t4 = worksheet.getRange(ranges[4].title);
+        t0.merge(true);
         t0.format.horizontalAlignment = 'Center';
+        t1.merge(true);
         t1.format.horizontalAlignment = 'Center';
+        t2.merge(true);
         t2.format.horizontalAlignment = 'Center';
+        t3.merge(true);
         t3.format.horizontalAlignment = 'Center';
+        t4.merge(true);
         t4.format.horizontalAlignment = 'Center';
 
         var subTitleRange = worksheet.getRange('F5:S5');
