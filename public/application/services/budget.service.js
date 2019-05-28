@@ -558,6 +558,7 @@ app.service("budgetService", [
         dateLabel2.format.horizontalAlignment = 'Center';
         dateLabel2.merge(true);
 
+        worksheet.freezePanes.freezeRows(5);
         return ctx.sync()
           .then(function (res) {
             next(null, data);

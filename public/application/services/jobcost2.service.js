@@ -230,6 +230,7 @@ app.service("jobcostService2", [
         var gCol = worksheet.getRange('H1:H' + sheetLength);
         gCol.format.columnWidth = 110;
 
+        worksheet.freezePanes.freezeRows(6);
         return ctx.sync()
           .then(function (res) {
             data.header = header;
