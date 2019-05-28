@@ -59,9 +59,9 @@ app.service("jobcostService2", [
         }
       } catch (e) {
         //USED FOR TESTING ERROR START
-        var errData = worksheet.getRange('M2');
-        errData.load("values");
-        errData.values = JSON.stringify("ERROOOORRR!!");
+        // var errData = worksheet.getRange('M2');
+        // errData.load("values");
+        // errData.values = JSON.stringify("ERROOOORRR!!");
         //USED FOR TESTING ERROR END
         cb(e);
       }
@@ -535,7 +535,7 @@ app.service("jobcostService2", [
         var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
         var headerOffset = 6;
         var length = headerOffset + data.sheetData.length;
-        var grandTotalData = [['=SUM(H7:H' + (length) + ')/2', '=SUM(I7:I' + (length) + ')/2', '=SUM(J7:J' + (length) + ')/2', '=SUM(K7:K' + (length) + ')/2', '=SUM(L7:L' + (length) + ')/2']];
+        var grandTotalData = [['=SUBTOTAL(9,H7:H' + (length) + ')', '=SUBTOTAL(9,I7:I' + (length) + ')', '=SUBTOTAL(9,J7:J' + (length) + ')', '=SUBTOTAL(9,K7:K' + (length) + ')', '=SUBTOTAL(9,L7:L' + (length) + ')']];
 
         var grandRange = worksheet.getRange('D' + (length+1));
         grandRange.load('values');

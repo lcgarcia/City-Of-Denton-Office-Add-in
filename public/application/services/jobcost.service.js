@@ -221,6 +221,7 @@ app.service("jobcostService", [
             //insertDataToWorkSheet,
             addTableRows,
             addFilter,
+            hideRows,
             addSubTotal,
             addGrandTotal,
             addFormatting,
@@ -395,23 +396,25 @@ app.service("jobcostService", [
           ['', '', '', 'City of Denton - Job Cost Summary', '', '', 'Dept:', data.scope.selectedValues.department.name, 'Month:', data.scope.selectedValues.dates.monthStart.name, ''],
           [data.hiddenRows.length > 1000 ? '' : jsonHiddenData, '', '', moment().format('MM/DD/YYYY, h:mm:ss a'), '', '', 'Company:', data.scope.selectedValues.company.name, 'JDE Fiscal Year:', data.scope.selectedValues.dates.jdeYear + ' - ' + (parseInt(data.scope.selectedValues.dates.jdeYear)+1), ''],
           ['', '', '', 'Unaudited/Unofficial-Not intended for public distribution', '', '', 'Project:', data.scope.selectedValues.project.name, 'Layout:', 'Cost Code/Type Details', ''],
-          ['', '', '', '', '', '', 'Job:', data.scope.selectedValues.job.name, '', '', ''],
-          ["Dept", "Company", "Project", "Bus Unit", "Object", "Subsidary", "Budget", "Expendatures", "Remaining", "Encumbrances", "Unencumbered"]
+          ['', '', '', '', '', '', 'Job:', data.scope.selectedValues.job.name, '', '', '']
         ];
 
 
         //USED FOR TESTING 
         // var sqlData = worksheet.getRange('N1');
         // sqlData.load("values");
-        // sqlData.values = JSON.stringify(data.test);
+        // sqlData.values = JSON.stringify(data.sql);
 
-        var range = worksheet.getRange('A1:K5');
+        var range = worksheet.getRange('A1:K4');
         range.load('values');
         range.values = header;
 
         var jsonDataRange = worksheet.getRange('A1:C4');
         jsonDataRange.format.font.color = 'white';
         jsonDataRange.merge(true);
+
+        var spaceRange = worksheet.getRange('A5:K5');
+        spaceRange.merge(true);
 
         var titleSection = worksheet.getRange('D1:D2');
         titleSection.format.font.color = '#174888';
@@ -431,11 +434,11 @@ app.service("jobcostService", [
         reportRangeHeader.format.font.color = '#174888';
         reportRangeHeader.format.font.bold = true;
 
-        var tableHeader = worksheet.getRange('A5:K5');
-        tableHeader.format.fill.color = '#174888';
-        tableHeader.format.font.color = 'white';
-        if(data.isEmpty) tableHeader.rowHidden = false;
-        else tableHeader.rowHidden = true;
+        // var tableHeader = worksheet.getRange('A5:K5');
+        // tableHeader.format.fill.color = '#174888';
+        // tableHeader.format.font.color = 'white';
+        // if(data.isEmpty) tableHeader.rowHidden = false;
+        // else tableHeader.rowHidden = true;
 
         var leftColumns = worksheet.getRange('A:C');
         leftColumns.format.horizontalAlignment = 'Center';
@@ -648,13 +651,8 @@ app.service("jobcostService", [
         var sheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
         var table = sheet.tables.getItem(data.tableName);
 
-        filter = table.columns.getItem("Project").filter;
-        filter.apply({
-            filterOn: Excel.FilterOn.values,
-            values: ["-"]
-        });
 
-        sheet.getUsedRange().format.autofitColumns();
+        //sheet.getUsedRange().format.autofitColumns();
         var len = data.sheetData.length + data.headerOffset;
         var sheetLength = data.sheetData.length + data.headerOffset - 1;
         var range = sheet.getRange('E' + data.headerOffset + ':K' + len);
@@ -864,7 +862,7 @@ app.service("jobcostService", [
         var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
         var headerOffset = 6;
         var length = headerOffset + data.sheetData.length;
-        var grandTotalData = [['=SUM(G7:G' + (length) + ')/2', '=SUM(H7:H' + (length) + ')/2', '=SUM(I7:I' + (length) + ')/2', '=SUM(J7:J' + (length) + ')/2', '=SUM(K7:K' + (length) + ')/2']];
+        var grandTotalData = [['=SUBTOTAL(9,G7:G' + (length) + ')', '=SUBTOTAL(9,H7:H' + (length) + ')', '=SUBTOTAL(9,I7:I' + (length) + ')', '=SUBTOTAL(9,J7:J' + (length) + ')', '=SUBTOTAL(9,K7:K' + (length) + ')']];
 
         var grandRange = worksheet.getRange('D' + (length+1));
         grandRange.load('values');

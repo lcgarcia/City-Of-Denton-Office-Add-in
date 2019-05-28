@@ -3,3 +3,4 @@ npm-debug.log
 libaio
 instantclient
 package-lock.json
+.vscode
