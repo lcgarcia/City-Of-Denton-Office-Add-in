@@ -98,40 +98,41 @@ app.controller('jobcost2Ctrl', [
       
       modalService.showDataLoadingModal();
       jobcostService.getReportData(rType).then(function(data){
-        $scope.filteredDepartment = (data.departments) ? data.departments : [];
-        $scope.filteredCompany = (data.company) ? data.company : [];
-        $scope.filteredProject = (data.projects) ? data.projects : [];
-        $scope.filteredJob  = (data.jobs) ? data.jobs : [];
-        $scope.filteredCatCode1 = (data.catCodeHead) ? data.catCodeHead : [];
-        $scope.filteredCC1Descriptions = [];
-        $scope.filteredCC2Descriptions = [];
-        
-        $scope.filteredDepartment.unshift($scope.allOptionValue);
-        $scope.filteredCompany.unshift($scope.allOptionValue);
-        $scope.filteredProject.unshift($scope.allOptionValue);
-        $scope.filteredJob.unshift($scope.allOptionValue);
-        //$scope.filteredDetails.unshift($scope.allOptionValue);
-        $scope.jobStatus.unshift($scope.allOptionValue);
-        $scope.filteredCatCode1.unshift($scope.allOptionValue);
-        $scope.filteredCC1Descriptions.unshift($scope.allOptionValue);
-        $scope.filteredCC2Descriptions.unshift($scope.allOptionValue);
-        
-        $scope.selectedValues.department = $scope.allOptionValue;
-        $scope.selectedValues.company = $scope.allOptionValue;
-        $scope.selectedValues.project = $scope.allOptionValue;
-        $scope.selectedValues.job = $scope.allOptionValue;
-        $scope.selectedValues.jobStatus = $scope.allOptionValue;
-        //$scope.selectedValues.details = $scope.allOptionValue;
+        $scope.$apply(function () {
+          $scope.filteredDepartment = (data.departments) ? data.departments : [];
+          $scope.filteredCompany = (data.company) ? data.company : [];
+          $scope.filteredProject = (data.projects) ? data.projects : [];
+          $scope.filteredJob  = (data.jobs) ? data.jobs : [];
+          $scope.filteredCatCode1 = (data.catCodeHead) ? data.catCodeHead : [];
+          $scope.filteredCC1Descriptions = [];
+          $scope.filteredCC2Descriptions = [];
+          
+          $scope.filteredDepartment.unshift($scope.allOptionValue);
+          $scope.filteredCompany.unshift($scope.allOptionValue);
+          $scope.filteredProject.unshift($scope.allOptionValue);
+          $scope.filteredJob.unshift($scope.allOptionValue);
+          //$scope.filteredDetails.unshift($scope.allOptionValue);
+          $scope.jobStatus.unshift($scope.allOptionValue);
+          $scope.filteredCatCode1.unshift($scope.allOptionValue);
+          $scope.filteredCC1Descriptions.unshift($scope.allOptionValue);
+          $scope.filteredCC2Descriptions.unshift($scope.allOptionValue);
+          
+          $scope.selectedValues.department = $scope.allOptionValue;
+          $scope.selectedValues.company = $scope.allOptionValue;
+          $scope.selectedValues.project = $scope.allOptionValue;
+          $scope.selectedValues.job = $scope.allOptionValue;
+          $scope.selectedValues.jobStatus = $scope.allOptionValue;
+          //$scope.selectedValues.details = $scope.allOptionValue;
 
-        $scope.filteredCatCode2 = $scope.filteredCatCode1;
-        $scope.selectedValues.optional.cat1 = $scope.allOptionValue;
-        $scope.selectedValues.optional.cat2 = $scope.allOptionValue;
-        $scope.selectedValues.optional.cat1Description = $scope.allOptionValue;
-        $scope.selectedValues.optional.cat2Description = $scope.allOptionValue;
+          $scope.filteredCatCode2 = $scope.filteredCatCode1;
+          $scope.selectedValues.optional.cat1 = $scope.allOptionValue;
+          $scope.selectedValues.optional.cat2 = $scope.allOptionValue;
+          $scope.selectedValues.optional.cat1Description = $scope.allOptionValue;
+          $scope.selectedValues.optional.cat2Description = $scope.allOptionValue;
 
-        modalService.hideDataLoadingModal();
+          modalService.hideDataLoadingModal();
+        });
       });
-      
     }
 
     $scope.selectedDepartment = function(){
@@ -185,19 +186,21 @@ app.controller('jobcost2Ctrl', [
 
       modalService.showDataLoadingModal();
       jobcostService.getProjects(rType, dKey, cKey).then(function(data){
-        $scope.filteredProject = data;
+        $scope.$apply(function () {
+          $scope.filteredProject = data;
 
-        $scope.filteredProject.unshift($scope.allOptionValue);
-        $scope.selectedValues.project = $scope.allOptionValue;
-        
-        jobcostService.getJobs(rType, dKey, cKey, pKey).then(function(jobs){
-          $scope.$apply(function () {
-            $scope.filteredJob = jobs;
-  
-            $scope.filteredJob.unshift($scope.allOptionValue);
-            $scope.selectedValues.job = $scope.allOptionValue;
-            
-            modalService.hideDataLoadingModal();
+          $scope.filteredProject.unshift($scope.allOptionValue);
+          $scope.selectedValues.project = $scope.allOptionValue;
+          
+          jobcostService.getJobs(rType, dKey, cKey, pKey).then(function(jobs){
+            $scope.$apply(function () {
+              $scope.filteredJob = jobs;
+    
+              $scope.filteredJob.unshift($scope.allOptionValue);
+              $scope.selectedValues.job = $scope.allOptionValue;
+              
+              modalService.hideDataLoadingModal();
+            });
           });
         });
       });
@@ -212,19 +215,21 @@ app.controller('jobcost2Ctrl', [
 
       modalService.showDataLoadingModal();
       jobcostService.getJobWithStatus(rType, dKey, cKey, pKey, jsKey).then(function(data){
-        $scope.filteredJob = [];
-        if(data[0]){
-          $scope.filteredJob = data;
-        }
-        $scope.filteredJob.unshift($scope.allOptionValue);
-        $scope.selectedValues.job = $scope.allOptionValue;
-        
-        modalService.hideDataLoadingModal();
+        $scope.$apply(function () {
+          $scope.filteredJob = [];
+          if(data[0]){
+            $scope.filteredJob = data;
+          }
+          $scope.filteredJob.unshift($scope.allOptionValue);
+          $scope.selectedValues.job = $scope.allOptionValue;
+          
+          modalService.hideDataLoadingModal();
+        });
       });
     }
 
-    $scope.selectedProject = updateJobs
-    $scope.selectedJobStatus = updateJobs
+    // $scope.selectedProject = updateJobs
+    // $scope.selectedJobStatus = updateJobs
 
     $scope.selectedCatCode1 = function() {
       var rType = $scope.selectedValues.report.type;
@@ -237,13 +242,15 @@ app.controller('jobcost2Ctrl', [
 
       modalService.showDataLoadingModal();
       jobcostService.getCatCodeDescription(rType, dKey, cKey, pKey, jsKey, jKey, ccKey).then(function(data){
-        $scope.filteredCC1Descriptions = [];
-        if(data[0]){
-          $scope.filteredCC1Descriptions = data;
-        }
-        $scope.filteredCC1Descriptions.unshift($scope.allOptionValue);
-        $scope.selectedValues.optional.cat1Description = $scope.allOptionValue;
-        modalService.hideDataLoadingModal();
+        $scope.$apply(function () {
+          $scope.filteredCC1Descriptions = [];
+          if(data[0]){
+            $scope.filteredCC1Descriptions = data;
+          }
+          $scope.filteredCC1Descriptions.unshift($scope.allOptionValue);
+          $scope.selectedValues.optional.cat1Description = $scope.allOptionValue;
+          modalService.hideDataLoadingModal();
+        });
       });
     }
 
@@ -258,13 +265,15 @@ app.controller('jobcost2Ctrl', [
       
       modalService.showDataLoadingModal();
       jobcostService.getCatCodeDescription(rType, dKey, cKey, pKey, jsKey, jKey, ccKey).then(function(data){
-        $scope.filteredCC2Descriptions = [];
-        if(data[0]){
-          $scope.filteredCC2Descriptions = data;
-        }
-        $scope.filteredCC2Descriptions.unshift($scope.allOptionValue);
-        $scope.selectedValues.optional.cat2Description = $scope.allOptionValue;
-        modalService.hideDataLoadingModal();
+        $scope.$apply(function () {
+          $scope.filteredCC2Descriptions = [];
+          if(data[0]){
+            $scope.filteredCC2Descriptions = data;
+          }
+          $scope.filteredCC2Descriptions.unshift($scope.allOptionValue);
+          $scope.selectedValues.optional.cat2Description = $scope.allOptionValue;
+          modalService.hideDataLoadingModal();
+        });
       });
     }
 
