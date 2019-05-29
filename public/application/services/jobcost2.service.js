@@ -51,7 +51,8 @@ app.service("jobcostService2", [
             createTable,
             addTableHeader,
             addTableRows,
-            addFilter,
+            // addFilter,
+            hideRows,
             addSubTotal,
             addGrandTotal,
             addFormatting
@@ -174,8 +175,7 @@ app.service("jobcostService2", [
           ['', '', '', 'City of Denton - Job Cost Summary', '', '', 'Dept:', data.scope.selectedValues.department.name, 'Month:', data.scope.selectedValues.dates.monthStart.name, '', ''],
           [data.hiddenRows.length > 1000 ? '' : jsonHiddenData, '', '', moment().format('MM/DD/YYYY, h:mm:ss a'), '', '', 'Company:', data.scope.selectedValues.company.name, 'JDE Fiscal Year:', data.scope.selectedValues.dates.jdeYear + ' - ' + (parseInt(data.scope.selectedValues.dates.jdeYear)+1), '', ''],
           ['', '', '', 'Unaudited/Unofficial-Not intended for public distribution', '', '', 'Project:', data.scope.selectedValues.project.name, 'Layout:', 'Cost Code/Type Details', '', ''],
-          ['', '', '', '', '', '', 'Job:', data.scope.selectedValues.job.name, '', '', '', ''],
-          ["Dept", "Company", "Project Manager", "Project", "Bus Unit", "Object", "Subsidary", "Budget", "Expendatures", "Remaining", "Encumbrances", "Unencumbered"]
+          ['', '', '', '', '', '', 'Job:', data.scope.selectedValues.job.name, '', '', '', '']
         ];
 
         //USED FOR TESTING 
@@ -183,13 +183,16 @@ app.service("jobcostService2", [
         // sqlData.load("values");
         // sqlData.values = JSON.stringify(data.sql);
 
-        var range = worksheet.getRange('A1:L5');
+        var range = worksheet.getRange('A1:L4');
         range.load('values');
         range.values = header;
 
         var jsonDataRange = worksheet.getRange('A1:C4');
         jsonDataRange.format.font.color = 'white';
         jsonDataRange.merge(true);
+
+        var spaceRange = worksheet.getRange('A5:L5');
+        spaceRange.merge(true);
 
         var titleSection = worksheet.getRange('D1:D2');
         titleSection.format.font.color = '#174888';
@@ -209,11 +212,11 @@ app.service("jobcostService2", [
         reportRangeHeader.format.font.color = '#174888';
         reportRangeHeader.format.font.bold = true;
 
-        var tableHeader = worksheet.getRange('A5:L5');
-        tableHeader.format.fill.color = '#174888';
-        tableHeader.format.font.color = 'white';
-        if(data.isEmpty) tableHeader.rowHidden = false;
-        else tableHeader.rowHidden = true;
+        // var tableHeader = worksheet.getRange('A5:L5');
+        // tableHeader.format.fill.color = '#174888';
+        // tableHeader.format.font.color = 'white';
+        // if(data.isEmpty) tableHeader.rowHidden = false;
+        // else tableHeader.rowHidden = true;
 
         var leftColumns = worksheet.getRange('A:C');
         leftColumns.format.horizontalAlignment = 'Center';
