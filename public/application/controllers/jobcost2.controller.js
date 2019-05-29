@@ -138,6 +138,7 @@ app.controller('jobcost2Ctrl', [
       var rType = $scope.selectedValues.report.type;
       var dKey = $scope.selectedValues.department.key;
       var cKey = $scope.selectedValues.company.key;
+      var pKey = $scope.selectedValues.project.key;
 
       if(dKey == "*All"){
         setReportData();
@@ -159,7 +160,16 @@ app.controller('jobcost2Ctrl', [
                 $scope.filteredProject.unshift($scope.allOptionValue);
                 $scope.selectedValues.project = $scope.allOptionValue;
                 
-                modalService.hideDataLoadingModal();
+                jobcostService.getJobs(rType, dKey, cKey, pKey).then(function(jobs){
+                  $scope.$apply(function () {
+                    $scope.filteredJob = jobs;
+          
+                    $scope.filteredJob.unshift($scope.allOptionValue);
+                    $scope.selectedValues.job = $scope.allOptionValue;
+                    
+                    modalService.hideDataLoadingModal();
+                  });
+                });
               });
             });
           });
@@ -171,6 +181,7 @@ app.controller('jobcost2Ctrl', [
       var rType = $scope.selectedValues.report.type;
       var dKey = $scope.selectedValues.department.key;
       var cKey = $scope.selectedValues.company.key;
+      var pKey = $scope.selectedValues.project.key;
 
       modalService.showDataLoadingModal();
       jobcostService.getProjects(rType, dKey, cKey).then(function(data){
@@ -179,7 +190,16 @@ app.controller('jobcost2Ctrl', [
         $scope.filteredProject.unshift($scope.allOptionValue);
         $scope.selectedValues.project = $scope.allOptionValue;
         
-        modalService.hideDataLoadingModal();
+        jobcostService.getJobs(rType, dKey, cKey, pKey).then(function(jobs){
+          $scope.$apply(function () {
+            $scope.filteredJob = jobs;
+  
+            $scope.filteredJob.unshift($scope.allOptionValue);
+            $scope.selectedValues.job = $scope.allOptionValue;
+            
+            modalService.hideDataLoadingModal();
+          });
+        });
       });
     }
 
