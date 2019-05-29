@@ -321,8 +321,8 @@ app.controller('jobcost2Ctrl', [
       var jobStatus = $scope.selectedValues.jobStatus.key;
       var layout = $scope.selectedValues.details.name;
       var catField = $scope.selectedValues.optional.cat1.key;
-      var catField1 = $scope.selectedValues.optional.cat1Description.key;
-      var catCode = $scope.selectedValues.optional.cat2.key;
+      var catField1 = $scope.selectedValues.optional.cat2.key; 
+      var catCode = $scope.selectedValues.optional.cat1Description.key;
       var catCode1 = $scope.selectedValues.optional.cat2Description.key;
 
       var options = {
