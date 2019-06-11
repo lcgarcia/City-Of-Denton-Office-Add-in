@@ -184,6 +184,14 @@ app.service("jobcostService", [
               data.headerOffset = 6;
               data.alphabet = alphabet;
               data.isEmpty = true;
+
+              data.layout = data.scope.selectedValues.details.name;
+              data.budgetStart = 'G';
+              data.budgetEnd = 'K';
+              if(data.layout == "No Details"){
+                data.budgetStart = 'E';
+                data.budgetEnd = 'I';
+              }
               next(null, data);
             },
             loadWorkSheets,
@@ -205,6 +213,14 @@ app.service("jobcostService", [
               data.headerOffset = 6;
               data.alphabet = alphabet;
               data.isEmpty = false;
+
+              data.layout = data.scope.selectedValues.details.name;
+              data.budgetStart = 'G';
+              data.budgetEnd = 'K';
+              if(data.layout == "No Details"){
+                data.budgetStart = 'E';
+                data.budgetEnd = 'I';
+              }
               if (data.sheetData.length > 5000) {
                 data.scope.modalData.message = 'This is going to take a while...';
               }
@@ -311,11 +327,13 @@ app.service("jobcostService", [
       var allWorksheets = data.sheets;
       Excel.run(function (ctx) {
         var dataCreated = false;
-        var dataSheetName = 'Jobcost-90'
+        var dataSheetName = 'Jobcost-90';
         
         _.forEach(data.sheets.items, function (sheet) {
-          if(sheet.name == dataSheetName)
+          if(sheet.name == dataSheetName){
+            sheet.name = 'Jobcost-90_old';
             dataCreated = true;
+          }
         });
 
         return ctx.sync()
@@ -330,11 +348,10 @@ app.service("jobcostService", [
     }
 
     var initalizeWorkSheet = function (data, next) {
-      if(!data.dataCreated){
+      // if(!data.dataCreated){
         Excel.run(function (ctx) {
           var worksheets = ctx.workbook.worksheets;
-          var worksheet = worksheets.add();
-          worksheet.name = data.dataSheetName;
+          var worksheet = worksheets.add(data.dataSheetName);
           worksheet.load("name, position");
 
           worksheet.activate();
@@ -358,33 +375,33 @@ app.service("jobcostService", [
             next(null, data);
           });
         });
-      } else {
-        Excel.run(function (ctx) {
-          var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
-          var worksheets = ctx.workbook.worksheets;
-          worksheets.load("items");
-          return ctx.sync()
-          .then(function () {
-            var sheetMap = _.map(ctx.workbook.worksheets.items, function(sheet) { return sheet.id });
+      // } else {
+      //   Excel.run(function (ctx) {
+      //     var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+      //     var worksheets = ctx.workbook.worksheets;
+      //     worksheets.load("items");
+      //     return ctx.sync()
+      //     .then(function () {
+      //       var sheetMap = _.map(ctx.workbook.worksheets.items, function(sheet) { return sheet.id });
 
-            _.forEach(sheetMap, function (id, key) {
-              if (id != worksheet.id) {
-                var ws = worksheets.getItem(id);
-                ws.delete();
-              };
-            });
+      //       _.forEach(sheetMap, function (id, key) {
+      //         if (id != worksheet.id) {
+      //           var ws = worksheets.getItem(id);
+      //           ws.delete();
+      //         };
+      //       });
            
-            return ctx.sync()
-            .then(function (response) {
-              next(null, data);  
-            }).catch(function (err) {
-              next(null, data);
-            });
-          }).catch(function (err) {
-            next(null, data);
-          });
-        });
-      }
+      //       return ctx.sync()
+      //       .then(function (response) {
+      //         next(null, data);  
+      //       }).catch(function (err) {
+      //         next(null, data);
+      //       });
+      //     }).catch(function (err) {
+      //       next(null, data);
+      //     });
+      //   });
+      // }
     }
 
     var setHeader = function (data, next) {
@@ -395,7 +412,7 @@ app.service("jobcostService", [
         var header = [
           ['', '', '', 'City of Denton - Job Cost Summary', '', '', 'Dept:', data.scope.selectedValues.department.name, 'Month:', data.scope.selectedValues.dates.monthStart.name, ''],
           [data.hiddenRows.length > 1000 ? '' : jsonHiddenData, '', '', moment().format('MM/DD/YYYY, h:mm:ss a'), '', '', 'Company:', data.scope.selectedValues.company.name, 'JDE Fiscal Year:', data.scope.selectedValues.dates.jdeYear + ' - ' + (parseInt(data.scope.selectedValues.dates.jdeYear)+1), ''],
-          ['', '', '', 'Unaudited/Unofficial-Not intended for public distribution', '', '', 'Project:', data.scope.selectedValues.project.name, 'Layout:', 'Cost Code/Type Details', ''],
+          ['', '', '', 'Unaudited/Unofficial-Not intended for public distribution', '', '', 'Project:', data.scope.selectedValues.project.name, 'Layout:', data.layout, ''],
           ['', '', '', '', '', '', 'Job:', data.scope.selectedValues.job.name, '', '', '']
         ];
 
@@ -497,9 +514,12 @@ app.service("jobcostService", [
 
     var addTableHeader = function (data, next) {
       Excel.run(function (ctx) {
-        var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+        //var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
         var tables = ctx.workbook.tables;
-        tables.getItem(data.tableName).getHeaderRowRange().values = [["Dept", "Company", "Project", "Bus Unit", "Object", "Subsidary", "Budget", "Expendatures", "Remaining", "Encumbrances", "Unencumbered"]];
+        if(data.layout == "No Details"){
+          tables.getItem(data.tableName).getHeaderRowRange().values = [["Dept", "Company", "Project", "Bus Unit", "Budget", "Expendatures", "Remaining", "Encumbrances", "Unencumbered"]];
+        }
+        else tables.getItem(data.tableName).getHeaderRowRange().values = [["Dept", "Company", "Project", "Bus Unit", "Object", "Subsidary", "Budget", "Expendatures", "Remaining", "Encumbrances", "Unencumbered"]];
 
         return ctx.sync()
           .then(function (response) {
@@ -548,10 +568,10 @@ app.service("jobcostService", [
             var sheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
 
             if (split.length > 1 && j === (split.length - 1)) {
-              var range = 'A' + (chunk * (j - 1) + split[j-1].length + data.headerOffset + 1) + ':K' + (chunk*j + split[j].length + data.headerOffset);
+              var range = 'A' + (chunk * (j - 1) + split[j-1].length + data.headerOffset + 1) + ':' + data.budgetEnd + (chunk*j + split[j].length + data.headerOffset);
               sheet.getRange(range).values = split[j];
             } else {
-              var rangeAddress = 'A' + (chunk*j + data.headerOffset + 1) + ':K' + (chunk*j + split[j].length + data.headerOffset);
+              var rangeAddress = 'A' + (chunk*j + data.headerOffset + 1) + ':' + data.budgetEnd + (chunk*j + split[j].length + data.headerOffset);
               var range = sheet.getRange(rangeAddress);
               range.format.font.color = 'black';
               range.format.font.bold = false;
@@ -691,10 +711,10 @@ app.service("jobcostService", [
               var sheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
 
               if (split.length > 1 && j === (split.length - 1)) {
-                var range = 'G' + (chunk * (j - 1) + split[j-1].length + data.headerOffset + 1) + ':' + data.alphabetRangeValue + (chunk*j + split[j].length + data.headerOffset);
+                var range = data.budgetStart + (chunk * (j - 1) + split[j-1].length + data.headerOffset + 1) + ':' + data.alphabetRangeValue + (chunk*j + split[j].length + data.headerOffset);
                 sheet.getRange(range).numberFormat = split[j];
               } else {
-                var rangeAddress = 'G' + (chunk*j + data.headerOffset + 1) + ':' + data.alphabetRangeValue + (chunk*j + split[j].length + data.headerOffset);
+                var rangeAddress = data.budgetStart + (chunk*j + data.headerOffset + 1) + ':' + data.alphabetRangeValue + (chunk*j + split[j].length + data.headerOffset);
                 var range = sheet.getRange(rangeAddress);
 
                 range.numberFormat = split[j];
@@ -727,7 +747,7 @@ app.service("jobcostService", [
         Excel.run(function (ctx) {
           var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
           var len = data.sheetData.length + data.headerOffset;
-          var numberRange = worksheet.getRange('G7:' + data.alphabetRangeValue + len)
+          var numberRange = worksheet.getRange(data.budgetStart+'7:' + data.alphabetRangeValue + len)
           numberRange.numberFormat = _.fill(Array(data.sheetData.length),_.fill(Array(5), formatPricingRed));
 
           var len = data.sheetData.length + data.headerOffset;
@@ -821,7 +841,7 @@ app.service("jobcostService", [
         range.values = data.sheetData
         range.format.autofitColumns();
 
-        var numberRange = worksheet.getRange('G' + headerOffset + ':' + alphabetRangeValue + sheetLength)
+        var numberRange = worksheet.getRange(data.budgetStart + headerOffset + ':' + alphabetRangeValue + sheetLength)
         numberRange.numberFormat = _.fill(Array(data.sheetData.length),_.fill(Array(5), formatPricing));
         return ctx.sync()
           .then(function (res) {
@@ -865,13 +885,17 @@ app.service("jobcostService", [
         var length = headerOffset + data.sheetData.length;
         var grandTotalData = [['=SUBTOTAL(9,G7:G' + (length) + ')', '=SUBTOTAL(9,H7:H' + (length) + ')', '=SUBTOTAL(9,I7:I' + (length) + ')', '=SUBTOTAL(9,J7:J' + (length) + ')', '=SUBTOTAL(9,K7:K' + (length) + ')']];
 
+        if(data.layout == "No Details"){
+          grandTotalData = [['=SUBTOTAL(9,E7:E' + (length) + ')', '=SUBTOTAL(9,F7:F' + (length) + ')', '=SUBTOTAL(9,G7:G' + (length) + ')', '=SUBTOTAL(9,H7:H' + (length) + ')', '=SUBTOTAL(9,I7:I' + (length) + ')']];
+        }
+
         var grandRange = worksheet.getRange('D' + (length+1));
         grandRange.load('values');
         grandRange.values = "Grand Total";
         grandRange.format.font.bold = true;
         grandRange.format.font.color = '#00037B';
 
-        var range = worksheet.getRange('G' + (length+1) + ':K' + (length+1));
+        var range = worksheet.getRange(data.budgetStart + (length+1) + ':' + data.budgetEnd + (length+1));
         range.load('values');
         range.values = grandTotalData;
         range.numberFormat = [_.fill(Array(5), formatPricingTotal)];

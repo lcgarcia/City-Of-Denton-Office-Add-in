@@ -89,7 +89,7 @@ router.post('/sheet/data', (req, res) => {
               .catch(err => next(err));
             }, 
             (managers, next) => {
-              knexQuery.jobSheetDataQuery(sql, req.body.projectList, managers)
+              knexQuery.jobSheetDataQuery(sql, req.body.projectList, managers, options.layout)
               .then(result => cb(null, result))
               .catch(err => next(err));
             }
@@ -104,7 +104,7 @@ router.post('/sheet/data', (req, res) => {
       else{
         const sql = generator.createSelectStatement(req.body.month, req.body.year, options);
         const queryDB = (cb) => {
-          knexQuery.jobSheetDataQuery(sql, req.body.projectList, null)
+          knexQuery.jobSheetDataQuery(sql, req.body.projectList, null, options.layout)
           .then(result => cb(null, result))
           .catch(err => cb(err));
         };
@@ -118,7 +118,7 @@ router.post('/sheet/data', (req, res) => {
     else{
       const sql = generator.createSelectStatement(req.body.month, req.body.year, options);
       const queryDB = (cb) => {
-        knexQuery.jobSheetDataQuery(sql, req.body.projectList, null)
+        knexQuery.jobSheetDataQuery(sql, req.body.projectList, null, options.layout)
         .then(result => cb(null, result))
         .catch(err => cb(err));
       };
