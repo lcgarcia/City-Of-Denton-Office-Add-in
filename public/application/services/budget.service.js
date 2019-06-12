@@ -67,25 +67,44 @@ app.service("budgetService", [
     this.insertSpreadSheetData = function (data, cb) {
       // Callback with (err, result)
       try {
-        async.waterfall([
-          function (next) {
-            next(null, data);
-          },
-          //deleteWorkSheets,
-          loadWorkSheets,
-          findWorkSheet,
-          initalizeWorkSheet,
-          hideRows,
-          insertDataToWorkSheet,
-          setSubTotalFormat,
-          addGrandTotal,
-          addSubtotalUnderline,
-          setMainHeaderFormat,
-          setHeader,
-          removeOldSheet,
-          splitSections
-        ], cb);
-      } catch (e) {
+        if(data.sheetData.length == 0){
+          async.waterfall([
+            function (next) {
+              next(null, data);
+            },
+            //deleteWorkSheets,
+            loadWorkSheets,
+            findWorkSheet,
+            initalizeWorkSheet,
+            setMainHeaderFormat,
+            setHeader,
+            addGrandTotal,
+            removeOldSheet,
+            splitSections
+          ], cb);
+        }
+        else{
+          async.waterfall([
+            function (next) {
+              next(null, data);
+            },
+            //deleteWorkSheets,
+            loadWorkSheets,
+            findWorkSheet,
+            initalizeWorkSheet,
+            hideRows,
+            insertDataToWorkSheet,
+            setSubTotalFormat,
+            addGrandTotal,
+            addSubtotalUnderline,
+            setMainHeaderFormat,
+            setHeader,
+            removeOldSheet,
+            splitSections
+          ], cb);
+        }
+      } 
+      catch (e) {
         cb(e);
       }
     };

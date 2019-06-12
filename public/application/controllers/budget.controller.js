@@ -123,9 +123,11 @@ app.controller('budgetCtrl', [
               child.selected = false;
               child.id = (child.id).trim();
             });
+            parent.name = parent.mcco + '-' + parent.ccname;
             parent.selected = false;
             parent.id = (parent.id).trim();
             parent.childList = children;
+            if(parent.id == 'ferc') parent.name = parent.ccname;
           });
           modalService.hideDataLoadingModal();
         });
@@ -137,7 +139,10 @@ app.controller('budgetCtrl', [
      * @param type [report type selected]
      */
     $scope.selectedReportType = function (type) {
-      $scope.selectedValues.reportType = type;
+      if($scope.selectedValues.report.type == 'f'){
+        $scope.selectedValues.reportType = 'Income Statement';
+      }
+      else $scope.selectedValues.reportType = type;
     }
 
     
@@ -452,14 +457,36 @@ app.controller('budgetCtrl', [
      * @param parentSelected [selected parent]
      */
     $scope.selectedParent = function(parent) {
+      //$scope.debugMsg = JSON.stringify($scope.selectedKeys);
       if('ferc' in parent){
-        //DO NOTHING
+        if(parent.selected){
+          $scope.selectedKeys.push(parent);
+          _.forEach(parent.childList, function(child) {
+            if(!child.selected){
+              child.selected = true;
+              $scope.selectedKeys.push(child);
+            }
+            // setChildSelected(child, true);
+          });
+        }
+        else{
+          _.remove($scope.selectedKeys, { id: parent.id });
+          _.forEach(parent.childList, function(child) {
+            if(child.selected){
+              child.selected = false;
+              _.remove($scope.selectedKeys, { id: child.id });
+            }
+            child.selected = false;
+            // setChildSelected(child, false);
+          });
+        }
       }
       else{
         if(parent.selected) $scope.selectedKeys.push(parent);
         else _.remove($scope.selectedKeys, { id: parent.id });
       }
       setParentSelected(parent, parent.selected);
+      //$scope.debugMsg = JSON.stringify($scope.selectedKeys);
     }
 
     /**
@@ -467,14 +494,10 @@ app.controller('budgetCtrl', [
      * @param parent [parent of selected child]
      */
     $scope.selectedChild = function(parent, child) {
-      if('ferc' in child){
-        //DO NOTHING
-      }
-      else{
-        if(child.selected) $scope.selectedKeys.push(child);
-        else _.remove($scope.selectedKeys, { id: child.id });
-      }
+      if(child.selected) $scope.selectedKeys.push(child);
+      else _.remove($scope.selectedKeys, { id: child.id });
       setChildSelected(child, child.selected);
+      //$scope.debugMsg = JSON.stringify($scope.selectedKeys);
     }
 
     /**
@@ -647,28 +670,22 @@ app.controller('budgetCtrl', [
       var keys = [], subledgers = [];
 
       _.forEach($scope.selectedKeys, function (val) {
-        if ('childList' in val) {
-          subledgers = _.map(val.childList, function(val){
-            var sub = "        ";
-            if(val.id && val.id.length > 0){
-              sub = ' '.repeat(8 - val.id.length) + val.id;
-            }
-            return sub;
+        if ('subledger' in val) {
+          var sub = "        ";
+          if(val.id && val.id.length > 0){
+            sub = ' '.repeat(8 - val.id.length) + val.id;
+          }
+          subledgers.push(sub);
+        } 
+        else {
+           keys.push({
+            id: val.id,
+            buLevel: _.isArray(val.childList) ? 'comp' : 'busu',
+            adHoc: false,
+            companyKey: "",
+            businessUnitKey: ""
           });
-        } 
-        else if ('subledger' in val) {
-          subledgers.push(val.id);
-        } 
-        
-        keys.push({
-          id: val.id,
-          buLevel: _.isArray(val.childList) ? 'comp' : 'busu',
-          adHoc: false,
-          companyKey: "",
-          businessUnitKey: ""
-        });
-        //keys.push(val.id);
-        
+        }
       });
       var ledgerText = 'in ' + JSON.stringify(subledgers).replace(/"/gi,"'").replace(/\[/gi,"(").replace(/\]/gi,")");
       return { keys: keys, subledgers: ledgerText };
@@ -677,11 +694,6 @@ app.controller('budgetCtrl', [
 
     $scope.getSheetData = function () {
       $scope.modalData.message = 'Loading...';
-
-      //2-25-19: REMOVING FERC SELECTIONS
-      $scope.selectedKeys = _.remove($scope.selectedKeys, function(val) {
-        return 'ferc' in val == false;
-      });
 
       var keys = _.map($scope.selectedKeys, function (key) { 
         return {
