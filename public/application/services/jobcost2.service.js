@@ -371,7 +371,7 @@ app.service("jobcostService2", [
           range.format.font.color = 'blue';
           range.format.font.bold = true;
           numberRange.numberFormat = [_.fill(Array(5), formatPricingRed)];
-          if(data.layout == "FERC/Cost Code Subtotals"){
+          if(data.layout == "FERC/Cost Code Subtotals" || data.layout ==  "Cost Type Subtotals"){
             numberRange = worksheet.getRange('H'+(val+1)+':L'+(val+1));
             range = worksheet.getRange('A'+(val+1)+':Z'+(val+1));
             range.format.font.color = 'blue';
