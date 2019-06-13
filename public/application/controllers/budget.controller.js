@@ -677,7 +677,7 @@ app.controller('budgetCtrl', [
           }
           subledgers.push(sub);
         } 
-        else {
+        else if ('ferc' in val === false) {
            keys.push({
             id: val.id,
             buLevel: _.isArray(val.childList) ? 'comp' : 'busu',
@@ -687,13 +687,15 @@ app.controller('budgetCtrl', [
           });
         }
       });
-      var ledgerText = 'in ' + JSON.stringify(subledgers).replace(/"/gi,"'").replace(/\[/gi,"(").replace(/\]/gi,")");
+      var ledgerText = null;
+      if(subledgers.length > 0) ledgerText = 'in ' + JSON.stringify(subledgers).replace(/"/gi,"'").replace(/\[/gi,"(").replace(/\]/gi,")");
       return { keys: keys, subledgers: ledgerText };
     };
     
 
     $scope.getSheetData = function () {
       $scope.modalData.message = 'Loading...';
+      var runReport = true;
 
       var keys = _.map($scope.selectedKeys, function (key) { 
         return {
@@ -715,74 +717,80 @@ app.controller('budgetCtrl', [
           var keysAndSubledgers = $scope.getKeysAndSubledgers();
           keys = keysAndSubledgers.keys;
           subledgers = keysAndSubledgers.subledgers;
+          if(!keys || keys.length == 0 || !subledgers) runReport = false;
         }
 
-        if($scope.selectedValues.totalSheet == "Yes"){
-          var adHoc = {
-            id: 'Selected Total',
-            buLevel: 'adHoc',
-            adHoc: true
-          };
-          var companyKey = "";
-          var businessUnitKey = "";
-          _.forEach(keys, function (key) {
-            if(key.buLevel == 'comp') companyKey += ("'"+key.id + "',");
-            else if(key.buLevel == 'busu'){
-              businessUnitKey += "'"+(' '.repeat(12 - key.id.length) + key.id) + "',";
-            }
-          });
-
-          if(companyKey.length > 0) companyKey = companyKey.slice(0, -1) + " ";
-          if(businessUnitKey.length > 0) businessUnitKey = businessUnitKey.slice(0, -1) + " ";
-          adHoc.companyKey = companyKey;
-          adHoc.businessUnitKey = businessUnitKey;
-          keys.push(adHoc);
-        } 
-        //$scope.debugMsg = JSON.stringify(keys);
-        
-        budgetService.getSheetData($scope.selectedValues.report.type, keys, $scope.selectedValues.month.name, 'Comp', $scope.selectedValues.dates.jdeYear, accounts, { subledgers: subledgers })
-        .then(function (data) {
-          /**
-           * [data has object data ararys that contain sheet data by keys]
-           * Example:
-           *   data["00100"]
-           *   -> 00100:{sheetData: Array(232), hiddenRows: Array(19), subTotalRows: Array(19), mainHeaders: Array(3)}
-           *   
-           * hiddenRows contain the name and the range to show/hide in excel
-           * Example:
-           *   data["00100"].hiddenRows[0]
-           *   -> 0:{range: "A7:Z25", key: "CASH AND DEPOSITS"}
-           * 
-           */
-          $scope.$apply(function () {})
-          budgetService.deleteWorkSheets({ scope: $scope }, function (err, newSheetData) {
-            var dummySheetName = newSheetData.dummySheetName;
-
-            var count = 0;
-            _.forEach(data, function (sheetData, key) {
-              _.forEach(sheetData.hiddenRows, function(child) {
-                child.selected = false;
-              });
-              sheetData.scope = $scope;
-              sheetData.accountType = accounts;
-              sheetData.month = $scope.selectedValues.month.name;
-              sheetData.year = $scope.selectedValues.dates.jdeYear;
-              sheetData.sheetKey = key;
-              sheetData.dummySheetName = dummySheetName;
-
-              $scope.sheetData = sheetData;
-
-              budgetService.insertSpreadSheetData(sheetData, function (err, data) {
-                if (++count == keys.length)
-                  $rootScope.$broadcast('reloadHiddenRows', { rows: data.hiddenRows });
-                modalService.hideReportLoadingModal();
+        if(runReport){
+          if($scope.selectedValues.totalSheet == "Yes"){
+            var adHoc = {
+              id: 'Selected Total',
+              buLevel: 'adHoc',
+              adHoc: true
+            };
+            var companyKey = "";
+            var businessUnitKey = "";
+            _.forEach(keys, function (key) {
+              if(key.buLevel == 'comp') companyKey += ("'"+key.id + "',");
+              else if(key.buLevel == 'busu'){
+                businessUnitKey += "'"+(' '.repeat(12 - key.id.length) + key.id) + "',";
+              }
+            });
+  
+            if(companyKey.length > 0) companyKey = companyKey.slice(0, -1) + " ";
+            if(businessUnitKey.length > 0) businessUnitKey = businessUnitKey.slice(0, -1) + " ";
+            adHoc.companyKey = companyKey;
+            adHoc.businessUnitKey = businessUnitKey;
+            keys.push(adHoc);
+          } 
+          //$scope.debugMsg = JSON.stringify(keys);
+          
+          budgetService.getSheetData($scope.selectedValues.report.type, keys, $scope.selectedValues.month.name, 'Comp', $scope.selectedValues.dates.jdeYear, accounts, { subledgers: subledgers })
+          .then(function (data) {
+            /**
+             * [data has object data ararys that contain sheet data by keys]
+             * Example:
+             *   data["00100"]
+             *   -> 00100:{sheetData: Array(232), hiddenRows: Array(19), subTotalRows: Array(19), mainHeaders: Array(3)}
+             *   
+             * hiddenRows contain the name and the range to show/hide in excel
+             * Example:
+             *   data["00100"].hiddenRows[0]
+             *   -> 0:{range: "A7:Z25", key: "CASH AND DEPOSITS"}
+             * 
+             */
+            $scope.$apply(function () {})
+            budgetService.deleteWorkSheets({ scope: $scope }, function (err, newSheetData) {
+              var dummySheetName = newSheetData.dummySheetName;
+  
+              var count = 0;
+              _.forEach(data, function (sheetData, key) {
+                _.forEach(sheetData.hiddenRows, function(child) {
+                  child.selected = false;
+                });
+                sheetData.scope = $scope;
+                sheetData.accountType = accounts;
+                sheetData.month = $scope.selectedValues.month.name;
+                sheetData.year = $scope.selectedValues.dates.jdeYear;
+                sheetData.sheetKey = key;
+                sheetData.dummySheetName = dummySheetName;
+  
+                $scope.sheetData = sheetData;
+  
+                budgetService.insertSpreadSheetData(sheetData, function (err, data) {
+                  if (++count == keys.length)
+                    $rootScope.$broadcast('reloadHiddenRows', { rows: data.hiddenRows });
+                  modalService.hideReportLoadingModal();
+                });
               });
             });
+          }).catch(function (err) {
+            modalService.hideReportLoadingModal();
+            //console.log(err);
           });
-        }).catch(function (err) {
+        }
+        else{
           modalService.hideReportLoadingModal();
-          //console.log(err);
-        });
+        }
 
       }
       else{
