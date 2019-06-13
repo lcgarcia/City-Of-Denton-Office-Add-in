@@ -366,11 +366,19 @@ app.service("jobcostService2", [
         var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
 
         _.forEach(data.subTotalRows, function (val) {
-          var numberRange = worksheet.getRange('E'+val+':L'+val);
+          var numberRange = worksheet.getRange('H'+val+':L'+val);
           var range = worksheet.getRange('A'+val+':Z'+val);
           range.format.font.color = 'blue';
           range.format.font.bold = true;
-          //numberRange.numberFormat = [_.fill(Array(7), formatPricingRed)];
+          numberRange.numberFormat = [_.fill(Array(5), formatPricingRed)];
+          if(data.layout == "FERC/Cost Code Subtotals"){
+            numberRange = worksheet.getRange('H'+(val+1)+':L'+(val+1));
+            range = worksheet.getRange('A'+(val+1)+':Z'+(val+1));
+            range.format.font.color = 'blue';
+            range.format.font.bold = true;
+            numberRange.numberFormat = [_.fill(Array(5), formatPricingRed)];
+          }
+          
         });
 
         return ctx.sync()
