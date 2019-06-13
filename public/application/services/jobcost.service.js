@@ -656,7 +656,7 @@ app.service("jobcostService", [
           range.format.font.color = 'blue';
           range.format.font.bold = true;
           numberRange.numberFormat = [_.fill(Array(7), formatPricingRed)];
-          if(data.layout == "FERC Details"){
+          if(data.layout == "FERC Details" || data.layout == "FERC/Cost Code Subtotals"  || data.layout ==  "Cost Type Subtotals"){
             numberRange = worksheet.getRange('E'+(val+1)+':K'+(val+1));
             range = worksheet.getRange('A'+(val+1)+':Z'+(val+1));
             range.format.font.color = 'blue';
