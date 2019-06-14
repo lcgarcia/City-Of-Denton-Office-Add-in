@@ -242,6 +242,7 @@ app.service("jobcostService", [
               }
               next(null, data);
             },
+            deleteWorkSheets,
             loadWorkSheets,
             findWorkSheet,
             initalizeWorkSheet,
@@ -249,7 +250,8 @@ app.service("jobcostService", [
             setHeader,
             createTable,
             addTableHeader,
-            addEmptyTableRows
+            addEmptyTableRows,
+            removeOldSheet
           ], cb);
         }
         else{
@@ -274,7 +276,7 @@ app.service("jobcostService", [
               }
               next(null, data);
             },
-            //deleteWorkSheets,
+            deleteWorkSheets,
             loadWorkSheets,
             findWorkSheet,
             initalizeWorkSheet,
@@ -289,7 +291,7 @@ app.service("jobcostService", [
             addSubTotal,
             addGrandTotal,
             addFormatting,
-            //removeOldSheet,
+            removeOldSheet,
             //insertData
           ], cb);
         }
@@ -379,7 +381,6 @@ app.service("jobcostService", [
         
         _.forEach(data.sheets.items, function (sheet) {
           if(sheet.name == dataSheetName){
-            sheet.name = 'Jobcost-90_old';
             dataCreated = true;
           }
         });
@@ -396,60 +397,23 @@ app.service("jobcostService", [
     }
 
     var initalizeWorkSheet = function (data, next) {
-      // if(!data.dataCreated){
+      if(!data.dataCreated){
         Excel.run(function (ctx) {
           var worksheets = ctx.workbook.worksheets;
-          var worksheet = worksheets.add(data.dataSheetName);
+          var worksheet = worksheets.add();
+          worksheet.name = data.dataSheetName;
           worksheet.load("name, position");
 
           worksheet.activate();
-          worksheets.load("items, name");
-          return ctx.sync()
+
+        return ctx.sync()
           .then(function () {
-            var sheetMap = _.map(ctx.workbook.worksheets.items, function(sheet) { return sheet.id });
-            _.forEach(sheetMap, function (id, key) {
-              var ws = worksheets.getItem(id);
-              if ( key != sheetMap.length - 1 )
-                ws.delete();
-            });
-           
-            return ctx.sync()
-            .then(function (response) {
-              next(null, data);  
-            }).catch(function (err) {
-              next(null, data);
-            });
-          }).catch(function (err) {
             next(null, data);
+          }).catch(function (err) {
+            next(err);
           });
         });
-      // } else {
-      //   Excel.run(function (ctx) {
-      //     var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
-      //     var worksheets = ctx.workbook.worksheets;
-      //     worksheets.load("items");
-      //     return ctx.sync()
-      //     .then(function () {
-      //       var sheetMap = _.map(ctx.workbook.worksheets.items, function(sheet) { return sheet.id });
-
-      //       _.forEach(sheetMap, function (id, key) {
-      //         if (id != worksheet.id) {
-      //           var ws = worksheets.getItem(id);
-      //           ws.delete();
-      //         };
-      //       });
-           
-      //       return ctx.sync()
-      //       .then(function (response) {
-      //         next(null, data);  
-      //       }).catch(function (err) {
-      //         next(null, data);
-      //       });
-      //     }).catch(function (err) {
-      //       next(null, data);
-      //     });
-      //   });
-      // }
+      } else next(null, data);
     }
 
     var setHeader = function (data, next) {
