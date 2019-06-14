@@ -351,7 +351,8 @@ app.service("jobcostService", [
       // if(!data.dataCreated){
         Excel.run(function (ctx) {
           var worksheets = ctx.workbook.worksheets;
-          var worksheet = worksheets.add(data.dataSheetName);
+          var worksheet = worksheets.add();
+          worksheet.name = data.dataSheetName;
           worksheet.load("name, position");
 
           worksheet.activate();
