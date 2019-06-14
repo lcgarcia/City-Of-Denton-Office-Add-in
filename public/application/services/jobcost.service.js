@@ -166,6 +166,54 @@ app.service("jobcostService", [
       return requestRetry(makeRequest);
     };
 
+
+    /**
+     * Get data for the spreadsheet
+     * @param  {string} type          Type of spreadsheet
+     * @param  {string} departmentKey 
+     * @param  {string} companyKey    
+     * @param  {string} projectKey    
+     * @param  {string} jobKey        
+     * @param  {object} options       Object containing the data for new and ka jobcosts
+     *                                { status: jobStatus, catField, catField1, catCode, catCode1 }
+     * @return {promise}              Promise from the $http request
+     */
+    this.getTrendSheetData = function (type, monthStart, monthEnd, yearStart, yearEnd, departmentKey, companyKey, projectKey, jobKey, layout, options) {
+      var makeRequest = function (cb) {
+        var requestData = {
+          reportSelected: type,
+          monthStart: monthStart,
+          monthEnd: monthEnd,
+          yearStart: yearStart,
+          yearEnd: yearEnd,
+          layout: layout,
+          department: departmentKey,
+          company: companyKey,
+          project: projectKey,
+          job: jobKey,
+          projectList: options.projects, 
+        };
+
+        
+        requestData.status = options.jobStatus;
+        requestData.catField = options.catField;
+        requestData.catField1 = options.catField1;
+        requestData.catCode = options.catCode;
+        requestData.catCode1 = options.catCode1;
+        
+
+        return $http.post('/ks2inc/job/sheet/data', JSON.stringify(requestData), {headers: {'Content-Type': 'application/json'} })
+        .then(function (response) {
+          cb(null, response.data);
+        },
+        function (httpError) {
+          cb(httpError.status + " : " + httpError.data);
+        });
+      };
+
+      return requestRetry(makeRequest);
+    };
+
     function getQueryType(type){
       if(type === 'ka') {return '?type=ka'}
       else if(type === 'e') {return '?type=e'}

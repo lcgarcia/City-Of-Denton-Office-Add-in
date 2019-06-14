@@ -299,4 +299,64 @@ var jobcost2ReportDates = function (event) {
        }
        return -1;
      }
+
+
+    $("#yearStart2").datepicker({
+        autoclose: !0,
+        disableTouchKeyboard: !0,
+        minViewMode: 2,
+        maxViewMode: 2,
+        format: "yyyy",
+        endDate: '+1d'
+    });
+
+    $("#yearEnd2").datepicker({
+        autoclose: !0,
+        disableTouchKeyboard: !0,
+        minViewMode: 2,
+        maxViewMode: 2,
+        format: "yyyy",
+        endDate: '+1y'
+    });
+    
+
+
+    //Year Start Events
+    $("#yearStart2").datepicker().on('changeDate', function(selected){
+        if($("#yearStartSelection2").val() && $("#yearEndSelection2").val()){
+            var selectedStartMonth = $("#monthStartSelection2")[0];
+            startDate = $("#yearStartSelection2").val();
+            startMonth = selectedStartMonth.selectedOptions[0].text;
+           
+            if(changeStartYear2()){
+                $('#yearEndSelection2').datepicker('setDate', startDate);
+            }
+        }
+    });
+    //Year End Events
+    $("#yearEnd2").datepicker().on('changeDate', function(selected){
+        if($("#yearStartSelection2").val() && $("#yearEndSelection2").val()){
+            startDate = $("#yearEndSelection2").val();
+
+            if(changeStartYear2()){
+                $('#yearStartSelection2').datepicker('setDate', startDate);
+            }
+        }
+    });
+
+    $("#yearStartSelection2").val(currentYear.toString()); 
+    $("#yearStartSelection2").datepicker("update"); 
+
+    $("#yearEndSelection2").val((currentYear+1).toString()); 
+    $("#yearEndSelection2").datepicker("update"); 
+
+    function changeStartYear2(){
+        startYear = parseInt($("#yearStartSelection2").val());
+        endYear = parseInt($("#yearEndSelection2").val());
+        if(endYear < startYear){
+            return true;
+        }
+        return false;
+    }
+
 }

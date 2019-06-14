@@ -80,7 +80,14 @@ router.post('/sheet/data', (req, res) => {
       options.catCode1 = req.body.catCode1;
 
       if(reportSelected == 'ka'){
-        const sql = generator.createSelectStatement(req.body.month, req.body.year, options);
+        var sql;
+        if((options.layout+"").includes("Trend")){
+          sql = generator.createTrendSelectStatement(req.body.monthStart, req.body.monthEnd, req.body.yearStart, req.body.yearEnd, options);
+        }
+        else{
+          sql = generator.createSelectStatement(req.body.month, req.body.year, options);
+        }
+        
         const queryDB = (cb) => {
           async.waterfall([
             (next) => {

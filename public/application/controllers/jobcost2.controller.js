@@ -54,6 +54,11 @@ app.controller('jobcost2Ctrl', [
       $scope.selectedValues.dates.jdeYear = "";
       $scope.selectedValues.dates.jdeFiscalYear = "";
 
+      $scope.selectedValues.dates.monthStart2 = "";
+      $scope.selectedValues.dates.monthEnd2 = "";
+      $scope.selectedValues.dates.yearStart2 = "";
+      $scope.selectedValues.dates.yearEnd2 = "";
+
       $scope.reportDetails.show = false;
       $scope.reportDetails.msg = "";
 
@@ -64,6 +69,8 @@ app.controller('jobcost2Ctrl', [
       }
       $scope.selectedValues.dates.monthStart = $scope.monthValues[11];
       $scope.selectedValues.dates.monthEnd = $scope.monthValues[11];
+      $scope.selectedValues.dates.monthStart2 = $scope.monthValues[11];
+      $scope.selectedValues.dates.monthEnd2 = $scope.monthValues[11];
 
       setDetailData();
       setReportData();
@@ -75,10 +82,10 @@ app.controller('jobcost2Ctrl', [
         {name:"No Details"},
         {name:"Cost Code/Type Details"},
         {name:"FERC/Cost Code Subtotals"},
-        {name:"Cost Type Subtotals"}/*,
+        {name:"Cost Type Subtotals"},
         {name:"Trend - Expenditures"},
         {name:"Trend - Budget"},
-        {name:"Trend - Encumbrances"}*/
+        {name:"Trend - Encumbrances"}
       ];
 
       //Set Detail IDs
@@ -228,6 +235,24 @@ app.controller('jobcost2Ctrl', [
       });
     }
 
+    var updatedMonths = function (monthStart, monthEnd) {
+      if(monthStart < 3)monthStart += 10;
+      else{
+        if(monthStart == 12) monthStart++;
+        else monthStart -= 2;
+      }
+
+      if(monthEnd < 3)monthEnd += 10;
+      else{
+        if(monthEnd == 12) monthEnd++;
+        else monthEnd -= 2;
+      }
+      //$scope.debugMsg = JSON.stringify($scope.selectedValues.dates.yearStart2 + "|" + $scope.selectedValues.dates.yearEnd2 + "] ["+ monthStart + " | " + monthEnd);
+      if($scope.selectedValues.dates.yearStart2 == $scope.selectedValues.dates.yearEnd2 && monthStart > monthEnd){
+        $scope.selectedValues.dates.monthEnd2 = $scope.selectedValues.dates.monthStart2;
+      }
+    }
+
     // $scope.selectedProject = updateJobs
     // $scope.selectedJobStatus = updateJobs
 
@@ -278,21 +303,26 @@ app.controller('jobcost2Ctrl', [
     }
 
     /**
-     * [selectedMonthStart updates end month when start date > end date]
+     * [selectedDetail updates period ui view depending on selection]
      */
-    $scope.selectedMonthStart = function(){
-      if($scope.selectedValues.dates.yearStart == $scope.selectedValues.dates.yearEnd && $scope.selectedValues.dates.monthStart.key > $scope.selectedValues.dates.monthEnd.key){
-        $scope.selectedValues.dates.monthEnd = $scope.selectedValues.dates.monthStart;
+    $scope.selectedDetail = function(){
+      if($scope.selectedValues.details.key < 4){
+        $("#datePanel1").show();
+        $("#datePanel2").hide();
+      }
+      else{
+        $("#datePanel1").hide();
+        $("#datePanel2").show();
       }
     }
 
     /**
-     * [selectedMonthEnd updates start month when start date > end date]
+     * [selectedMonthStart updates end month when start date > end date]
      */
-    $scope.selectedMonthEnd = function(){
-      if($scope.selectedValues.dates.yearStart == $scope.selectedValues.dates.yearEnd && $scope.selectedValues.dates.monthStart.key > $scope.selectedValues.dates.monthEnd.key){
-        $scope.selectedValues.dates.monthStart = $scope.selectedValues.dates.monthEnd;
-      }
+    $scope.selectedMonthStart = function(){
+      // if($scope.selectedValues.dates.yearStart == $scope.selectedValues.dates.yearEnd && $scope.selectedValues.dates.monthStart.key > $scope.selectedValues.dates.monthEnd.key){
+      //   $scope.selectedValues.dates.monthEnd = $scope.selectedValues.dates.monthStart;
+      // }
     }
 
     //Set JDE Fiscal Years
@@ -307,6 +337,35 @@ app.controller('jobcost2Ctrl', [
     //Open Calendar for JDE Years
     $scope.jdeYearClick = function() {
       $("#jdeCalendar").click();
+    }
+
+
+    /**
+     * [selectedMonthStart updates end month when start date > end date]
+     */
+    $scope.selectedMonthStart2 = function(){
+      updatedMonths($scope.selectedValues.dates.monthStart2.key, $scope.selectedValues.dates.monthEnd2.key);
+    }
+
+    /**
+     * [selectedMonthEnd updates start month when start date > end date]
+     */
+    $scope.selectedMonthEnd2 = function(){
+      updatedMonths($scope.selectedValues.dates.monthStart2.key, $scope.selectedValues.dates.monthEnd2.key);
+    }
+
+    //Set JDE Fiscal Years
+    $scope.jdeYearChange2 = function() {
+      var selectedDates = $scope.selectedValues.dates;
+      if(selectedDates && selectedDates.jdeFiscalYear2 == "" && selectedDates.jdeYear2 != ""){
+        var year = parseInt(selectedDates.jdeYear2);
+        selectedDates.jdeFiscalYear2 = year + "-" + (year+1);
+      }
+    }
+
+    //Open Calendar for JDE Years
+    $scope.jdeYearClick2 = function() {
+      $("#jdeCalendar2").click();
     }
 
     $scope.getSheetData = function () {
@@ -339,31 +398,62 @@ app.controller('jobcost2Ctrl', [
       $scope.reportDetails.msg = "";
       $scope.reportDetails.name = "Jobcost-90";
 
-      jobcostService.getSheetData(rType, month, year, dKey, cKey, pKey, jKey, layout, options)
-      .then(function (data) {
-        try {
-          _.forEach(data.hiddenRows, function(child) {
-            child.selected = false;
-          });
-          
-          data.scope = $scope;
-          if(rType == 'ka'){
-            jobcostService2.insertTable(data, function(err, response) {
-              $rootScope.$broadcast('reloadHiddenRows', { rows: data.hiddenRows });
-              modalService.hideReportLoadingModal();
+      if((layout+"").includes("Trend")){
+        var monthStart = $scope.selectedValues.dates.monthStart2.name;
+        var monthEnd = $scope.selectedValues.dates.monthEnd2.name;
+        var yearStart = $scope.selectedValues.dates.yearStart2;
+        var yearEnd = $scope.selectedValues.dates.yearEnd2;
+        jobcostService.getTrendSheetData(rType, monthStart, monthEnd, yearStart, yearEnd, dKey, cKey, pKey, jKey, layout, options)
+        .then(function (data) {
+          try {
+            _.forEach(data.hiddenRows, function(child) {
+              child.selected = false;
             });
-          }
-          else{
-            jobcostService.insertTable(data, function(err, response) {
-              $rootScope.$broadcast('reloadHiddenRows', { rows: data.hiddenRows });
-              modalService.hideReportLoadingModal();
+            
+            data.scope = $scope;
+            if(rType == 'ka'){
+              jobcostService2.insertTable(data, function(err, response) {
+                $rootScope.$broadcast('reloadHiddenRows', { rows: data.hiddenRows });
+                modalService.hideReportLoadingModal();
+              });
+            }
+            else{
+              jobcostService.insertTable(data, function(err, response) {
+                $rootScope.$broadcast('reloadHiddenRows', { rows: data.hiddenRows });
+                modalService.hideReportLoadingModal();
+              });
+            }
+          } catch (e) {
+            console.log(data);
+          }       
+        });
+      }
+      else{
+        jobcostService.getSheetData(rType, month, year, dKey, cKey, pKey, jKey, layout, options)
+        .then(function (data) {
+          try {
+            _.forEach(data.hiddenRows, function(child) {
+              child.selected = false;
             });
-          }
-        } catch (e) {
-          console.log(data);
-        }       
-      });
-      
+            
+            data.scope = $scope;
+            if(rType == 'ka'){
+              jobcostService2.insertTable(data, function(err, response) {
+                $rootScope.$broadcast('reloadHiddenRows', { rows: data.hiddenRows });
+                modalService.hideReportLoadingModal();
+              });
+            }
+            else{
+              jobcostService.insertTable(data, function(err, response) {
+                $rootScope.$broadcast('reloadHiddenRows', { rows: data.hiddenRows });
+                modalService.hideReportLoadingModal();
+              });
+            }
+          } catch (e) {
+            console.log(data);
+          }       
+        });
+      }
     };
 
     
