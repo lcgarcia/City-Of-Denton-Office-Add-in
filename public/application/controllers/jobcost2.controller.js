@@ -9,8 +9,9 @@ app.controller('jobcost2Ctrl', [
   '$state',
   'jobcostService',
   'jobcostService2',
+  'trendService',
   'modalService',
-  function ($http, $scope, $rootScope, $state, jobcostService, jobcostService2, modalService) {
+  function ($http, $scope, $rootScope, $state, jobcostService, jobcostService2, trendService, modalService) {
 
     $scope.filteredDepartment = [];
     $scope.filteredCompany = [];
@@ -399,8 +400,8 @@ app.controller('jobcost2Ctrl', [
       $scope.reportDetails.name = "Jobcost-90";
 
       if((layout+"").includes("Trend")){
-        var monthStart = $scope.selectedValues.dates.monthStart2.name;
-        var monthEnd = $scope.selectedValues.dates.monthEnd2.name;
+        var monthStart = $scope.selectedValues.dates.monthStart2.key;
+        var monthEnd = $scope.selectedValues.dates.monthEnd2.key;
         var yearStart = $scope.selectedValues.dates.yearStart2;
         var yearEnd = $scope.selectedValues.dates.yearEnd2;
         jobcostService.getTrendSheetData(rType, monthStart, monthEnd, yearStart, yearEnd, dKey, cKey, pKey, jKey, layout, options)
@@ -411,18 +412,11 @@ app.controller('jobcost2Ctrl', [
             });
             
             data.scope = $scope;
-            if(rType == 'ka'){
-              jobcostService2.insertTable(data, function(err, response) {
-                $rootScope.$broadcast('reloadHiddenRows', { rows: data.hiddenRows });
-                modalService.hideReportLoadingModal();
-              });
-            }
-            else{
-              jobcostService.insertTable(data, function(err, response) {
-                $rootScope.$broadcast('reloadHiddenRows', { rows: data.hiddenRows });
-                modalService.hideReportLoadingModal();
-              });
-            }
+            trendService.insertTable(data, function(err, response) {
+              $rootScope.$broadcast('reloadHiddenRows', { rows: data.hiddenRows });
+              modalService.hideReportLoadingModal();
+            });
+
           } catch (e) {
             console.log(data);
           }       

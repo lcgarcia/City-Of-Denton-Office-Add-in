@@ -227,7 +227,7 @@ app.service("jobcostService", [
           async.waterfall([
             function (next) {
               var alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
-              data.sheetData = ["No Data Found. Please change your selections amd try again"," "," "," "," "," "," "," "," "," "," "];
+              data.sheetData = ["No Data Found. Please change your selections and try again"," "," "," "," "," "," "," "," "," "," "];
               data.alphabetRangeValue = alphabet[data.sheetData[0].length-1];
               data.headerOffset = 6;
               data.alphabet = alphabet;
@@ -248,8 +248,6 @@ app.service("jobcostService", [
             initalizeWorkSheet,
             clearSheet,
             setHeader,
-            createTable,
-            addTableHeader,
             addEmptyTableRows,
             removeOldSheet
           ], cb);
@@ -546,7 +544,7 @@ app.service("jobcostService", [
     var addEmptyTableRows = function (data, next) {
       Excel.run(function (ctx) {
         var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
-        var messageData = [["No Data Found. Please change your selections amd try again", "", "", "", "", "", "", "", "", "", ""]];
+        var messageData = [["No Data Found. Please change your selections and try again", "", "", "", "", "", "", "", "", "", ""]];
         var messageRange = worksheet.getRange('A6:K6');
         messageRange.merge(true);
         messageRange.load('values');

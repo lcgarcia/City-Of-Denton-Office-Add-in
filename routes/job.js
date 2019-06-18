@@ -62,6 +62,7 @@ router.get('/ui/data', (req, res) => {
 router.post('/sheet/data', (req, res) => {
   getDataSource()
   .then(schema => {
+    var sql;
     const reportSelected = req.body.reportSelected || '';
     const generator = new Generator({ type: reportSelected || '', schema: schema.schema, ctrlSchema: schema.controlSchema })
     const options = {
@@ -78,11 +79,25 @@ router.post('/sheet/data', (req, res) => {
       options.catField1 = req.body.catField1;
       options.catCode = req.body.catCode;
       options.catCode1 = req.body.catCode1;
+      
+      var isTrend = (options.layout+"").includes("Trend");
+      if(reportSelected == 'ka' || isTrend){
+        var managerSql = "SELECT DISTINCT trim(MCMCU) AS MCMCU, trim(DRDL01) AS DRDL01 FROM prodctl.f0005 A, proddta.f0006 B WHERE A.DRKY = B.MCRP21 (+) and A.DRSY = '00' and A.DRRT = '21' and trim(MCMCU) Is not Null ORDER BY trim(MCMCU) ";
+        if(isTrend){
+          //Determine how many periods to print
+          var intFirst = 12 - req.body.monthStart + 1;
+          var intMiddle = (req.body.yearEnd - req.body.yearStart - 1) * 12;
+          var intLast = req.body.monthEnd;
+          options.trend = {};
+          options.trend.periods = intFirst + intMiddle + intLast;
+          options.trend.monthStart = req.body.monthStart;
+          options.trend.monthEnd = req.body.monthEnd;
+          options.trend.yearStart = req.body.yearStart;
+          options.trend.yearEnd = req.body.yearEnd;
+          options.trend.report = reportSelected;
 
-      if(reportSelected == 'ka'){
-        var sql;
-        if((options.layout+"").includes("Trend")){
-          sql = generator.createTrendSelectStatement(req.body.monthStart, req.body.monthEnd, req.body.yearStart, req.body.yearEnd, options);
+          sql = generator.createTrendSelectStatement(req.body.monthStart, req.body.yearStart, req.body.yearEnd, options);
+          managerSql = "SELECT trim(mcmcu || ' ' || mcdl01) AS drdl01, trim(mcmcu) AS mcmcu FROM proddta.f0006 WHERE mcstyl = 'PJ'";
         }
         else{
           sql = generator.createSelectStatement(req.body.month, req.body.year, options);
@@ -91,12 +106,12 @@ router.post('/sheet/data', (req, res) => {
         const queryDB = (cb) => {
           async.waterfall([
             (next) => {
-              knexQuery.query("SELECT DISTINCT trim(MCMCU) AS MCMCU, trim(DRDL01) AS DRDL01 FROM prodctl.f0005 A, proddta.f0006 B WHERE A.DRKY = B.MCRP21 (+) and A.DRSY = '00' and A.DRRT = '21' and trim(MCMCU) Is not Null ORDER BY trim(MCMCU) ")
+              knexQuery.query(managerSql)
               .then(managers => next(null, managers))
               .catch(err => next(err));
             }, 
             (managers, next) => {
-              knexQuery.jobSheetDataQuery(sql, req.body.projectList, managers, options.layout)
+              knexQuery.jobSheetDataQuery(sql, req.body.projectList, managers, options)
               .then(result => cb(null, result))
               .catch(err => next(err));
             }
@@ -109,9 +124,9 @@ router.post('/sheet/data', (req, res) => {
         });
       }
       else{
-        const sql = generator.createSelectStatement(req.body.month, req.body.year, options);
+        sql = generator.createSelectStatement(req.body.month, req.body.year, options);
         const queryDB = (cb) => {
-          knexQuery.jobSheetDataQuery(sql, req.body.projectList, null, options.layout)
+          knexQuery.jobSheetDataQuery(sql, req.body.projectList, null, options)
           .then(result => cb(null, result))
           .catch(err => cb(err));
         };
@@ -125,7 +140,7 @@ router.post('/sheet/data', (req, res) => {
     else{
       const sql = generator.createSelectStatement(req.body.month, req.body.year, options);
       const queryDB = (cb) => {
-        knexQuery.jobSheetDataQuery(sql, req.body.projectList, null, options.layout)
+        knexQuery.jobSheetDataQuery(sql, req.body.projectList, null, options)
         .then(result => cb(null, result))
         .catch(err => cb(err));
       };
