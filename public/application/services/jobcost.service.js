@@ -289,7 +289,7 @@ app.service("jobcostService", [
             addSubTotal,
             addGrandTotal,
             addFormatting,
-            removeOldSheet,
+            removeOldSheet
             //insertData
           ], cb);
         }
