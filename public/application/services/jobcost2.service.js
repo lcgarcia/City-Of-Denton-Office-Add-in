@@ -317,10 +317,12 @@ app.service("jobcostService2", [
       Excel.run(function (ctx) {
         var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
         var tables = ctx.workbook.tables;
+        var tableHeader = tables.getItem(data.tableName).getHeaderRowRange();
         if(data.layout == "No Details"){
-          tables.getItem(data.tableName).getHeaderRowRange().values = [["Dept", "Company", "Project Manager", "Project", "Bus Unit", "Budget", "Expendatures", "Remaining", "Encumbrances", "Unencumbered"]];
+          tableHeader.values = [["Dept", "Company", "Project Manager", "Project", "Bus Unit", "Budget", "Expenditures", "Remaining", "Encumbrances", "Unencumbered"]];
         }
-        else tables.getItem(data.tableName).getHeaderRowRange().values = [["Dept", "Company", "Project Manager", "Project", "Bus Unit", "Object", "Subsidary", "Budget", "Expendatures", "Remaining", "Encumbrances", "Unencumbered"]];
+        else tableHeader.values = [["Dept", "Company", "Project Manager", "Project", "Bus Unit", "Object", "Subsidary", "Budget", "Expenditures", "Remaining", "Encumbrances", "Unencumbered"]];
+        tableHeader.format.horizontalAlignment = 'Center';
 
         return ctx.sync()
           .then(function (response) {
