@@ -242,7 +242,7 @@ app.service("trendService", [
         // if(data.isEmpty) tableHeader.rowHidden = false;
         // else tableHeader.rowHidden = true;
 
-        var leftColumns = worksheet.getRange('A:C');
+        var leftColumns = worksheet.getRange('A:B');
         leftColumns.format.horizontalAlignment = 'Center';
 
         var rightColumns = worksheet.getRange('E:G');
@@ -303,9 +303,10 @@ app.service("trendService", [
 
     var addTableHeader = function (data, next) {
       Excel.run(function (ctx) {
-        var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
         var tables = ctx.workbook.tables;
-        tables.getItem(data.tableName).getHeaderRowRange().values = data.trend.header;
+        var tableHeader = tables.getItem(data.tableName).getHeaderRowRange();
+        tableHeader.values = data.trend.header;
+        tableHeader.format.horizontalAlignment = 'Center';
 
         return ctx.sync()
           .then(function (response) {
@@ -513,7 +514,7 @@ app.service("trendService", [
         var length = headerOffset + data.sheetData.length;
         var grandTotalData = data.trend.grandTotal;
 
-        var grandRange = worksheet.getRange('D' + (length+1));
+        var grandRange = worksheet.getRange('C' + (length+1));
         grandRange.load('values');
         grandRange.values = "Grand Total";
         grandRange.format.font.bold = true;

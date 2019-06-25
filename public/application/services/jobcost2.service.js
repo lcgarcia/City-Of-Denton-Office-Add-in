@@ -254,7 +254,7 @@ app.service("jobcostService2", [
         // if(data.isEmpty) tableHeader.rowHidden = false;
         // else tableHeader.rowHidden = true;
 
-        var leftColumns = worksheet.getRange('A:C');
+        var leftColumns = worksheet.getRange('A:B');
         leftColumns.format.horizontalAlignment = 'Center';
 
         var rightColumns = worksheet.getRange('E:G');
