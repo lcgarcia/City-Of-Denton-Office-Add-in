@@ -429,6 +429,10 @@ app.controller('jobcost2Ctrl', [
             _.forEach(data.hiddenRows, function(child) {
               child.selected = false;
             });
+
+            if (data.sheetData.length > 5000){
+              $scope.modalData.message = "Loading " + data.sheetData.length + " records...";
+            }
             
             data.scope = $scope;
             if(rType == 'ka'){
