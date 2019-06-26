@@ -366,7 +366,12 @@ app.service("trendService", [
             }
 
             data.scope.$apply(function () {
-              data.scope.modalData.message = 'Loading ' + (j+1)*chunk + ' rows of ' + split.length;
+              if ((j+1) * chunk > data.sheetData.length) {
+                data.scope.modalData.message = 'Loading ' + data.sheetData.length + ' rows of ' + data.sheetData.length;
+              } else {
+                data.scope.modalData.message = 'Loading ' + (j+1)*chunk + ' rows of ' + data.sheetData.length;
+              }
+
             });
             
             j++;
@@ -438,7 +443,11 @@ app.service("trendService", [
               }
 
               data.scope.$apply(function () {
-                data.scope.modalData.message = 'Formatting ' + (j+1)*chunk + ' rows of ' + split.length;
+                if ((j+1) * chunk > data.sheetData.length) {
+                  data.scope.modalData.message = 'Formatting ' + data.sheetData.length + ' rows of ' + data.sheetData.length;
+                } else {
+                  data.scope.modalData.message = 'Formatting ' + (j+1)*chunk + ' rows of ' + data.sheetData.length;
+                }
               });
 
               j++;

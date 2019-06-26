@@ -417,11 +417,10 @@ app.service("jobcostService", [
     var setHeader = function (data, next) {
       Excel.run(function (ctx) {
         var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
-        var jsonHiddenData = JSON.stringify(data.hiddenRows);
 
         var header = [
           ['', '', '', 'City of Denton - Job Cost Summary', '', '', 'Dept:', data.scope.selectedValues.department.name, 'Month:', data.scope.selectedValues.dates.monthStart.name, ''],
-          [data.hiddenRows.length > 1000 ? '' : jsonHiddenData, '', '', moment().format('MM/DD/YYYY, h:mm:ss a'), '', '', 'Company:', data.scope.selectedValues.company.name, 'JDE Fiscal Year:', data.scope.selectedValues.dates.jdeYear + ' - ' + (parseInt(data.scope.selectedValues.dates.jdeYear)+1), ''],
+          [data.jsonHiddenData, '', '', moment().format('MM/DD/YYYY, h:mm:ss a'), '', '', 'Company:', data.scope.selectedValues.company.name, 'JDE Fiscal Year:', data.scope.selectedValues.dates.jdeYear + ' - ' + (parseInt(data.scope.selectedValues.dates.jdeYear)+1), ''],
           ['', '', '', 'Unaudited/Unofficial-Not intended for public distribution', '', '', 'Project:', data.scope.selectedValues.project.name, 'Layout:', data.layout, ''],
           ['', '', '', '', '', '', 'Job:', data.scope.selectedValues.job.name, '', '', '']
         ];
@@ -590,7 +589,11 @@ app.service("jobcostService", [
             }
 
             data.scope.$apply(function () {
-              data.scope.modalData.message = 'Loading ' + (j+1)*chunk + ' rows of ' + split.length;
+              if ((j+1) * chunk > data.sheetData.length) {
+                data.scope.modalData.message = 'Loading ' + data.sheetData.length + ' rows of ' + data.sheetData.length;
+              } else {
+                data.scope.modalData.message = 'Loading ' + (j+1)*chunk + ' rows of ' + data.sheetData.length;
+              }
             });
             j++;
 
@@ -735,7 +738,11 @@ app.service("jobcostService", [
               }
 
               data.scope.$apply(function () {
-                data.scope.modalData.message = 'Formatting ' + (j+1)*chunk + ' rows of ' + split.length;
+                if ((j+1) * chunk > data.sheetData.length) {
+                  data.scope.modalData.message = 'Formatting ' + data.sheetData.length + ' rows of ' + data.sheetData.length;
+                } else {
+                  data.scope.modalData.message = 'Formatting ' + (j+1)*chunk + ' rows of ' + data.sheetData.length;
+                }
               });
 
               j++;

@@ -28,7 +28,9 @@ app.controller('setupCtrl', [
     ];
     $scope.modalLoad = {};
     $scope.user = {};
+    $scope.reportDetails = {};
     $scope.modalData = {message: 'Loading...', offlineMessage: 'Oh no! You are offline!'};
+    $scope.reportDetails.selectAll = false;
 
     window.addEventListener('online', function() {
       modalService.hideOfflineModal();
@@ -43,6 +45,8 @@ app.controller('setupCtrl', [
     $rootScope.$on('reloadHiddenRows', function(event, opts) {
       $scope.reportDetails.worksheet = '';
       $scope.getActiveSheet();
+      // $scope.reportDetails.selectAll = false;
+      // $("#selectAll").prop( "checked", false );
     });
 
     $scope.filterReports = function (data) {
@@ -80,7 +84,6 @@ app.controller('setupCtrl', [
 
     function loadPage(){
       Office.initialize = function (reason) {}
-      $scope.reportDetails = {};
       $scope.reportDetails.worksheet = "Sheet1";
       $scope.reportDetails.selectAll = false;
       $scope.reportDetails.searchInput = "";
@@ -171,6 +174,7 @@ app.controller('setupCtrl', [
               changeReportDetails(activeWorksheet.name, jsonDataRange.values);
             }
           }).catch(function (err) {
+            // $scope.reportDetails.msg = err;
           });
       });
     }
@@ -202,18 +206,12 @@ app.controller('setupCtrl', [
 
         if(jsonSheetData != null && jsonSheetData != ""){
           var jsonString = JSON.stringify(jsonSheetData);
-          var indexStart = jsonString.indexOf("{");
-          var indexEnd = jsonString.indexOf("}", (jsonString.length-6));
-          jsonString = jsonString.substring(indexStart, indexEnd+1);
-          jsonString = jsonString.replace(/\\"/g, '"');
-          jsonData = jsonString.split(",{");
+          var jsonData = jsonString.replace(/\\"/g, "\"");
+          var jsonObj = jsonData.substring(3, jsonData.length-3);
+          $scope.reportDetails.hiddenRows = JSON.parse(jsonObj);
 
-          $scope.reportDetails.hiddenRows.push(JSON.parse(jsonData.shift()));
-          _.forEach(jsonData, function(data) {
-            $scope.reportDetails.hiddenRows.push(JSON.parse("{"+data));
-          });
-
-          var unselectedFound = _.find($scope.reportDetails.hiddenRows, function(o) { return o.selected == false; });
+          //TODO: This always returns true for some reason.. 
+          var unselectedFound = _.find($scope.reportDetails.hiddenRows, ['selected',false]);
           if(unselectedFound) $scope.reportDetails.selectAll = false;
           else $scope.reportDetails.selectAll = true;
 
@@ -248,12 +246,43 @@ app.controller('setupCtrl', [
     };
 
     $scope.toggleAllRows = function (show) {
-      modalService.showDataLoadingModal();
       var selected = $('#selectAll').is(':checked');
-      _.forEach($scope.reportDetails.hiddenRows, function (row) {
-        row.selected = selected;
-        toggleHiddenRow(row, selected);
-      });
+      var water = [];
+
+      $scope.modalData.message = selected ? "Expanding Rows..." : "Collapsing Rows...";
+      modalService.showReportLoadingModal();
+
+      try {
+        _.forEach($scope.reportDetails.hiddenRows, function (row) {
+          row.selected = selected;
+
+          water.push(function (cb) {
+            Excel.run(function(ctx) {
+              var worksheet = ctx.workbook.worksheets.getItem($scope.reportDetails.worksheet);
+              var range = worksheet.getRange(row.range);
+              range.rowHidden = !selected;
+
+              return ctx.sync()
+              .then(function (response) {
+                cb(null);
+              }).catch(function (err) {
+                cb(null);
+              });
+            });
+          });
+        });
+
+        async.waterfall(water, function (err, res) {
+          $scope.$apply(function () {
+            modalService.hideReportLoadingModal();
+          });
+        });
+      } 
+      catch (e) {
+        // $scope.$apply(function () {
+        //   $scope.reportDetails.msg = e;
+        // });
+      }
     }
 
     $scope.toggleRow = function (label) {
@@ -275,17 +304,10 @@ app.controller('setupCtrl', [
 
     function toggleHiddenRow(label, selected){
       Excel.run(function (ctx) {
-        // var regex = new RegExp(label.range,"gi");
-        // if (regex.test("A6")) {
-        //   var split = label.range.split(':')
-        //   label.range = 'A7:' + split[1];
-        // }
         
         var worksheet = ctx.workbook.worksheets.getItem($scope.reportDetails.worksheet);
         var range = worksheet.getRange(label.range);
         range.rowHidden = !selected;
-
-        
 
         return ctx.sync()
           .then(function(){
@@ -293,11 +315,9 @@ app.controller('setupCtrl', [
               modalService.hideDataLoadingModal();
             });
           }).catch(function (err) {
-            /*
-            $scope.$apply(function () {
-              $scope.reportDetails.msg = err;
-            });
-            */
+            // $scope.$apply(function () {
+            //   $scope.reportDetails.msg = err;
+            // });
           });
       });
     }
