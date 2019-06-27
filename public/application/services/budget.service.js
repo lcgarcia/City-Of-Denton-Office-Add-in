@@ -152,6 +152,15 @@ app.service("budgetService", [
         range = worksheet.getRange("V4:V"+length);
         range.format.columnWidth = columnWidth;
         range.delete("Up");
+
+
+        //Hidden JSON Data
+        var jsonDataRange = worksheet.getRange(data.hiddenRowsData.header);
+        jsonDataRange.load('values');
+        jsonDataRange.values = [data.hiddenRowsData.json];
+        jsonDataRange.format.font.color = 'white';
+        jsonDataRange.format.horizontalAlignment = 'Fill';
+        jsonDataRange.format.columnWidth = 60;
         
         return ctx.sync()
           .then(function(response) {
@@ -488,14 +497,15 @@ app.service("budgetService", [
         // sqlData.load("values");
         // sqlData.values = [[data.sql]];
 
-        //Hidden JSON Data
-        var jsonDataRange = worksheet.getRange('A1:E2');
-        var jsonDataValues = [['', '', '', '', ''],['', '', '', '', '']];
-        jsonDataValues[1][0] = jsonHiddenData;
-        jsonDataRange.load('values');
-        jsonDataRange.format.font.color = 'white';
-        jsonDataRange.values = jsonDataValues;
-        jsonDataRange.merge(true);
+        //Empty Header
+        var headerRange = worksheet.getRange('A1:E2');
+        var headerValues = [['', '', '', '', ''],['', '', '', '', '']];
+        headerRange.load('values');
+        headerRange.format.font.color = 'white';
+        headerRange.values = headerValues;
+        headerRange.merge(true);
+
+        
 
         //Disclaimer
         var disclaimerRange = worksheet.getRange('A3:E5');

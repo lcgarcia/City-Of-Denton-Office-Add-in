@@ -79,6 +79,15 @@ app.service("trendService", [
           var worksheets = ctx.workbook.worksheets.load('name');
           var worksheet = worksheets.getItem('report-' + data.dummySheetName);
           worksheet.delete();
+
+          //Hidden JSON Data
+          var sheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+          var jsonDataRange = sheet.getRange(data.hiddenRowsData.header);
+          jsonDataRange.load('values');
+          jsonDataRange.values = [data.hiddenRowsData.json];
+          jsonDataRange.format.font.color = 'white';
+          jsonDataRange.format.horizontalAlignment = 'Fill';
+          jsonDataRange.format.columnWidth = 60;
           
           return ctx.sync()
             .then(function(response) {
@@ -193,27 +202,21 @@ app.service("trendService", [
     var setHeader = function (data, next) {
       Excel.run(function (ctx) {
         var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
-        var jsonHiddenData = JSON.stringify(data.hiddenRows);
 
         var header = [
           ['', '', '', 'City of Denton - Job Cost Summary', '', '', 'Dept:', data.scope.selectedValues.department.name, 'Month:', data.scope.selectedValues.dates.monthStart2.name +' - '+ data.scope.selectedValues.dates.monthEnd2.name, '', ''],
-          [data.hiddenRows.length > 1000 ? '' : jsonHiddenData, '', '', moment().format('MM/DD/YYYY, h:mm:ss a'), '', '', 'Company:', data.scope.selectedValues.company.name, 'JDE Fiscal Year:', 'FY'+data.scope.selectedValues.dates.yearStart2 + ' thru FY' + data.scope.selectedValues.dates.yearEnd2, '', ''],
+          ['', '', '', moment().format('MM/DD/YYYY, h:mm:ss a'), '', '', 'Company:', data.scope.selectedValues.company.name, 'JDE Fiscal Year:', 'FY'+data.scope.selectedValues.dates.yearStart2 + ' thru FY' + data.scope.selectedValues.dates.yearEnd2, '', ''],
           ['', '', '', 'Unaudited/Unofficial-Not intended for public distribution', '', '', 'Project:', data.scope.selectedValues.project.name, 'Layout:', data.layout, '', ''],
           ['', '', '', '', '', '', 'Job:', data.scope.selectedValues.job.name, '', '', '', '']
         ];
-
-        //USED FOR TESTING 
-        // var sqlData = worksheet.getRange('N1');
-        // sqlData.load("values");
-        // sqlData.values = JSON.stringify(data.sql);
 
         var range = worksheet.getRange('A1:L4');
         range.load('values');
         range.values = header;
 
-        var jsonDataRange = worksheet.getRange('A1:C4');
-        jsonDataRange.format.font.color = 'white';
-        jsonDataRange.merge(true);
+        var headerRange = worksheet.getRange('A1:C4');
+        headerRange.format.font.color = 'white';
+        headerRange.merge(true);
 
         var spaceRange = worksheet.getRange('A5:L5');
         spaceRange.merge(true);

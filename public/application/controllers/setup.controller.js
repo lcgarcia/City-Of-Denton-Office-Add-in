@@ -164,7 +164,7 @@ app.controller('setupCtrl', [
     $scope.getActiveSheet = function(data){
       Excel.run(function (ctx) {
         var activeWorksheet = ctx.workbook.worksheets.getActiveWorksheet();
-        var jsonDataRange = activeWorksheet.getRange("A2:A2");
+        var jsonDataRange = activeWorksheet.getRange("AA1:AZ1");
         activeWorksheet.load('name');
         jsonDataRange.load("values");
 
@@ -183,12 +183,47 @@ app.controller('setupCtrl', [
     $scope.updateRowSelections = function(){
       Excel.run(function (ctx) {
         var activeWorksheet = ctx.workbook.worksheets.getActiveWorksheet();
-        var jsonDataRange = activeWorksheet.getRange("A2:A2");
         activeWorksheet.load('name');
-        jsonDataRange.load("values");
+        var hiddenRows = $scope.reportDetails.hiddenRows;
+        const alphaMap = ['','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+        
 
-        if($scope.reportDetails.hiddenRows && $scope.reportDetails.hiddenRows.length > 0){
-          jsonDataRange.values = [[JSON.stringify($scope.reportDetails.hiddenRows)]];
+        if(hiddenRows && hiddenRows.length > 0){
+          try{
+            var hiddenRowsData = {};
+            hiddenRowsData.json = [];
+            var jsonHiddenData;
+            var alphaKey1 = 1;
+            var alphaKey2 = 1;
+            if(hiddenRows.length > 200){
+              var sliceStart = 0;
+              var sliceEnd = 200;
+              
+              while(sliceEnd < hiddenRows.length){
+                jsonHiddenData = JSON.stringify(hiddenRows.slice(sliceStart, sliceEnd));
+                hiddenRowsData.json.push(jsonHiddenData);
+                sliceStart = sliceEnd;
+                sliceEnd += 200;
+                alphaKey2++;
+                if(alphaKey2 == alphaMap.length){
+                  alphaKey1++;
+                  alphaKey2=1;
+                }
+              }
+              jsonHiddenData = JSON.stringify(hiddenRows.slice(sliceStart, hiddenRows.length));
+              hiddenRowsData.json.push(jsonHiddenData);
+            }
+            else hiddenRowsData.json.push(JSON.stringify(hiddenRows));
+            hiddenRowsData.header = `${alphaMap[1]}${alphaMap[1]}1:${alphaMap[alphaKey1]}${alphaMap[alphaKey2]}1`;
+
+            var jsonDataRange = activeWorksheet.getRange(hiddenRowsData.header);
+            jsonDataRange.load("values");
+            jsonDataRange.values = [hiddenRowsData.json];
+          }
+          catch(err){
+            //$scope.reportDetails.msg = err.message;
+          }
+
         }
         activeWorksheet.getRange("A1:A1").select();
         
@@ -204,11 +239,16 @@ app.controller('setupCtrl', [
         $scope.reportDetails.worksheet = sheetName;
         $scope.reportDetails.hiddenRows = [];
 
-        if(jsonSheetData != null && jsonSheetData != ""){
-          var jsonString = JSON.stringify(jsonSheetData);
-          var jsonData = jsonString.replace(/\\"/g, "\"");
-          var jsonObj = jsonData.substring(3, jsonData.length-3);
-          $scope.reportDetails.hiddenRows = JSON.parse(jsonObj);
+        if(jsonSheetData && jsonSheetData[0]){
+          var jsonData = _.compact(jsonSheetData[0]);
+          try{
+            _.forEach(jsonData, (val) => {
+              $scope.reportDetails.hiddenRows = $scope.reportDetails.hiddenRows.concat(JSON.parse(val));
+            });
+          }
+          catch(err){
+            //$scope.reportDetails.msg = err.message;
+          }
           
           var unselectedFound = _.find($scope.reportDetails.hiddenRows, 'selected');
           if(unselectedFound){
