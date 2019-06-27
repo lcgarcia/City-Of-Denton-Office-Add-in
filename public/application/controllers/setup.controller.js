@@ -209,11 +209,14 @@ app.controller('setupCtrl', [
           var jsonData = jsonString.replace(/\\"/g, "\"");
           var jsonObj = jsonData.substring(3, jsonData.length-3);
           $scope.reportDetails.hiddenRows = JSON.parse(jsonObj);
-
-          //TODO: This always returns true for some reason.. 
-          var unselectedFound = _.find($scope.reportDetails.hiddenRows, ['selected',false]);
-          if(unselectedFound) $scope.reportDetails.selectAll = false;
-          else $scope.reportDetails.selectAll = true;
+          
+          var unselectedFound = _.find($scope.reportDetails.hiddenRows, 'selected');
+          if(unselectedFound){
+            unselectedFound = _.find($scope.reportDetails.hiddenRows, ['selected',false]);
+            if(unselectedFound) $scope.reportDetails.selectAll = false;
+            else $scope.reportDetails.selectAll = true;
+          }
+          else $scope.reportDetails.selectAll = false;
 
           if($scope.reportDetails.hiddenRows && $scope.reportDetails.hiddenRows.length > 0){
             $scope.reportDetails.msg = "";
