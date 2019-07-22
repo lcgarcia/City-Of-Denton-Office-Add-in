@@ -1,6 +1,9 @@
 const Cloudant = require('cloudant');
 const cloudantCredentials = JSON.parse(process.env.VCAP_SERVICES).cloudantNoSQLDB[0].credentials;
-const cloudant = Cloudant({url: cloudantCredentials.url, plugin:'promises'});
+const cloudant = Cloudant({
+  url: cloudantCredentials.url,
+  plugin: 'promises'
+});
 const books = cloudant.use('books');
 const express = require('express');
 const _ = require('lodash');
@@ -38,7 +41,9 @@ router.delete('/:id/:rev', (req, res) => {
 });
 
 router.get('/:id', (req, res) => {
-  books.get(req.params.id, { include_docs: true })
+  books.get(req.params.id, {
+      include_docs: true
+    })
     .then(response => {
       response.rev = response._rev;
       delete response._rev;
@@ -50,7 +55,12 @@ router.get('/:id', (req, res) => {
 });
 
 router.get('/user/:userId/:reportType', (req, res) => {
-  books.find({ selector: { userId: req.params.userId, reportType: req.params.reportType } })
+  books.find({
+      selector: {
+        userId: req.params.userId,
+        reportType: req.params.reportType
+      }
+    })
     .then(response => res.send(_.map(response.docs, (val) => {
       val.rev = val._rev;
       delete val._rev;

@@ -1,6 +1,9 @@
 const Cloudant = require('cloudant');
 const cloudantCredentials = JSON.parse(process.env.VCAP_SERVICES).cloudantNoSQLDB[0].credentials;
-const cloudant = Cloudant({url: cloudantCredentials.url, plugin:'promises'});
+const cloudant = Cloudant({
+  url: cloudantCredentials.url,
+  plugin: 'promises'
+});
 const datasource = cloudant.use('datasource');
 const express = require('express');
 const _ = require('lodash');
@@ -18,7 +21,9 @@ const remapToUnderscores = (data) => {
 }
 
 router.get('/', (req, res) => {
-  datasource.get('1e2f7556d1fe4538509ee5124a2edecf', { include_docs: true })
+  datasource.get('1e2f7556d1fe4538509ee5124a2edecf', {
+      include_docs: true
+    })
     .then(response => {
       response.rev = response._rev;
       delete response._rev;

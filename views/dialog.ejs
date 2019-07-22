@@ -5,74 +5,74 @@
 <html>
 
 <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>City Of Denton</title>
-
-    <!-- <script src="https://localhost:1337/vorlon.js"></script> -->
-
-    <!-- Office JavaScript API -->
-    <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.debug.js"></script>
-
-    <!-- LOCAL -->
-    <link rel="stylesheet" href="node_modules/office-ui-fabric-js/dist/css/fabric.min.css" />
-    <link rel="stylesheet" href="node_modules/office-ui-fabric-js/dist/css/fabric.components.css" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css">
-    
-
-    <!-- CDN -->
-    <!-- For the Office UI Fabric, go to http://aka.ms/office-ui-fabric to learn more. -->
-    <!--<link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.2.0/css/fabric.min.css" />-->
-    <!--<link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.2.0/css/fabric.components.min.css" />-->
-
-    <!-- Template styles -->
-    <link href="css/app.css" rel="stylesheet" type="text/css" />
-    <link href="css/login.css" rel="stylesheet" type="text/css" />
-    
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>City Of Denton</title>
+  
+  <!-- <script src="https://localhost:1337/vorlon.js"></script> -->
+  
+  <!-- Office JavaScript API -->
+  <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.debug.js"></script>
+  
+  <!-- LOCAL -->
+  <link rel="stylesheet" href="node_modules/office-ui-fabric-js/dist/css/fabric.min.css" />
+  <link rel="stylesheet" href="node_modules/office-ui-fabric-js/dist/css/fabric.components.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css">
+  
+  
+  <!-- CDN -->
+  <!-- For the Office UI Fabric, go to http://aka.ms/office-ui-fabric to learn more. -->
+  <!--<link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.2.0/css/fabric.min.css" />-->
+  <!--<link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.2.0/css/fabric.components.min.css" />-->
+  
+  <!-- Template styles -->
+  <link href="css/app.css" rel="stylesheet" type="text/css" />
+  <link href="css/login.css" rel="stylesheet" type="text/css" />
+  
 </head>
 
 <body class="ms-font-m ms-welcome" ng-app="ks-2-harvest">
-    <header class="ms-setup__header ms-bgColor-neutralLighter ms-u-fadeIn500">
-        <h4 style="font-weight: bold;">CITY OF</h4>
-        <h2 style="font-weight: bold;">DENTON</h2>
-   <!-- <img src="assets/CODlogo.png" alt="test add-in" title="test add-in" width="160" height="90" />  -->
-    </header>
-    <div style="height: 100%;">
-        <div class="container">
-
-            <p id="param" style="display:none;"><%= user %></p>
-            <div id="success" class="login" style="display: none;">
-                <div class="panel-heading loginHeading">
-                     <h4 class="panel-title loginTitle">
-                        Success!
-                     </h4>
-                </div>
-                <div class="panel-group" style="margin-bottom:0">
-                     <div class="panel panel-default">
-                        <div class="panel-body">
-                           
-                           <p style="margin-bottom: 10px;">You have successfully logged in please close this window to begin running reports.</p>
-                        </div>
-                     </div>
-                </div>
-            </div>
-            <a type="button" id="login" href="/login" class="btn btn-primary btn-lg btn-block">Login</a>
+  <header class="ms-setup__header ms-bgColor-neutralLighter ms-u-fadeIn500">
+    <h4 style="font-weight: bold;">CITY OF</h4>
+    <h2 style="font-weight: bold;">DENTON</h2>
+    <!-- <img src="assets/CODlogo.png" alt="test add-in" title="test add-in" width="160" height="90" />  -->
+  </header>
+  <div style="height: 100%;">
+    <div class="container">
+      
+      <p id="param" style="display:none;"><%= user %></p>
+      <div id="success" class="login" style="display: none;">
+        <div class="panel-heading loginHeading">
+          <h4 class="panel-title loginTitle">
+            Success!
+          </h4>
         </div>
-
-        <p id="hello"></p>
+        <div class="panel-group" style="margin-bottom:0">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              
+              <p style="margin-bottom: 10px;">You have successfully logged in please close this window to begin running reports.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <a type="button" id="login" href="/login" class="btn btn-primary btn-lg btn-block">Login</a>
     </div>
-
-    <script type="text/javascript" src="node_modules/core-js/client/core.js"></script>
-    <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
-    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="node_modules/lodash/lodash.min.js"></script>
-    <script type="text/javascript" src="node_modules/office-ui-fabric-js/dist/js/fabric.js"></script>
-    <script type="text/javascript" src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
-
-    <script type="text/javascript" src="/scripts/dialog.js"></script>
+    
+    <p id="hello"></p>
+  </div>
+  
+  <script type="text/javascript" src="node_modules/core-js/client/core.js"></script>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+  <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="node_modules/lodash/lodash.min.js"></script>
+  <script type="text/javascript" src="node_modules/office-ui-fabric-js/dist/js/fabric.js"></script>
+  <script type="text/javascript" src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+  
+  <script type="text/javascript" src="/scripts/dialog.js"></script>
 </body>
 
 </html>
