@@ -71,11 +71,12 @@
         </div>
       </div>
       <!-- Panel Report Deatils End-->
-      
-      
+
     </div>
   </div>
-  
+  <div style="padding-bottom: 10px;">
+    <a class="nav-link" data-toggle="modal" data-target="#adminModal" ng-click="adminView()">Admin</a>
+  </div>
   
   <!-- *************** MODALS START *************** -->
   <!-- Offline Modal -->
@@ -115,6 +116,40 @@
     </div>
   </div>
   <!-- Modal 2 End-->
+
+
+  <!-- Modal Admin -->
+  <div class="modal fade" id="adminModal" role="dialog">
+    <div class="modal-dialog" style="max-width: 350px;">
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header" style="padding: 10px; color: #337ab7;">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Debug Console</h4>
+        </div>
+        <div id="bookModalError" class="alert alert-danger" style="margin:0; padding:10px; display:block">
+          Invalid Password. Please try again.
+        </div>
+        <div id="bookModalBody" class="modal-body" ng-keyup="modalKeyPressed($event)">
+          <div class="input-group" style="width: 100%;">
+            <p style="padding-bottom: 10px;">Password</p>
+            <input id="bookModalInput" type="text" class="form-control" ng-model="modalBook.value" autofocus>
+          </div>
+          <div id="selectionDetails" class="container" style="width: 100%; max-height: 250px; overflow: scroll;">
+            User Groups:
+            <br>
+            {{userGroups}}
+            <br>
+          </div>
+        </div>
+        
+        <div class="modal-footer" style="padding: 10px;">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- Modal Admin End-->
   <!-- *************** MODALS END *************** -->
   
 </main>

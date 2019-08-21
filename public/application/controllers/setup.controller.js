@@ -77,6 +77,7 @@ app.controller('setupCtrl', [
     
     $scope.filterReports = function(data) {
       var groups = data._json.groups;
+      $scope.userGroups = groups;
       if (_.includes(groups, '13d4a1b3-a96e-43e0-a747-bbea092ae269')) { // Accounting
         $scope.filterReports = $scope.filterReports;
       }
@@ -142,6 +143,7 @@ app.controller('setupCtrl', [
       
       var userd = $stateParams.data.user;
       var data = localStorage.getItem('user');
+      $scope.data = data;
       if (userd != '' && userd != undefined && userd != null) {
         data = JSON.parse(data);
         $scope.user = data;
