@@ -811,7 +811,7 @@ app.controller('budgetCtrl', [
                *   -> 0:{range: "A7:Z25", key: "CASH AND DEPOSITS"}
                * 
                */
-              $scope.$apply(function() {})
+              //$scope.$apply(function() {})
               budgetService.deleteWorkSheets({
                 scope: $scope
               }, function(err, newSheetData) {
