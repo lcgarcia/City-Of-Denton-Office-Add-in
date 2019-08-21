@@ -1,5 +1,7 @@
 if (!('VCAP_SERVICES' in process.env)) {
-  require('dotenv').config({ path: process.env.ENVPATH });
+  require('dotenv').config({
+    path: process.env.ENVPATH
+  });
 }
 const express = require('express');
 const path = require('path');
@@ -9,7 +11,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const session = require('express-session')
 const passport = require('passport'),
-    OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
+  OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
 const config = require('./config');
 const CloudantStore = require('connect-cloudant-store')(session);
 const store = new CloudantStore({
@@ -23,11 +25,11 @@ const book = require('./routes/book');
 const datasource = require('./routes/datasource');
 const job = require('./routes/job');
 
-passport.serializeUser(function(user,done){
-  done(null,user);
+passport.serializeUser(function(user, done) {
+  done(null, user);
 });
-passport.deserializeUser(function(user,done){
-  done(null,user);
+passport.deserializeUser(function(user, done) {
+  done(null, user);
 });
 
 var app = express();
@@ -39,14 +41,18 @@ app.set('view engine', 'ejs');
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
-app.use(bodyParser.json({limit: '50mb'}));
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({
+  limit: '50mb'
+}));
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/node_modules/angular', express.static(__dirname + '/node_modules/angular'));
 app.use('/node_modules/office-ui-fabric-js', express.static(__dirname + '/node_modules/office-ui-fabric-js'));
 app.use('/node_modules/client-js', express.static(__dirname + '/node_modules/client-js'));
-app.use('/node_modules/lodash', express.static(__dirname + '/node_modules/lodash')); 
+app.use('/node_modules/lodash', express.static(__dirname + '/node_modules/lodash'));
 app.use('/node_modules/core-js', express.static(__dirname + '/node_modules/core-js'));
 
 app.use(session({
@@ -60,72 +66,74 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.use(new OIDCStrategy({
-  identityMetadata: config.creds.identityMetadata,
-  clientID: config.creds.clientID,
-  responseType: config.creds.responseType,
-  responseMode: config.creds.responseMode,
-  redirectUrl: config.creds.redirectUrl,
-  allowHttpForRedirectUrl: config.creds.allowHttpForRedirectUrl,
-  clientSecret: config.creds.clientSecret,
-  validateIssuer: config.creds.validateIssuer,
-  isB2C: config.creds.isB2C,
-  issuer: config.creds.issuer,
-  passReqToCallback: config.creds.passReqToCallback,
-  scope: config.creds.scope,
-  loggingLevel: config.creds.loggingLevel,
-},
-function(req, iss, sub, profile, accessToken, refreshToken, done) {
-  if (!profile.oid) {
-    return done(new Error("No oid found"), null);
-  } else {
-    return done(null, profile);
+    identityMetadata: config.creds.identityMetadata,
+    clientID: config.creds.clientID,
+    responseType: config.creds.responseType,
+    responseMode: config.creds.responseMode,
+    redirectUrl: config.creds.redirectUrl,
+    allowHttpForRedirectUrl: config.creds.allowHttpForRedirectUrl,
+    clientSecret: config.creds.clientSecret,
+    validateIssuer: config.creds.validateIssuer,
+    isB2C: config.creds.isB2C,
+    issuer: config.creds.issuer,
+    passReqToCallback: config.creds.passReqToCallback,
+    scope: config.creds.scope,
+    loggingLevel: config.creds.loggingLevel,
+  },
+  function(req, iss, sub, profile, accessToken, refreshToken, done) {
+    if (!profile.oid) {
+      return done(new Error("No oid found"), null);
+    }
+    else {
+      return done(null, profile);
+    }
   }
-}
 ));
 
 var userCheck = (req, res, next) => {
-  if(req.user) {
+  if (req.user) {
     req.session.nowInMinutes = Date.now() / 60e3;
     next();
-  } else res.redirect('/');
+  }
+  else res.redirect('/');
 }
 
 app.get('/login',
-function(req, res, next) {
-  passport.authenticate('azuread-openidconnect', 
-    { 
+  function(req, res, next) {
+    passport.authenticate('azuread-openidconnect', {
       response: res,
       resourceURL: config.resourceURL,
       customState: 'my_state',
-      failureRedirect: '/?error=login' 
+      failureRedirect: '/?error=login'
     }, (err, user, info) => {
       req.logIn(user, function(err) {
-        if (err) { return next(err); }
-        return res.redirect('/dialog', { user });
+        if (err) {
+          return next(err);
+        }
+        return res.redirect('/dialog', {
+          user
+        });
       });
-    }
-  )(req, res, next);
-},
-function(req, res) {
-  console.log('Login was called in the Sample')
-  res.redirect('/');
-});
+    })(req, res, next);
+  },
+  function(req, res) {
+    console.log('Login was called in the Sample')
+    res.redirect('/');
+  });
 
 app.post('/auth/openid/return',
-function(req, res, next) {
-  passport.authenticate('azuread-openidconnect', 
-    { 
+  function(req, res, next) {
+    passport.authenticate('azuread-openidconnect', {
       response: res,
-      failureRedirect: '/?error=return'  
-    }
-  )(req, res, next);
-},
-function(req, res) {
-  console.info('We received a return from AzureAD.');
-  res.redirect('/dialog');
-});
+      failureRedirect: '/?error=return'
+    })(req, res, next);
+  },
+  function(req, res) {
+    console.info('We received a return from AzureAD.');
+    res.redirect('/dialog');
+  });
 
-app.get('/logout', function(req, res){
+app.get('/logout', function(req, res) {
   // req.session.destroy();
   req.logout();
   res.redirect('/');
@@ -136,7 +144,9 @@ app.use('/SessionInfo', (req, res) => {
 });
 
 app.get('/proto', (req, res) => {
-  res.send({ message: 'success' });
+  res.send({
+    message: 'success'
+  });
 });
 app.use('/', routes);
 app.use('/ks2inc/budget', budget);
@@ -174,6 +184,5 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
-
 
 module.exports = app;

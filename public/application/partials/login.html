@@ -1,40 +1,39 @@
-
 <!-- *************** LOGIN START *************** -->
 <!-- Panel 1 Start-->
 <div id="loginContainer">
-   <div id="login" class="login">
-      <div class="panel-heading loginHeading">
-         <h4 class="panel-title loginTitle">
-            Welcome!
-         </h4>
+  <div id="login" class="login">
+    <div class="panel-heading loginHeading">
+      <h4 class="panel-title loginTitle">
+        Welcome!
+      </h4>
+    </div>
+    <div class="panel-group" style="margin-bottom:0">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          
+          <p style="margin-bottom: 10px;">Login here to get started.</p>
+          <button type="button" id="login" class="btn btn-primary btn-lg btn-block" ng-click="openDialog()">Begin Login</button>
+        </div>
       </div>
-      <div class="panel-group" style="margin-bottom:0">
-         <div class="panel panel-default">
-            <div class="panel-body">
-               
-               <p style="margin-bottom: 10px;">Login here to get started.</p>
-               <button type="button" id="login" class="btn btn-primary btn-lg btn-block" ng-click="openDialog()">Begin Login</button>
-            </div>
-         </div>
-      </div>
-   </div> 
+    </div>
+  </div>
 </div>
-<!-- Panel 1 End--> 
+<!-- Panel 1 End-->
 
 
 <!-- *************** MODALS START *************** -->
 <!-- Modal 1-->
 <div class="modal fade" id="loadModal">
-   <div class="modal-dialog">
-      <!-- Modal content-->
-      <div class="center-div">
-         <div class="loader-login"></div>
-      </div>
-   </div>
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="center-div">
+      <div class="loader-login"></div>
+    </div>
+  </div>
 </div>
 
 <p>
-   {{ debugMsg }}
+  {{ debugMsg }}
 </p>
 <!-- Modal 1 End-->
 <!-- *************** MODALS END *************** -->

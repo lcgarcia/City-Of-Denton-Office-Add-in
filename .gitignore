@@ -4,3 +4,4 @@ libaio
 instantclient
 package-lock.json
 .vscode
+.jsbeautifyrc

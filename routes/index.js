@@ -20,10 +20,11 @@ const release = (connection) => {
 };
 
 var userCheck = (req, res, next) => {
-  if(req.user) {
+  if (req.user) {
     req.session.nowInMinutes = Date.now() / 60e3;
     return true;
-  } else return false;
+  }
+  else return false;
 }
 
 /* GET home page. */
@@ -32,10 +33,15 @@ router.get('/', (req, res, next) => {
 });
 
 router.get('/dialog', (req, res, next) => {
-  if(req.user) {
-    res.render('dialog', { user: true });
-  } else {
-    res.render('dialog', { user: false });
+  if (req.user) {
+    res.render('dialog', {
+      user: true
+    });
+  }
+  else {
+    res.render('dialog', {
+      user: false
+    });
   }
 });
 
@@ -43,13 +49,16 @@ router.get('/user/data', (req, res, next) => {
   const authorization = req.get('Authorization');
   const [schema, jwt] = authorization.split(' ');
   keyManager.verifyJWT(jwt, (err, decoded) => {
-
-    keyManager.getMicrosoftGraphToken({ jwtData: decoded, jwt })
-    .then(keyManager.getGroups)
-    .then(data => {
-      decoded.groups = data.groups;
-      res.send(decoded);
-    });
+    
+    keyManager.getMicrosoftGraphToken({
+        jwtData: decoded,
+        jwt
+      })
+      .then(keyManager.getGroups)
+      .then(data => {
+        decoded.groups = data.groups;
+        res.send(decoded);
+      });
   });
 });
 
@@ -58,7 +67,9 @@ router.get('/jwt/config', (req, res, next) => {
 });
 
 router.get('/datasource', (req, res, next) => {
-  res.render('datasource', { title: 'Express' });
+  res.render('datasource', {
+    title: 'Express'
+  });
 });
 
 module.exports = router;
