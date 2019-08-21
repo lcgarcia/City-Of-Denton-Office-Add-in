@@ -449,7 +449,9 @@ app.controller('budgetCtrl', [
         //check for book index and make sure that it is not the default 'please select' value
         if (index != -1 && index != 0) {
           var i, j, item, parent, child;
-          
+          //enable book menu options
+          $('#menu1').removeClass("disabled");
+
           for (i = 0; i < book.selectionList.length; i++) {
             item = book.selectionList[i];
             parent = _.find($scope.parentList, ['id', item.id]);
@@ -466,20 +468,19 @@ app.controller('budgetCtrl', [
                 for (j = 0; j < item.childList.length; j++) {
                   //set children selections
                   child = _.find(parent.childList, ['id', item.childList[j].id]);
-                  if (item.childList[j].selected == null || item.childList[j].selected == false) {
-                    setChildSelected(child, false);
-                  }
-                  else {
-                    setChildSelected(child, true);
-                    $scope.selectedKeys.push(child);
+                  if(child){
+                    if (item.childList[j].selected == null || item.childList[j].selected == false) {
+                      setChildSelected(child, false);
+                    }
+                    else {
+                      setChildSelected(child, true);
+                      $scope.selectedKeys.push(child);
+                    }
                   }
                 }
               }
             }
           }
-          
-          //enable book menu options
-          $('#menu1').removeClass("disabled");
         }
         else {
           //disabled book menu options
