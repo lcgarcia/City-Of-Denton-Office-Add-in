@@ -384,6 +384,9 @@ app.service("budgetService", [
         
         var numberRange = worksheet.getRange('F' + headerOffset + ':' + alphabetRangeValue + sheetLength)
         numberRange.numberFormat = _.fill(Array(data.sheetData.length), _.fill(Array(14), formatPricing));
+
+        var cRange = worksheet.getRange('C' + headerOffset + ':C' + sheetLength);
+        cRange.numberFormat = "0000";
         return ctx.sync()
           .then(function(res) {
             next(null, data);
@@ -522,9 +525,9 @@ app.service("budgetService", [
         
         var a = worksheet.getRange('A1:A3000');
         a.format.columnWidth = 2;
-        var cd = worksheet.getRange('C1:D3000');
-        cd.clear();
-        cd.format.columnWidth = 1;
+        var d = worksheet.getRange('D1:D3000');
+        d.clear();
+        d.format.columnWidth = 1;
         
         //USED FOR TESTING QUERY 
         // var sqlData = worksheet.getRange("T1:T1");
