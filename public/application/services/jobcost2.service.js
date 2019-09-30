@@ -220,7 +220,7 @@ app.service("jobcostService2", [
           ['', '', '', 'City of Denton - Job Cost Summary', '', '', 'Dept:', data.scope.selectedValues.department.name, 'Month:', data.scope.selectedValues.dates.monthStart.name, '', ''],
           ['', '', '', moment().format('MM/DD/YYYY, h:mm:ss a'), '', '', 'Company:', data.scope.selectedValues.company.name, 'JDE Fiscal Year:', data.scope.selectedValues.dates.jdeYear + ' - ' + (parseInt(data.scope.selectedValues.dates.jdeYear) + 1), '', ''],
           ['', '', '', 'Unaudited/Unofficial-Not intended for public distribution', '', '', 'Project:', data.scope.selectedValues.project.name, 'Layout:', data.layout, '', ''],
-          ['', '', '', '', '', '', 'Job:', data.scope.selectedValues.job.name, '', '', '', '']
+          ['', '', '', '', '', '', 'Job:', data.scope.selectedValues.job.name, 'Records:', data.sheetData.length, '', '']
         ];
         
         var range = worksheet.getRange('A1:L4');
@@ -258,11 +258,11 @@ app.service("jobcostService2", [
         // if(data.isEmpty) tableHeader.rowHidden = false;
         // else tableHeader.rowHidden = true;
         
-        var leftColumns = worksheet.getRange('A:B');
+        var leftColumns = worksheet.getRange('A:C');
         leftColumns.format.horizontalAlignment = 'Center';
         
-        var rightColumns = worksheet.getRange('E:G');
-        rightColumns.format.horizontalAlignment = 'Center';
+        var rightColumns = worksheet.getRange('J1:J4');
+        rightColumns.format.horizontalAlignment = 'Left';
         
         var headerOffset = 6;
         var sheetLength = data.sheetData.length + headerOffset - 1;
