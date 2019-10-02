@@ -74,6 +74,7 @@ router.get('/ui/data', (req, res) => {
 router.post('/sheet/data', (req, res) => {
   getDataSource()
     .then(schema => {
+      console.log('Getting sheet data');
       var sql;
       const reportSelected = req.body.reportSelected || '';
       const generator = new Generator({
@@ -118,6 +119,7 @@ router.post('/sheet/data', (req, res) => {
           else {
             sql = generator.createSelectStatement(req.body.month, req.body.year, options);
           }
+          console.log('SQL generated');
           
           const queryDB = (cb) => {
             async.waterfall([
@@ -141,6 +143,7 @@ router.post('/sheet/data', (req, res) => {
         }
         else {
           sql = generator.createSelectStatement(req.body.month, req.body.year, options);
+          console.log('SQL generated');
           const queryDB = (cb) => {
             knexQuery.jobSheetDataQuery(sql, req.body.projectList, null, options)
               .then(result => cb(null, result))
@@ -155,6 +158,7 @@ router.post('/sheet/data', (req, res) => {
       }
       else {
         const sql = generator.createSelectStatement(req.body.month, req.body.year, options);
+        console.log('SQL generated');
         const queryDB = (cb) => {
           knexQuery.jobSheetDataQuery(sql, req.body.projectList, null, options)
             .then(result => cb(null, result))
