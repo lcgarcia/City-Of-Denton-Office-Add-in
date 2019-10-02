@@ -234,6 +234,41 @@ app.service("jobcostService", [
       }
       return '';
     }
+
+    this.insertTableTest = function(data, cb) {
+      try {
+          async.waterfall([
+            function(next) {
+              var alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+              data.sheetData = ["No Data Found. Please change your selections and try again", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "];
+              data.alphabetRangeValue = alphabet[data.sheetData[0].length - 1];
+              data.headerOffset = 6;
+              data.alphabet = alphabet;
+              data.isEmpty = true;
+              
+              data.layout = data.scope.selectedValues.details.name;
+              data.budgetStart = 'G';
+              data.budgetEnd = 'K';
+              if (data.layout == "No Details") {
+                data.budgetStart = 'E';
+                data.budgetEnd = 'I';
+              }
+              next(null, data);
+            },
+            deleteWorkSheets,
+            loadWorkSheets,
+            findWorkSheet,
+            initalizeWorkSheet,
+            clearSheet,
+            setHeaderTest,
+            addEmptyTableRows,
+            removeOldSheet
+          ], cb);
+      }
+      catch (e) {
+        cb(e);
+      }
+    };
     
     this.insertTable = function(data, cb) {
       try {
@@ -443,6 +478,83 @@ app.service("jobcostService", [
       }
       else next(null, data);
     }
+
+    var setHeaderTest = function(data, next) {
+      Excel.run(function(ctx) {
+        var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+        
+        var header = [
+          ['', '', '', 'City of Denton - Job Cost Summary', '', '', 'Dept:', data.scope.selectedValues.department.name, 'Month:', data.scope.selectedValues.dates.monthStart.name, ''],
+          ['', '', '', moment().format('MM/DD/YYYY, h:mm:ss a'), '', '', 'Company:', data.scope.selectedValues.company.name, 'JDE Fiscal Year:', data.scope.selectedValues.dates.jdeYear + ' - ' + (parseInt(data.scope.selectedValues.dates.jdeYear) + 1), ''],
+          ['', '', '', 'Unaudited/Unofficial-Not intended for public distribution', '', '', 'Project:', data.scope.selectedValues.project.name, 'Layout:', data.layout, ''],
+          ['', '', '', '', '', '', 'Job:', data.scope.selectedValues.job.name, 'Records:', data.result.length, '']
+        ];
+        
+        var range = worksheet.getRange('A1:K4');
+        range.load('values');
+        range.values = header;
+        
+        var headerRange = worksheet.getRange('A1:C4');
+        headerRange.format.font.color = 'white';
+        headerRange.merge(true);
+        
+        var spaceRange = worksheet.getRange('A5:K5');
+        spaceRange.merge(true);
+        
+        var titleSection = worksheet.getRange('D1:D2');
+        titleSection.format.font.color = '#174888';
+        
+        var titleCell = worksheet.getRange('D1');
+        titleCell.format.font.bold = true;
+        
+        var infoCell = worksheet.getRange('D3');
+        infoCell.format.font.color = 'red';
+        infoCell.format.font.italic = true;
+        
+        var reportheaders = worksheet.getRange('G1:G4');
+        reportheaders.format.font.color = '#174888';
+        reportheaders.format.font.bold = true;
+        
+        var reportRangeHeader = worksheet.getRange('I1:I4');
+        reportRangeHeader.format.font.color = '#174888';
+        reportRangeHeader.format.font.bold = true;
+        
+        // var tableHeader = worksheet.getRange('A5:K5');
+        // tableHeader.format.fill.color = '#174888';
+        // tableHeader.format.font.color = 'white';
+        // if(data.isEmpty) tableHeader.rowHidden = false;
+        // else tableHeader.rowHidden = true;
+        
+        var leftColumns = worksheet.getRange('A:C');
+        leftColumns.format.horizontalAlignment = 'Center';
+
+        var rightColumns = worksheet.getRange('J1:J4');
+        rightColumns.format.horizontalAlignment = 'Left';
+        
+        var headerOffset = 6;
+        var sheetLength = data.sheetData.length + headerOffset - 1;
+        var fullSheetRange = worksheet.getRange('A1:K' + sheetLength);
+        fullSheetRange.load('values');
+        fullSheetRange.format.autofitColumns();
+        
+        var gCol = worksheet.getRange('G1:G' + sheetLength);
+        gCol.format.columnWidth = 110;
+        
+        worksheet.freezePanes.freezeRows(6);
+        return ctx.sync()
+          .then(function(res) {
+            data.header = header;
+            next(null, data);
+          }).catch(function(err) {
+            next({
+              err: err,
+              stage: 'setHeader',
+              range: 'A1:K' + sheetLength,
+              header: header
+            });
+          });
+      });
+    };
     
     var setHeader = function(data, next) {
       Excel.run(function(ctx) {
