@@ -5,6 +5,7 @@ app.service("jobcostService2", [
     var formatPricing = '_(* #,##0.00_);_(* (#,##0.00);_(* #,##0.00_);_(@_)';
     var formatPricingRed = '_(* #,##0.00_);[Red]_(* (#,##0.00);_(* #,##0.00_);_(@_)';
     var formatPricingTotal = '_($* #,##0.00_);[Red]_($* (#,##0.00);_($* #,##0.00_);_(@_)';
+    var noDataFound = ["No Data Found. Please change your selections and try again", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "];
     
     this.insertTable = function(data, cb) {
       try {
@@ -12,7 +13,7 @@ app.service("jobcostService2", [
           async.waterfall([
             function(next) {
               var alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
-              data.sheetData = ["No Data Found. Please change your selections and try again", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "];
+              data.sheetData = noDataFound;
               data.alphabetRangeValue = alphabet[data.sheetData[0].length - 1];
               data.headerOffset = 6;
               data.alphabet = alphabet;
@@ -216,11 +217,13 @@ app.service("jobcostService2", [
     var setHeader = function(data, next) {
       Excel.run(function(ctx) {
         var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+        var recordCount = data.sheetData === noDataFound ? "None" : data.sheetData.length;
+        
         var header = [
           ['', '', '', 'City of Denton - Job Cost Summary', '', '', 'Dept:', data.scope.selectedValues.department.name, 'Month:', data.scope.selectedValues.dates.monthStart.name, '', ''],
           ['', '', '', moment().format('MM/DD/YYYY, h:mm:ss a'), '', '', 'Company:', data.scope.selectedValues.company.name, 'JDE Fiscal Year:', data.scope.selectedValues.dates.jdeYear + ' - ' + (parseInt(data.scope.selectedValues.dates.jdeYear) + 1), '', ''],
           ['', '', '', 'Unaudited/Unofficial-Not intended for public distribution', '', '', 'Project:', data.scope.selectedValues.project.name, 'Layout:', data.layout, '', ''],
-          ['', '', '', '', '', '', 'Job:', data.scope.selectedValues.job.name, 'Records:', data.sheetData.length, '', '']
+          ['', '', '', '', '', '', 'Job:', data.scope.selectedValues.job.name, 'Records:', recordCount, '', '']
         ];
         
         var range = worksheet.getRange('A1:L4');

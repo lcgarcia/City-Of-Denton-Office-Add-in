@@ -286,7 +286,7 @@ app.controller('jobcostCtrl', [
             });
             
             data.scope = $scope;
-            jobcostService.insertTableTest(data, function(err, response) {
+            jobcostService.insertTable(data, function(err, response) {
               $rootScope.$broadcast('reloadHiddenRows', {
                 rows: data.hiddenRows
               });
