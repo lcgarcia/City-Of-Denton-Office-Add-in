@@ -719,6 +719,9 @@ app.controller('budgetCtrl', [
         subledgers = [];
       
       _.forEach($scope.selectedKeys, function(val) {
+        var sheetName = _.trim(val.name);
+        if(!/^\d+\-/.test(sheetName)) sheetName = val.id + "-" + sheetName;
+
         if ('subledger' in val) {
           var sub = "        ";
           if (val.id && val.id.length > 0) {
@@ -732,7 +735,8 @@ app.controller('budgetCtrl', [
             buLevel: _.isArray(val.childList) ? 'comp' : 'busu',
             adHoc: false,
             companyKey: "",
-            businessUnitKey: ""
+            businessUnitKey: "",
+            name: sheetName
           });
         }
       });
@@ -749,12 +753,15 @@ app.controller('budgetCtrl', [
       var runReport = true;
       
       var keys = _.map($scope.selectedKeys, function(key) {
+        var sheetName = _.trim(key.name);
+        if(!/^\d+\-/.test(sheetName)) sheetName = key.id + "-" + sheetName;
         return {
           id: key.id,
           buLevel: _.isArray(key.childList) ? 'comp' : 'busu',
           adHoc: false,
           companyKey: "",
-          businessUnitKey: ""
+          businessUnitKey: "",
+          name: sheetName
         }
       });
       var accounts = $scope.selectedValues.reportType;
@@ -824,6 +831,7 @@ app.controller('budgetCtrl', [
                   });
                   sheetData.scope = $scope;
                   sheetData.accountType = accounts;
+                  sheetData.reportType = $scope.selectedValues.report.type;
                   sheetData.month = $scope.selectedValues.month.name;
                   sheetData.year = $scope.selectedValues.dates.jdeYear;
                   sheetData.sheetKey = key;

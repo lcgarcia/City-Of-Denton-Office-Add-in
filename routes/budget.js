@@ -103,7 +103,8 @@ router.post('/sheet/data', (req, res) => {
               businessUnitKey: key.businessUnitKey,
               subledgers: subledgers
             }),
-            id: key.id
+            id: key.id,
+            name: key.name
           }
         }
         else {
@@ -114,7 +115,8 @@ router.post('/sheet/data', (req, res) => {
               companyKey: key.companyKey,
               businessUnitKey: key.businessUnitKey
             }),
-            id: key.id
+            id: key.id,
+            name: key.name
           }
         }
       });
@@ -123,7 +125,7 @@ router.post('/sheet/data', (req, res) => {
       _.forEach(querySets, data => {
         queries[data.id] = (next) => {
           if (req.body.type != 'f') {
-            knexQuery.budgetSheetDataQuery(data.sql)
+            knexQuery.budgetSheetDataQuery(data.sql, data.name)
               .then(result => {
                 next(null, result)
               }).catch(err => {
@@ -131,7 +133,7 @@ router.post('/sheet/data', (req, res) => {
               });
           }
           else {
-            knexQuery.budgetSheetFDataQuery(data.sql)
+            knexQuery.budgetSheetFDataQuery(data.sql, data.name)
               .then(result => {
                 next(null, result)
               }).catch(err => {

@@ -678,7 +678,7 @@ app.service("budgetService", [
         rangeGroup5.format.borders.getItem('EdgeRight').style = 'Continuous';
         rangeGroup5.format.borders.getItem('EdgeTop').style = 'Continuous';
         
-        var titleWithKey = data.sheetKey + '- General Fund';
+        var titleWithKey = data.sheetName;
         var mainTitle = worksheet.getRange('F1:N1');
         mainTitle.load('values');
         mainTitle.values = [
@@ -698,7 +698,7 @@ app.service("budgetService", [
         mainTitle2.format.font.bold = true;
         mainTitle2.merge(true);
         
-        var sheetTypeLabel = data.accountType;
+        var sheetTypeLabel = data.reportType == 'f' ? "Report of Operations by FERC Code" : data.accountType;
         var sheetTypeTitle = worksheet.getRange('F2:N2');
         sheetTypeTitle.load('values');
         sheetTypeTitle.values = [
