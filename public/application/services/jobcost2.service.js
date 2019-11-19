@@ -557,6 +557,7 @@ app.service("jobcostService2", [
     var addGrandTotal = function(data, next) {
       Excel.run(function(ctx) {
         var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+        var tableBody = worksheet.tables.getItem(data.tableName).getDataBodyRange();
         var headerOffset = 6;
         var length = headerOffset + data.sheetData.length;
         var grandTotalData = [
@@ -581,6 +582,7 @@ app.service("jobcostService2", [
         range.numberFormat = [_.fill(Array(5), formatPricingTotal)];
         range.format.font.bold = true;
         range.format.font.color = '#00037B';
+        tableBody.format.fill.color = 'white';
         
         return ctx.sync()
           .then(function(res) {

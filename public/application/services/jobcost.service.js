@@ -729,6 +729,7 @@ app.service("jobcostService", [
       Excel.run(function(ctx) {
         var sheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
         var table = sheet.tables.getItem(data.tableName);
+        var tableBody = table.getDataBodyRange();
         
         //sheet.getUsedRange().format.autofitColumns();
         var len = data.sheetData.length + data.headerOffset;
@@ -736,6 +737,7 @@ app.service("jobcostService", [
         var range = sheet.getRange('E' + data.headerOffset + ':K' + len);
         var rangeTitles = sheet.getRange('A' + (data.headerOffset + 1) + ':K' + len);
         range.format.columnWidth = 110;
+        tableBody.format.fill.color = 'white';
         //rangeTitles.format.font.bold = true;
         
         // _.forEach(data.hiddenRows, function (rowData) {

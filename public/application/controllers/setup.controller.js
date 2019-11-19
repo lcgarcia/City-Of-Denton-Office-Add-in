@@ -278,7 +278,7 @@ app.controller('setupCtrl', [
           }
           
         }
-        activeWorksheet.getRange("A1:A1").select();
+        //activeWorksheet.getRange("A1:A1").select();
         
         return ctx.sync()
           .then(function() {}).catch(function(err) {
