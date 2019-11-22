@@ -1,3 +1,9 @@
+/**
+ * Jobcost KA report only
+ * @param  {[type]} $http     [description]
+ * @param  {String} $timeout) {               var formatPricing [description]
+ * @return {[type]}           [description]
+ */
 app.service("jobcostService2", [
   '$http',
   '$timeout',
@@ -66,9 +72,9 @@ app.service("jobcostService2", [
             addTableHeader,
             addTableRows,
             hideRows,
+            addFormatting,
             addSubTotal,
             addGrandTotal,
-            addFormatting,
             removeOldSheet
           ], cb);
         }
@@ -438,13 +444,13 @@ app.service("jobcostService2", [
           range.format.font.color = 'blue';
           range.format.font.bold = true;
           numberRange.numberFormat = [_.fill(Array(5), formatPricingRed)];
-          if (data.layout == "FERC/Cost Code Subtotals" || data.layout == "Cost Type Subtotals") {
-            numberRange = worksheet.getRange('H' + (val + 1) + ':L' + (val + 1));
-            range = worksheet.getRange('A' + (val + 1) + ':Z' + (val + 1));
-            range.format.font.color = 'blue';
-            range.format.font.bold = true;
-            numberRange.numberFormat = [_.fill(Array(5), formatPricingRed)];
-          }
+          // if (data.layout == "FERC/Cost Code Subtotals" || data.layout == "Cost Type Subtotals") {
+          //   numberRange = worksheet.getRange('H' + (val + 1) + ':L' + (val + 1));
+          //   range = worksheet.getRange('A' + (val + 1) + ':Z' + (val + 1));
+          //   range.format.font.color = 'blue';
+          //   range.format.font.bold = true;
+          //   numberRange.numberFormat = [_.fill(Array(5), formatPricingRed)];
+          // }
           
         });
         
@@ -460,7 +466,7 @@ app.service("jobcostService2", [
     var addFormatting = function(data, next) {
       if (data.sheetData.length > 5000) {
         var len = data.sheetData.length + data.headerOffset;
-        var formatArray = _.fill(Array(len), _.fill(Array(5), formatPricingRed));
+        var formatArray = _.fill(Array(len), _.fill(Array(5), formatPricing));
         var chunk = 200;
         var split = _.chunk(formatArray, chunk);
         var water = [];
@@ -490,6 +496,15 @@ app.service("jobcostService2", [
                   data.scope.modalData.message = 'Formatting ' + (j + 1) * chunk + ' rows of ' + data.sheetData.length;
                 }
               });
+
+
+              if(i+1 >= split.length) {
+                var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+                var len = data.sheetData.length + data.headerOffset;
+                worksheet.getUsedRange().format.autofitColumns();
+                var range = worksheet.getRange('H' + (data.headerOffset+1) + ':L' + len);
+                range.format.horizontalAlignment = 'Right';
+              }
               
               j++;
               
@@ -512,13 +527,11 @@ app.service("jobcostService2", [
           var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
           var len = data.sheetData.length + data.headerOffset;
           var numberRange = worksheet.getRange(data.budgetStart + '7:' + data.alphabetRangeValue + len)
-          numberRange.numberFormat = _.fill(Array(data.sheetData.length), _.fill(Array(5), formatPricingRed));
-          
-          var len = data.sheetData.length + data.headerOffset;
+          numberRange.numberFormat = _.fill(Array(data.sheetData.length), _.fill(Array(5), formatPricing));
           worksheet.getUsedRange().format.autofitColumns();
-          //var sheetLength = data.sheetData.length + data.headerOffset - 1;
-          var range = worksheet.getRange('E' + data.headerOffset + ':L' + len);
-          range.format.columnWidth = 110;
+          
+          var range = worksheet.getRange('H' + (data.headerOffset+1) + ':L' + len);
+          range.format.horizontalAlignment = 'Right';
           return ctx.sync()
             .then(function(response) {
               //data.tableName = table.name;

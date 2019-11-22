@@ -301,9 +301,9 @@ app.service("jobcostService", [
             addTableRows,
             addFilter,
             hideRows,
+            addFormatting,
             addSubTotal,
             addGrandTotal,
-            addFormatting,
             removeOldSheet
             //insertData
           ], cb);
@@ -707,13 +707,6 @@ app.service("jobcostService", [
           range.format.font.color = 'blue';
           range.format.font.bold = true;
           numberRange.numberFormat = [_.fill(Array(7), formatPricingRed)];
-          if (data.layout == "FERC Details" || data.layout == "FERC/Cost Code Subtotals" || data.layout == "Cost Type Subtotals") {
-            numberRange = worksheet.getRange('E' + (val + 1) + ':K' + (val + 1));
-            range = worksheet.getRange('A' + (val + 1) + ':Z' + (val + 1));
-            range.format.font.color = 'blue';
-            range.format.font.bold = true;
-            numberRange.numberFormat = [_.fill(Array(7), formatPricingRed)];
-          }
         });
         
         return ctx.sync()
@@ -758,7 +751,7 @@ app.service("jobcostService", [
     var addFormatting = function(data, next) {
       if (data.sheetData.length > 5000) {
         var len = data.sheetData.length + data.headerOffset;
-        var formatArray = _.fill(Array(len), _.fill(Array(5), formatPricingRed));
+        var formatArray = _.fill(Array(len), _.fill(Array(5), formatPricing));
         var chunk = 200;
         var split = _.chunk(formatArray, chunk);
         var water = [];
@@ -790,6 +783,15 @@ app.service("jobcostService", [
               });
               
               j++;
+
+              if(i+1 >= split.length) {
+                var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+                var len = data.sheetData.length + data.headerOffset;
+                worksheet.getUsedRange().format.autofitColumns();
+
+                var range = worksheet.getRange('E' + (data.headerOffset+1) + ':K' + len);
+                range.format.horizontalAlignment = 'Right';
+              }
               
               return ctx.sync()
                 .then(function(response) {
@@ -810,13 +812,11 @@ app.service("jobcostService", [
           var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
           var len = data.sheetData.length + data.headerOffset;
           var numberRange = worksheet.getRange(data.budgetStart + '7:' + data.alphabetRangeValue + len)
-          numberRange.numberFormat = _.fill(Array(data.sheetData.length), _.fill(Array(5), formatPricingRed));
-          
-          var len = data.sheetData.length + data.headerOffset;
+          numberRange.numberFormat = _.fill(Array(data.sheetData.length), _.fill(Array(5), formatPricing));
           worksheet.getUsedRange().format.autofitColumns();
-          //var sheetLength = data.sheetData.length + data.headerOffset - 1;
-          var range = worksheet.getRange('E' + data.headerOffset + ':K' + len);
-          range.format.columnWidth = 110;
+
+          var range = worksheet.getRange('E' + (data.headerOffset+1) + ':K' + len);
+          range.format.horizontalAlignment = 'Right';
           return ctx.sync()
             .then(function(response) {
               //data.tableName = table.name;
