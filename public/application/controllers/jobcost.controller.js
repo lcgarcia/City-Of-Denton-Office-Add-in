@@ -69,6 +69,12 @@ app.controller('jobcostCtrl', [
     $(document).ready(function() {
       //Enables popup help boxes over labels
       $('[data-toggle="popover"]').popover();
+
+      //Enables yes/no checkbox graphics
+      $('#toggle-subtotals').bootstrapToggle({
+        on: 'Display Subtotals',
+        off: 'Remove Subtotals'
+      });
     });
     
     function buildPage() {
@@ -84,6 +90,7 @@ app.controller('jobcostCtrl', [
       
       $scope.reportDetails.show = false;
       $scope.reportDetails.msg = "";
+      $scope.selectedValues.removeSubtotals = false;
       
       //Set Month IDs
       var i;
@@ -261,6 +268,10 @@ app.controller('jobcostCtrl', [
     $scope.jdeYearClick = function() {
       $("#jdeCalendar").click();
     }
+
+    $scope.selectedSubtotals = function() {
+      $scope.selectedValues.removeSubtotals = !$scope.selectedValues.removeSubtotals;
+    }
     
     $scope.getSheetData = function() {
       $scope.modalData.message = 'Loading...';
@@ -272,12 +283,13 @@ app.controller('jobcostCtrl', [
       var year = $scope.selectedValues.dates.jdeYear;
       var month = $scope.selectedValues.dates.monthStart.name;
       var layout = $scope.selectedValues.details.name;
+      var removeSubtotals = $scope.selectedValues.removeSubtotals;
       var options = {
         projects: $scope.filteredProject
       };
       
       modalService.showReportLoadingModal();
-      jobcostService.getSheetData(rType, month, year, dKey, cKey, pKey, jKey, layout, options)
+      jobcostService.getSheetData(rType, month, year, dKey, cKey, pKey, jKey, layout, options, removeSubtotals)
         .then(function(data) {
           try {
             var hiddenRows = data.hiddenRows;

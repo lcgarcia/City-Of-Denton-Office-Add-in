@@ -87,7 +87,8 @@ router.post('/sheet/data', (req, res) => {
         department: req.body.department,
         company: req.body.company,
         project: req.body.project,
-        job: req.body.job
+        job: req.body.job,
+        removeSubtotals: req.body.removeSubtotals
       }
       if (reportSelected == 'ka' || reportSelected == 'new') {
         options.status = req.body.status;

@@ -136,7 +136,7 @@ app.service("jobcostService", [
      *                                { status: jobStatus, catField, catField1, catCode, catCode1 }
      * @return {promise}              Promise from the $http request
      */
-    this.getSheetData = function(type, month, year, departmentKey, companyKey, projectKey, jobKey, layout, options) {
+    this.getSheetData = function(type, month, year, departmentKey, companyKey, projectKey, jobKey, layout, options, removeSubtotals) {
       var makeRequest = function(cb) {
         var requestData = {
           reportSelected: type,
@@ -148,6 +148,7 @@ app.service("jobcostService", [
           project: projectKey,
           job: jobKey,
           projectList: options.projects,
+          removeSubtotals: removeSubtotals
         };
         
         if (type === 'new' || type === 'ka') {
@@ -953,31 +954,33 @@ app.service("jobcostService", [
     
     var addGrandTotal = function(data, next) {
       Excel.run(function(ctx) {
-        var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
-        var headerOffset = 6;
-        var length = headerOffset + data.sheetData.length;
-        var grandTotalData = [
-          ['=SUBTOTAL(9,G7:G' + (length) + ')', '=SUBTOTAL(9,H7:H' + (length) + ')', '=SUBTOTAL(9,I7:I' + (length) + ')', '=SUBTOTAL(9,J7:J' + (length) + ')', '=SUBTOTAL(9,K7:K' + (length) + ')']
-        ];
-        
-        if (data.layout == "No Details") {
-          grandTotalData = [
-            ['=SUBTOTAL(9,E7:E' + (length) + ')', '=SUBTOTAL(9,F7:F' + (length) + ')', '=SUBTOTAL(9,G7:G' + (length) + ')', '=SUBTOTAL(9,H7:H' + (length) + ')', '=SUBTOTAL(9,I7:I' + (length) + ')']
+        if(!data.removeSubtotals){
+          var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+          var headerOffset = 6;
+          var length = headerOffset + data.sheetData.length;
+          var grandTotalData = [
+            ['=SUBTOTAL(9,G7:G' + (length) + ')', '=SUBTOTAL(9,H7:H' + (length) + ')', '=SUBTOTAL(9,I7:I' + (length) + ')', '=SUBTOTAL(9,J7:J' + (length) + ')', '=SUBTOTAL(9,K7:K' + (length) + ')']
           ];
+          
+          if (data.layout == "No Details") {
+            grandTotalData = [
+              ['=SUBTOTAL(9,E7:E' + (length) + ')', '=SUBTOTAL(9,F7:F' + (length) + ')', '=SUBTOTAL(9,G7:G' + (length) + ')', '=SUBTOTAL(9,H7:H' + (length) + ')', '=SUBTOTAL(9,I7:I' + (length) + ')']
+            ];
+          }
+          
+          var grandRange = worksheet.getRange('D' + (length + 1));
+          grandRange.load('values');
+          grandRange.values = "Grand Total";
+          grandRange.format.font.bold = true;
+          grandRange.format.font.color = '#00037B';
+          
+          var range = worksheet.getRange(data.budgetStart + (length + 1) + ':' + data.budgetEnd + (length + 1));
+          range.load('values');
+          range.values = grandTotalData;
+          range.numberFormat = [_.fill(Array(5), formatPricingTotal)];
+          range.format.font.bold = true;
+          range.format.font.color = '#00037B';
         }
-        
-        var grandRange = worksheet.getRange('D' + (length + 1));
-        grandRange.load('values');
-        grandRange.values = "Grand Total";
-        grandRange.format.font.bold = true;
-        grandRange.format.font.color = '#00037B';
-        
-        var range = worksheet.getRange(data.budgetStart + (length + 1) + ':' + data.budgetEnd + (length + 1));
-        range.load('values');
-        range.values = grandTotalData;
-        range.numberFormat = [_.fill(Array(5), formatPricingTotal)];
-        range.format.font.bold = true;
-        range.format.font.color = '#00037B';
         
         return ctx.sync()
           .then(function(res) {
@@ -992,4 +995,5 @@ app.service("jobcostService", [
       });
     };
   }
+  
 ]);
