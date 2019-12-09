@@ -269,18 +269,15 @@ app.service("jobcostService2", [
         
         var leftColumns = worksheet.getRange('A:C');
         leftColumns.format.horizontalAlignment = 'Center';
+
+        leftColumns = worksheet.getRange('E:G');
+        leftColumns.format.horizontalAlignment = 'Center';
         
         var rightColumns = worksheet.getRange('J1:J4');
         rightColumns.format.horizontalAlignment = 'Left';
         
         var headerOffset = 6;
         var sheetLength = data.sheetData.length + headerOffset - 1;
-        var fullSheetRange = worksheet.getRange('A1:L' + sheetLength);
-        fullSheetRange.load('values');
-        fullSheetRange.format.autofitColumns();
-        
-        var gCol = worksheet.getRange('H1:H' + sheetLength);
-        gCol.format.columnWidth = 110;
         
         worksheet.freezePanes.freezeRows(6);
         return ctx.sync()
@@ -501,8 +498,11 @@ app.service("jobcostService2", [
               if(i+1 >= split.length) {
                 var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
                 var len = data.sheetData.length + data.headerOffset;
-                worksheet.getUsedRange().format.autofitColumns();
-                var range = worksheet.getRange('H' + (data.headerOffset+1) + ':L' + len);
+                //worksheet.getUsedRange().format.autofitColumns();
+                var range = worksheet.getRange('C' + (data.headerOffset+1) + ':C' + len);
+                range.format.horizontalAlignment = 'Left';
+
+                range = worksheet.getRange(data.budgetStart + (data.headerOffset+1) + ':' + data.budgetEnd + len);
                 range.format.horizontalAlignment = 'Right';
               }
               
@@ -528,9 +528,12 @@ app.service("jobcostService2", [
           var len = data.sheetData.length + data.headerOffset;
           var numberRange = worksheet.getRange(data.budgetStart + '7:' + data.alphabetRangeValue + len)
           numberRange.numberFormat = _.fill(Array(data.sheetData.length), _.fill(Array(5), formatPricing));
-          worksheet.getUsedRange().format.autofitColumns();
+          //worksheet.getUsedRange().format.autofitColumns();
           
-          var range = worksheet.getRange('H' + (data.headerOffset+1) + ':L' + len);
+          var range = worksheet.getRange('C' + (data.headerOffset+1) + ':C' + len);
+          range.format.horizontalAlignment = 'Left';
+
+          range = worksheet.getRange(data.budgetStart + (data.headerOffset+1) + ':' + data.budgetEnd + len);
           range.format.horizontalAlignment = 'Right';
           return ctx.sync()
             .then(function(response) {
@@ -596,6 +599,8 @@ app.service("jobcostService2", [
         range.format.font.bold = true;
         range.format.font.color = '#00037B';
         tableBody.format.fill.color = 'white';
+
+        worksheet.getUsedRange().format.autofitColumns();
         
         return ctx.sync()
           .then(function(res) {
