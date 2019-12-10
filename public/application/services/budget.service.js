@@ -5,6 +5,7 @@ app.service("budgetService", [
     var formatPricing = '_(* #,##0.00_);_(* (#,##0.00);_(* #,##0.00_);_(@_)';
     var formatPricingRed = '_(* #,##0.00_);[Red]_(* (#,##0.00);_(* #,##0.00_);_(@_)';
     var formatPricingTotal = '_($* #,##0.00_);[Red]_($* (#,##0.00);_($* #,##0.00_);_(@_)';
+    var constOffset = 6;
     
     var requestRetry = function(method) {
       return new Promise(function(resolve, reject) {
@@ -74,6 +75,7 @@ app.service("budgetService", [
     this.insertSpreadSheetData = function(data, cb) {
       // Callback with (err, result)
       try {
+        constOffset = data.reportType == 'f' ? 7 : 6;
         if (data.sheetData.length == 0) {
           async.waterfall([
             function(next) {
@@ -141,24 +143,60 @@ app.service("budgetService", [
         range = worksheet.getRange("H4:H" + length);
         range.format.columnWidth = columnWidth;
         range.delete("Up");
+        range = worksheet.getRange("H6:H" + length);
+        range.format.fill.color = 'white';
+        range.format.borders.getItem('EdgeLeft').style = 'Continuous';
+        range.format.borders.getItem('EdgeRight').style = 'Continuous';
         
         range = worksheet.getRange("L:L");
         range.insert("Right");
         range = worksheet.getRange("L4:L" + length);
         range.format.columnWidth = columnWidth;
         range.delete("Up");
+        range = worksheet.getRange("L6:L" + length);
+        range.format.fill.color = 'white';
+        range.format.borders.getItem('EdgeLeft').style = 'Continuous';
+        range.format.borders.getItem('EdgeRight').style = 'Continuous';
         
         range = worksheet.getRange("Q:Q");
         range.insert("Right");
         range = worksheet.getRange("Q4:Q" + length);
         range.format.columnWidth = columnWidth;
         range.delete("Up");
+        range = worksheet.getRange("Q6:Q" + length);
+        range.format.fill.color = 'white';
+        range.format.borders.getItem('EdgeLeft').style = 'Continuous';
+        range.format.borders.getItem('EdgeRight').style = 'Continuous';
         
         range = worksheet.getRange("V:V");
         range.insert("Right");
         range = worksheet.getRange("V4:V" + length);
         range.format.columnWidth = columnWidth;
         range.delete("Up");
+        range = worksheet.getRange("V6:V" + length);
+        range.format.fill.color = 'white';
+        range.format.borders.getItem('EdgeLeft').style = 'Continuous';
+        range.format.borders.getItem('EdgeRight').style = 'Continuous';
+
+        range = worksheet.getRange("X6:X" + length);
+        range.format.borders.getItem('EdgeLeft').style = 'Continuous';
+
+        length++;
+        range = worksheet.getRange('A' + length + ':G' + length);
+        range.format.borders.getItem('EdgeTop').style = 'Continuous';
+        range.format.fill.color = 'white';
+        range = worksheet.getRange('I' + length + ':K' + length);
+        range.format.borders.getItem('EdgeTop').style = 'Continuous';
+        range.format.fill.color = 'white';
+        range = worksheet.getRange('M' + length + ':P' + length);
+        range.format.borders.getItem('EdgeTop').style = 'Continuous';
+        range.format.fill.color = 'white';
+        range = worksheet.getRange('R' + length + ':U' + length);
+        range.format.borders.getItem('EdgeTop').style = 'Continuous';
+        range.format.fill.color = 'white';
+        range = worksheet.getRange('W' + length + ':W' + length);
+        range.format.borders.getItem('EdgeTop').style = 'Continuous';
+        range.format.fill.color = 'white';
         
         //Hidden JSON Data
         var jsonDataRange = worksheet.getRange(data.hiddenRowsData.header);
@@ -375,11 +413,12 @@ app.service("budgetService", [
         fullrange.load('values');
         fullrange.clear();
         
-        var headerOffset = 6;
+        var headerOffset = constOffset;
         var sheetLength = data.sheetData.length + headerOffset - 1;
         var range = worksheet.getRange('A' + headerOffset + ':' + alphabetRangeValue + sheetLength)
         range.load('values')
         range.values = data.sheetData
+        range.format.fill.color = 'white';
         range.format.autofitColumns()
         
         var numberRange = worksheet.getRange('F' + headerOffset + ':' + alphabetRangeValue + sheetLength)
@@ -387,6 +426,8 @@ app.service("budgetService", [
 
         var cRange = worksheet.getRange('C' + headerOffset + ':C' + sheetLength);
         cRange.numberFormat = "0000";
+        if(data.reportType == 'f') cRange.format.columnWidth = 2;
+
         return ctx.sync()
           .then(function(res) {
             next(null, data);
@@ -409,10 +450,10 @@ app.service("budgetService", [
           var range = worksheet.getRange('A' + val + ':Z' + val);
           //range.format.font.color = 'blue';
           range.format.font.bold = true;
-          numberRange.numberFormat = [_.fill(Array(14), formatPricingRed)];
+          numberRange.numberFormat = [_.fill(Array(14), formatPricing)];
         });
         
-        var headerOffset = 6;
+        var headerOffset = constOffset;
         var sheetLength = data.sheetData.length + headerOffset - 1;
         var range = worksheet.getRange('F' + headerOffset + ':S' + sheetLength)
         range.format.columnWidth = 110;
@@ -432,14 +473,13 @@ app.service("budgetService", [
     var addGrandTotal = function(data, next) {
       Excel.run(function(ctx) {
         var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
-        var headerOffset = 6;
+        var headerOffset = constOffset;
         var length = headerOffset + data.sheetData.length;
-        var range = 'E' + length + ':S' + length;
         var grandTotalData = [
-          ['Net Income/(Loss)', '=SUBTOTAL(9,F6:F' + (length - 1) + ')', '=SUBTOTAL(9,G6:G' + (length - 1) + ')', '=SUBTOTAL(9,H6:H' + (length - 1) + ')', '=SUBTOTAL(9,I6:I' + (length - 1) + ')', '=SUBTOTAL(9,J6:J' + (length - 1) + ')', '=SUBTOTAL(9,K6:K' + (length - 1) + ')', '=SUBTOTAL(9,L6:L' + (length - 1) + ')', '=SUBTOTAL(9,M6:M' + (length - 1) + ')', '=SUBTOTAL(9,N6:N' + (length - 1) + ')', '=SUBTOTAL(9,O6:O' + (length - 1) + ')', '=SUBTOTAL(9,P6:P' + (length - 1) + ')', '=SUBTOTAL(9,Q6:Q' + (length - 1) + ')', '=SUBTOTAL(9,R6:R' + (length - 1) + ')', '=SUBTOTAL(9,S6:S' + (length - 1) + ')']
+          ['Net(Income)/Loss', '=SUBTOTAL(9,F6:F' + (length - 1) + ')', '=SUBTOTAL(9,G6:G' + (length - 1) + ')', '=SUBTOTAL(9,H6:H' + (length - 1) + ')', '=SUBTOTAL(9,I6:I' + (length - 1) + ')', '=SUBTOTAL(9,J6:J' + (length - 1) + ')', '=SUBTOTAL(9,K6:K' + (length - 1) + ')', '=SUBTOTAL(9,L6:L' + (length - 1) + ')', '=SUBTOTAL(9,M6:M' + (length - 1) + ')', '=SUBTOTAL(9,N6:N' + (length - 1) + ')', '=SUBTOTAL(9,O6:O' + (length - 1) + ')', '=SUBTOTAL(9,P6:P' + (length - 1) + ')', '=SUBTOTAL(9,Q6:Q' + (length - 1) + ')', '=SUBTOTAL(9,R6:R' + (length - 1) + ')', '=SUBTOTAL(9,S6:S' + (length - 1) + ')']
         ];
         
-        var range = worksheet.getRange(range);
+        var range = worksheet.getRange('E' + length + ':S' + length);
         range.load('values');
         range.values = grandTotalData;
         range.numberFormat = [_.fill(Array(15), formatPricingTotal)];
@@ -498,8 +538,8 @@ app.service("budgetService", [
             var numberRange = worksheet.getRange('F' + val + ':S' + val);
             var range = worksheet.getRange('E' + val + ':Z' + val);
             range.format.font.bold = false;
-            numberRange.format.borders.getItem('EdgeTop').style = 'Continuous';
-            numberRange.numberFormat = [_.fill(Array(14), formatPricingRed)];
+            numberRange
+            numberRange.numberFormat = [_.fill(Array(14), formatPricing)];
           });
           
           return ctx.sync()
@@ -590,7 +630,7 @@ app.service("budgetService", [
             ],
             subTitle: 'K5:N5',
             subText: [
-              ['Budget', 'Encumbrances', '(Rev)/Expanded', 'Total']
+              ['Budget', 'Encumbrances', '(Rev)/Expend', 'Total']
             ]
           },
           {
@@ -601,7 +641,7 @@ app.service("budgetService", [
             ],
             subTitle: 'O5:R5',
             subText: [
-              ['Budget', 'Encumbrances', '(Rev)/Expanded', 'Total']
+              ['Budget', 'Encumbrances', '(Rev)/Expend', 'Total']
             ]
           },
           {
@@ -660,23 +700,22 @@ app.service("budgetService", [
         rangeGroup1.format.borders.getItem('EdgeBottom').style = 'Continuous';
         rangeGroup1.format.borders.getItem('EdgeLeft').style = 'Continuous';
         rangeGroup1.format.borders.getItem('EdgeRight').style = 'Continuous';
-        rangeGroup1.format.borders.getItem('EdgeTop').style = 'Continuous';
+
         rangeGroup2.format.borders.getItem('EdgeBottom').style = 'Continuous';
         rangeGroup2.format.borders.getItem('EdgeLeft').style = 'Continuous';
         rangeGroup2.format.borders.getItem('EdgeRight').style = 'Continuous';
-        rangeGroup2.format.borders.getItem('EdgeTop').style = 'Continuous';
+
         rangeGroup3.format.borders.getItem('EdgeBottom').style = 'Continuous';
         rangeGroup3.format.borders.getItem('EdgeLeft').style = 'Continuous';
         rangeGroup3.format.borders.getItem('EdgeRight').style = 'Continuous';
-        rangeGroup3.format.borders.getItem('EdgeTop').style = 'Continuous';
+
         rangeGroup4.format.borders.getItem('EdgeBottom').style = 'Continuous';
         rangeGroup4.format.borders.getItem('EdgeLeft').style = 'Continuous';
         rangeGroup4.format.borders.getItem('EdgeRight').style = 'Continuous';
-        rangeGroup4.format.borders.getItem('EdgeTop').style = 'Continuous';
+
         rangeGroup5.format.borders.getItem('EdgeBottom').style = 'Continuous';
         rangeGroup5.format.borders.getItem('EdgeLeft').style = 'Continuous';
         rangeGroup5.format.borders.getItem('EdgeRight').style = 'Continuous';
-        rangeGroup5.format.borders.getItem('EdgeTop').style = 'Continuous';
         
         var titleWithKey = data.sheetName;
         var mainTitle = worksheet.getRange('F1:N1');
@@ -738,6 +777,9 @@ app.service("budgetService", [
         ];
         dateLabel2.format.horizontalAlignment = 'Center';
         dateLabel2.merge(true);
+
+        var leftColumns = worksheet.getRange('B:B');
+        leftColumns.format.horizontalAlignment = 'Right';
         
         worksheet.freezePanes.freezeRows(5);
         worksheet.freezePanes.freezeColumns(5);
