@@ -278,7 +278,6 @@ app.controller('setupCtrl', [
           }
           
         }
-        //activeWorksheet.getRange("A1:A1").select();
         
         return ctx.sync()
           .then(function() {}).catch(function(err) {
@@ -394,7 +393,6 @@ app.controller('setupCtrl', [
         if (label.rows == (row[0] + "]")) selected = $(selections[i]).is(':checked');
       }
       
-      $scope.reportDetails.selectAll = selectAll;
       toggleHiddenRow(label, selected);
     };
     

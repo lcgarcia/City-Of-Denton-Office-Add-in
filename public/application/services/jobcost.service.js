@@ -239,6 +239,7 @@ app.service("jobcostService", [
     
     this.insertTable = function(data, cb) {
       try {
+        data.error = {};
         if (data.sheetData.length == 0) {
           async.waterfall([
             function(next) {
@@ -379,7 +380,9 @@ app.service("jobcostService", [
                 next(null, data);
               });
           }).catch(function(err) {
-            next(err);
+            data.error.msg = err;
+            data.error.stage = 'deleteWorkSheets';
+            next(null, data);
           });
       });
     }
@@ -397,7 +400,9 @@ app.service("jobcostService", [
             data.activeSheet = activeWorksheet.name;
             next(null, data);
           }).catch(function(err) {
-            next(err);
+            data.error.msg = err;
+            data.error.stage = 'loadWorkSheets';
+            next(null, data);
           });
       });
     };
@@ -420,7 +425,9 @@ app.service("jobcostService", [
             data.dataCreated = dataCreated;
             next(null, data);
           }).catch(function(err) {
-            next(err);
+            data.error.msg = err;
+            data.error.stage = 'findWorkSheet';
+            next(null, data);
           });
       });
     }
@@ -439,7 +446,9 @@ app.service("jobcostService", [
             .then(function() {
               next(null, data);
             }).catch(function(err) {
-              next(err);
+              data.error.msg = err;
+              data.error.stage = 'initalizeWorkSheet';
+              next(null, data);
             });
         });
       }
@@ -482,25 +491,17 @@ app.service("jobcostService", [
         var reportheaders = worksheet.getRange('G1:G4');
         reportheaders.format.font.color = '#174888';
         reportheaders.format.font.bold = true;
+        reportheaders.format.horizontalAlignment = 'Right';
+        reportheaders = worksheet.getRange('H1:H4');
+        reportheaders.format.horizontalAlignment = 'Left';
         
         var reportRangeHeader = worksheet.getRange('I1:I4');
         reportRangeHeader.format.font.color = '#174888';
         reportRangeHeader.format.font.bold = true;
+        reportRangeHeader.format.horizontalAlignment = 'Right';
+        reportRangeHeader = worksheet.getRange('J1:J4');
+        reportRangeHeader.format.horizontalAlignment = 'Left';
         
-        // var tableHeader = worksheet.getRange('A5:K5');
-        // tableHeader.format.fill.color = '#174888';
-        // tableHeader.format.font.color = 'white';
-        // if(data.isEmpty) tableHeader.rowHidden = false;
-        // else tableHeader.rowHidden = true;
-        
-        var leftColumns = worksheet.getRange('A:C');
-        leftColumns.format.horizontalAlignment = 'Center';
-
-        leftColumns = worksheet.getRange('E:F');
-        leftColumns.format.horizontalAlignment = 'Center';
-
-        var rightColumns = worksheet.getRange('J1:J4');
-        rightColumns.format.horizontalAlignment = 'Left';
         
         var headerOffset = 6;
         var sheetLength = data.sheetData.length + headerOffset - 1;
@@ -511,12 +512,9 @@ app.service("jobcostService", [
             data.header = header;
             next(null, data);
           }).catch(function(err) {
-            next({
-              err: err,
-              stage: 'setHeader',
-              range: 'A1:K' + sheetLength,
-              header: header
-            });
+            data.error.msg = err;
+            data.error.stage = 'setHeader';
+            next(null, data);
           });
       });
     };
@@ -531,6 +529,8 @@ app.service("jobcostService", [
           .then(function(res) {
             next(null, data);
           }).catch(function(err) {
+            data.error.msg = err;
+            data.error.stage = 'clearSheet';
             next(null, data);
           })
       })
@@ -548,6 +548,8 @@ app.service("jobcostService", [
             data.tableId = table.id;
             next(null, data);
           }).catch(function(err) {
+            data.error.msg = err;
+            data.error.stage = 'createTable';
             next(null, data);
           });
       });
@@ -571,6 +573,8 @@ app.service("jobcostService", [
           .then(function(response) {
             next(null, data);
           }).catch(function(err) {
+            data.error.msg = err;
+            data.error.stage = 'addTableHeader';
             next(null, data);
           });
       });
@@ -591,6 +595,8 @@ app.service("jobcostService", [
           .then(function(response) {
             next(null, data);
           }).catch(function(err) {
+            data.error.msg = err;
+            data.error.stage = 'addEmptyTableRows';
             next(null, data);
           });
       });
@@ -647,6 +653,8 @@ app.service("jobcostService", [
       }
       
       async.waterfall(water, function(err, res) {
+        data.error.msg = err;
+        data.error.stage = 'addTableRows';
         next(null, data);
       })
       
@@ -711,6 +719,8 @@ app.service("jobcostService", [
           .then(function(response) {
             next(null, data);
           }).catch(function(err) {
+            data.error.msg = err;
+            data.error.stage = 'addSubTotal';
             next(null, data);
           });
       });
@@ -735,6 +745,8 @@ app.service("jobcostService", [
             //data.tableName = table.name;
             next(null, data);
           }).catch(function(err) {
+            data.error.msg = err;
+            data.error.stage = 'addFilter';
             next(null, data);
           });
       });
@@ -795,6 +807,8 @@ app.service("jobcostService", [
           });
         }
         async.waterfall(water, function(err, res) {
+          data.error.msg = err;
+          data.error.stage = 'addFormatting';
           next(null, data);
         });
         
@@ -814,6 +828,8 @@ app.service("jobcostService", [
               //data.tableName = table.name;
               next(null, data);
             }).catch(function(err) {
+              data.error.msg = err;
+              data.error.stage = 'addFormatting';
               next(null, data);
             });
         });
@@ -867,10 +883,9 @@ app.service("jobcostService", [
           .then(function() {
             next(null, data);
           }).catch(function(err) {
-            next({
-              err: err,
-              stage: 'hideRows'
-            });
+            data.error.msg = err;
+            data.error.stage = 'insertSpreadSheetData';
+            next(null, data);
           });
       });
     };
@@ -905,11 +920,9 @@ app.service("jobcostService", [
           .then(function(res) {
             next(null, data);
           }).catch(function(err) {
-            next({
-              err: err,
-              stage: 'insertHttpDataIntoSpreadSheet',
-              len: sheetLength
-            });
+            data.error.msg = err;
+            data.error.stage = 'insertDataToWorkSheet';
+            next(null, data);
           });
       });
     };
@@ -935,20 +948,19 @@ app.service("jobcostService", [
           .then(function(res) {
             next(null, data);
           }).catch(function(err) {
-            next({
-              err: err,
-              stage: 'setSubTotalColor'
-            });
+            data.error.msg = err;
+            data.error.stage = 'setSubTotalFormat';
+            next(null, data);
           });
       })
     };
     
     var addGrandTotal = function(data, next) {
       Excel.run(function(ctx) {
+        var headerOffset = 6;
+        var length = headerOffset + data.sheetData.length;
         if(!data.removeSubtotals){
           var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
-          var headerOffset = 6;
-          var length = headerOffset + data.sheetData.length;
           var grandTotalData = [
             ['=SUBTOTAL(9,G7:G' + (length) + ')', '=SUBTOTAL(9,H7:H' + (length) + ')', '=SUBTOTAL(9,I7:I' + (length) + ')', '=SUBTOTAL(9,J7:J' + (length) + ')', '=SUBTOTAL(9,K7:K' + (length) + ')']
           ];
@@ -974,15 +986,36 @@ app.service("jobcostService", [
         }
         worksheet.getUsedRange().format.autofitColumns();
         
+        try{
+          length++;
+          var activeWorksheet = ctx.workbook.worksheets.getActiveWorksheet();
+          activeWorksheet.pageLayout.orientation = Excel.PageOrientation.landscape;
+          activeWorksheet.pageLayout.setPrintTitleRows("$1:$6");
+          activeWorksheet.pageLayout.setPrintArea("$A$1:$K$"+length);
+          activeWorksheet.pageLayout.zoom = { scale: 60 };
+          // activeWorksheet.pageLayout.topMargin = 0.5;
+          // activeWorksheet.pageLayout.bottomMargin = 0.5;
+          // activeWorksheet.pageLayout.rightMargin = 0.25;
+          // activeWorksheet.pageLayout.leftMargin = 0.25;
+          // activeWorksheet.pageLayout.headerMargin = 0.25;
+          // activeWorksheet.pageLayout.footerMargin = 0.25;
+
+          var headerFooter = activeWorksheet.pageLayout.headersFooters.defaultForAllPages;
+          headerFooter.leftFooter = data.dataSheetName;
+          headerFooter.centerFooter = "Page &P of &N";
+          headerFooter.rightFooter = "&D &B& &I&B&T";
+        }
+        catch(err){
+          data.error.msg = err;
+        }
+
         return ctx.sync()
           .then(function(res) {
             next(null, data);
           }).catch(function(err) {
-            next({
-              err: err,
-              stage: 'addGrandTotal',
-              len: sheetLength
-            });
+            data.error.msg = err;
+            data.error.stage = 'addGrandTotal';
+            next(null, data);
           });
       });
     };

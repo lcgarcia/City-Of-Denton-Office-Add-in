@@ -197,6 +197,18 @@ app.service("budgetService", [
         range = worksheet.getRange('W' + length + ':W' + length);
         range.format.borders.getItem('EdgeTop').style = 'Continuous';
         range.format.fill.color = 'white';
+
+        length+=2;
+        var length2 = length + 1;
+        var footer = [
+          ['*NOTE: If a company - or all business units within a company - is selected,'],
+          ['  a Net Loss in the original budget indicates fund balance utilization.']
+        ];
+        
+        range = worksheet.getRange('I' + length + ':I' + length2);
+        range.format.font.color = 'red';
+        range.load('values');
+        range.values = footer;
         
         //Hidden JSON Data
         var jsonDataRange = worksheet.getRange(data.hiddenRowsData.header);

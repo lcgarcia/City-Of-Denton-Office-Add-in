@@ -299,6 +299,8 @@ app.controller('jobcostCtrl', [
             
             data.scope = $scope;
             jobcostService.insertTable(data, function(err, response) {
+              //$scope.debugMsg = "TEST: " + data.error ? data.error.msg : "unknown";
+
               $rootScope.$broadcast('reloadHiddenRows', {
                 rows: data.hiddenRows
               });
