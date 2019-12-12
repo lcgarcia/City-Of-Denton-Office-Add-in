@@ -217,6 +217,28 @@ app.service("budgetService", [
         jsonDataRange.format.font.color = 'white';
         jsonDataRange.format.horizontalAlignment = 'Fill';
         jsonDataRange.format.columnWidth = 60;
+
+
+        //Set Print Settings
+        length++;
+        var activeWorksheet = ctx.workbook.worksheets.getActiveWorksheet();
+        activeWorksheet.pageLayout.orientation = Excel.PageOrientation.landscape;
+        activeWorksheet.pageLayout.setPrintTitleRows("$1:$5");
+        activeWorksheet.pageLayout.zoom = { scale: 60 };
+        activeWorksheet.pageLayout.setPrintArea("$A$1:$W$"+length);
+        
+        const inchPoint = 72;
+        activeWorksheet.pageLayout.topMargin = 0.25 * inchPoint;
+        activeWorksheet.pageLayout.bottomMargin = 0.5 * inchPoint;
+        activeWorksheet.pageLayout.rightMargin = 0.3 * inchPoint;
+        activeWorksheet.pageLayout.leftMargin = 0.3 * inchPoint;
+        activeWorksheet.pageLayout.headerMargin = 0.25 * inchPoint;
+        activeWorksheet.pageLayout.footerMargin = 0.25 * inchPoint;
+
+        var headerFooter = activeWorksheet.pageLayout.headersFooters.defaultForAllPages;
+        headerFooter.leftFooter = data.dataSheetName;
+        headerFooter.centerFooter = "Page &P of &N";
+        headerFooter.rightFooter = "&D &B& &I&B&T";
         
         return ctx.sync()
           .then(function(response) {
