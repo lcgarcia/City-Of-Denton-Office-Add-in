@@ -138,7 +138,10 @@ app.service("budgetService", [
         var length = 6 + data.sheetData.length;
         var columnWidth = 20;
         
-        var range = worksheet.getRange("H:H");
+        var range = worksheet.getRange("F6:F" + length);
+        range.format.borders.getItem('EdgeLeft').style = 'Continuous';
+
+        range = worksheet.getRange("H:H");
         range.insert("Right");
         range = worksheet.getRange("H4:H" + length);
         range.format.columnWidth = columnWidth;
