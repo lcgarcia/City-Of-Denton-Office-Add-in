@@ -245,9 +245,9 @@ app.service("trendService", [
         reportRangeHeader.format.font.color = '#174888';
         reportRangeHeader.format.font.bold = true;
 
-        var reportRangeHeader = worksheet.getRange('K1:K4');
-        reportRangeHeader.format.font.color = '#174888';
-        reportRangeHeader.format.font.bold = true;
+        var reportRangeHeader2 = worksheet.getRange('K1:K4');
+        reportRangeHeader2.format.font.color = '#174888';
+        reportRangeHeader2.format.font.bold = true;
         
         // var tableHeader = worksheet.getRange('A5:L5');
         // tableHeader.format.fill.color = '#174888';

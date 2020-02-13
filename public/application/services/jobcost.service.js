@@ -459,15 +459,30 @@ app.service("jobcostService", [
       Excel.run(function(ctx) {
         var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
         var recordCount = data.sheetData === noDataFound ? "None" : data.sheetData.length;
+        var reportType = data.scope.selectedValues.report.type;
         
-        var header = [
-          ['', '', '', 'City of Denton - Job Cost Summary', '', '', 'Dept:', data.scope.selectedValues.department.name, 'Month:', data.scope.selectedValues.dates.monthStart.name, ''],
-          ['', '', '', moment().format('MM/DD/YYYY, h:mm:ss a'), '', '', 'Company:', data.scope.selectedValues.company.name, 'JDE Fiscal Year:', data.scope.selectedValues.dates.jdeYear + ' - ' + (parseInt(data.scope.selectedValues.dates.jdeYear) + 1), ''],
-          ['', '', '', 'Unaudited/Unofficial-Not intended for public distribution', '', '', 'Project:', data.scope.selectedValues.project.name, 'Layout:', data.layout, ''],
-          ['', '', '', '', '', '', 'Job:', data.scope.selectedValues.job.name, 'Records:', recordCount, '']
+        var header = [];
+        if(reportType == "new"){
+          var catCodes = data.scope.selectedValues.optional;
+          header = [
+            ['', '', '', 'City of Denton - Job Cost Summary', '', '', 'Dept:', data.scope.selectedValues.department.name, 'Month:', data.scope.selectedValues.dates.monthStart.name, 'Cat Code 1:', catCodes.cat1.name],
+            ['', '', '', moment().format('MM/DD/YYYY, h:mm:ss a'), '', '', 'Company:', data.scope.selectedValues.company.name, 'JDE Fiscal Year:', data.scope.selectedValues.dates.jdeYear + ' - ' + (parseInt(data.scope.selectedValues.dates.jdeYear) + 1), 'Cat Code Value 1:', catCodes.cat1Description.name],
+            ['', '', '', 'Unaudited/Unofficial-Not intended for public distribution', '', '', 'Project:', data.scope.selectedValues.project.name, 'Layout:', data.layout, 'Cat Code 2:', catCodes.cat2.name],
+            ['', '', '', '', '', '', 'Job:', data.scope.selectedValues.job.name, 'Records:', recordCount, 'Cat Code Value 2:', catCodes.cat2Description.name]
+          ];
+
+          var reportRangeHeader2 = worksheet.getRange('K1:K4');
+          reportRangeHeader2.format.font.color = '#174888';
+          reportRangeHeader2.format.font.bold = true;
+        }
+        else header = [
+          ['', '', '', 'City of Denton - Job Cost Summary', '', '', 'Dept:', data.scope.selectedValues.department.name, 'Month:', data.scope.selectedValues.dates.monthStart.name, '', ''],
+          ['', '', '', moment().format('MM/DD/YYYY, h:mm:ss a'), '', '', 'Company:', data.scope.selectedValues.company.name, 'JDE Fiscal Year:', data.scope.selectedValues.dates.jdeYear + ' - ' + (parseInt(data.scope.selectedValues.dates.jdeYear) + 1), '', ''],
+          ['', '', '', 'Unaudited/Unofficial-Not intended for public distribution', '', '', 'Project:', data.scope.selectedValues.project.name, 'Layout:', data.layout, '', ''],
+          ['', '', '', '', '', '', 'Job:', data.scope.selectedValues.job.name, 'Records:', recordCount, '', '']
         ];
         
-        var range = worksheet.getRange('A1:K4');
+        var range = worksheet.getRange('A1:L4');
         range.load('values');
         range.values = header;
         
