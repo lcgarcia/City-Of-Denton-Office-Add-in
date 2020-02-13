@@ -404,14 +404,14 @@ app.controller('jobcost2Ctrl', [
      * [selectedMonthStart updates end month when start date > end date]
      */
     $scope.selectedMonthStart2 = function() {
-      updatedMonths($scope.selectedValues.dates.monthStart2.key, $scope.selectedValues.dates.monthEnd2.key);
+      //updatedMonths($scope.selectedValues.dates.monthStart2.key, $scope.selectedValues.dates.monthEnd2.key);
     }
     
     /**
      * [selectedMonthEnd updates start month when start date > end date]
      */
     $scope.selectedMonthEnd2 = function() {
-      updatedMonths($scope.selectedValues.dates.monthStart2.key, $scope.selectedValues.dates.monthEnd2.key);
+      //updatedMonths($scope.selectedValues.dates.monthStart2.key, $scope.selectedValues.dates.monthEnd2.key);
     }
     
     //Set JDE Fiscal Years

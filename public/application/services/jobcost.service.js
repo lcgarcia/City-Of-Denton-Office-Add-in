@@ -999,8 +999,8 @@ app.service("jobcostService", [
         const inchPoint = 72;
         activeWorksheet.pageLayout.topMargin = 0.25 * inchPoint;
         activeWorksheet.pageLayout.bottomMargin = 0.5 * inchPoint;
-        activeWorksheet.pageLayout.rightMargin = 0.3 * inchPoint;
-        activeWorksheet.pageLayout.leftMargin = 0.3 * inchPoint;
+        activeWorksheet.pageLayout.rightMargin = 0.2 * inchPoint;
+        activeWorksheet.pageLayout.leftMargin = 0.2 * inchPoint;
         activeWorksheet.pageLayout.headerMargin = 0.25 * inchPoint;
         activeWorksheet.pageLayout.footerMargin = 0.25 * inchPoint;
 

@@ -207,12 +207,13 @@ app.service("trendService", [
     var setHeader = function(data, next) {
       Excel.run(function(ctx) {
         var worksheet = ctx.workbook.worksheets.getItem(data.dataSheetName);
+        var catCodes = data.scope.selectedValues.optional;
         
         var header = [
-          ['', '', '', 'City of Denton - Job Cost Summary', '', '', 'Dept:', data.scope.selectedValues.department.name, 'Month:', data.scope.selectedValues.dates.monthStart2.name + ' - ' + data.scope.selectedValues.dates.monthEnd2.name, '', ''],
-          ['', '', '', moment().format('MM/DD/YYYY, h:mm:ss a'), '', '', 'Company:', data.scope.selectedValues.company.name, 'JDE Fiscal Year:', 'FY' + data.scope.selectedValues.dates.yearStart2 + ' thru FY' + data.scope.selectedValues.dates.yearEnd2, '', ''],
-          ['', '', '', 'Unaudited/Unofficial-Not intended for public distribution', '', '', 'Project:', data.scope.selectedValues.project.name, 'Layout:', data.layout, '', ''],
-          ['', '', '', '', '', '', 'Job:', data.scope.selectedValues.job.name, '', '', '', '']
+          ['', '', '', 'City of Denton - Job Cost Summary', '', '', 'Dept:', data.scope.selectedValues.department.name, 'Month:', data.scope.selectedValues.dates.monthStart2.name + ' - ' + data.scope.selectedValues.dates.monthEnd2.name, 'Cat Code 1:', catCodes.cat1.name],
+          ['', '', '', moment().format('MM/DD/YYYY, h:mm:ss a'), '', '', 'Company:', data.scope.selectedValues.company.name, 'JDE Fiscal Year:', 'FY' + data.scope.selectedValues.dates.yearStart2 + ' thru FY' + data.scope.selectedValues.dates.yearEnd2, 'Cat Code Value 1:', catCodes.cat1Description.name],
+          ['', '', '', 'Unaudited/Unofficial-Not intended for public distribution', '', '', 'Project:', data.scope.selectedValues.project.name, 'Layout:', data.layout, 'Cat Code 2:', catCodes.cat2.name],
+          ['', '', '', '', '', '', 'Job:', data.scope.selectedValues.job.name, '', '', 'Cat Code Value 2:', catCodes.cat2Description.name]
         ];
         
         var range = worksheet.getRange('A1:L4');
@@ -236,11 +237,15 @@ app.service("trendService", [
         infoCell.format.font.color = 'red';
         infoCell.format.font.italic = true;
         
-        var reportheaders = worksheet.getRange('H1:G4');
+        var reportheaders = worksheet.getRange('G1:G4');
         reportheaders.format.font.color = '#174888';
         reportheaders.format.font.bold = true;
         
         var reportRangeHeader = worksheet.getRange('I1:I4');
+        reportRangeHeader.format.font.color = '#174888';
+        reportRangeHeader.format.font.bold = true;
+
+        var reportRangeHeader = worksheet.getRange('K1:K4');
         reportRangeHeader.format.font.color = '#174888';
         reportRangeHeader.format.font.bold = true;
         
@@ -532,12 +537,14 @@ app.service("trendService", [
         var headerOffset = 6;
         var length = headerOffset + data.sheetData.length;
         var grandTotalData = data.trend.grandTotal;
+        var tableBody = worksheet.tables.getItem(data.tableName).getDataBodyRange();
         
         var grandRange = worksheet.getRange('C' + (length + 1));
         grandRange.load('values');
         grandRange.values = "Grand Total";
         grandRange.format.font.bold = true;
         grandRange.format.font.color = '#00037B';
+        tableBody.format.fill.color = 'white';
         
         var range = worksheet.getRange(data.budgetStart + (length + 1) + ':' + data.budgetEnd + (length + 1));
         range.load('values');

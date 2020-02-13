@@ -253,7 +253,7 @@ app.service("jobcostService2", [
         infoCell.format.font.color = 'red';
         infoCell.format.font.italic = true;
         
-        var reportheaders = worksheet.getRange('H1:G4');
+        var reportheaders = worksheet.getRange('G1:G4');
         reportheaders.format.font.color = '#174888';
         reportheaders.format.font.bold = true;
         
