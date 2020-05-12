@@ -267,7 +267,7 @@ app.controller('setupCtrl', [
               hiddenRowsData.json.push(jsonHiddenData);
             }
             else hiddenRowsData.json.push(JSON.stringify(hiddenRows));
-            hiddenRowsData.header = `${alphaMap[1]}${alphaMap[1]}1:${alphaMap[alphaKey1]}${alphaMap[alphaKey2]}1`;
+            hiddenRowsData.header = alphaMap[1] + alphaMap[1] + "1:" + alphaMap[alphaKey1] + alphaMap[alphaKey2] + "1";
             
             var jsonDataRange = activeWorksheet.getRange(hiddenRowsData.header);
             jsonDataRange.load("values");
@@ -294,7 +294,7 @@ app.controller('setupCtrl', [
         if (jsonSheetData && jsonSheetData[0]) {
           var jsonData = _.compact(jsonSheetData[0]);
           try {
-            _.forEach(jsonData, (val) => {
+            _.forEach(jsonData, function(val) {
               $scope.reportDetails.hiddenRows = $scope.reportDetails.hiddenRows.concat(JSON.parse(val));
             });
           }

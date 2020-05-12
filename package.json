@@ -6,7 +6,7 @@
     "node": ">=6.9"
   },
   "scripts": {
-    "start": "echo $LD_LIBRARY_PATH & NOLOGIN=false node ./bin/www",
+    "start": "node ./bin/www",
     "dev": "echo $LD_LIBRARY_PATH & NOLOGIN=true node ./bin/www",
     "local:install": "npm i --ignore-scripts",
     "live": "echo $LD_LIBRARY_PATH & nodemon ./bin/www",
